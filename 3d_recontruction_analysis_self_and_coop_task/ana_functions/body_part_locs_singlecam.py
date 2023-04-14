@@ -13,6 +13,7 @@ def body_part_locs_singlecam(bodyparts_camN_camNM,singlecam_ana_type,animalnames
     bodyparts_camN_camNM_data = pd.read_hdf(bodyparts_camN_camNM)
     
     # get body part location from one single camera
+    body_part_locs_notfix = {}
     body_part_locs = {}
   
     nbodies = np.shape(bodypartnames_videotrack)[0]
@@ -70,10 +71,19 @@ def body_part_locs_singlecam(bodyparts_camN_camNM,singlecam_ana_type,animalnames
 	    #
             yyy = yyy_filled
 
-            if (np.nanmean(xxx)>1000):
-                body_part_locs[('dodson',ibodyname)] = np.transpose(np.vstack((np.array(xxx),np.array(yyy))))
-            else:
-                body_part_locs[('scorch',ibodyname)] = np.transpose(np.vstack((np.array(xxx),np.array(yyy))))
+            body_part_locs_notfix[(iname,ibodyname)] = np.transpose(np.vstack((np.array(xxx),np.array(yyy))))
+ 
+    # fix the messed up dodson and scorch id (messed up animal1 and animal2)
+    for ibody in np.arange(0,nbodies,1):
+        ibodyname = bodypartnames_videotrack[ibody]
+   
+        if(np.nanmean(body_part_locs_notfix[('dodson',ibodyname)])>np.nanmean(body_part_locs_notfix[('scorch',ibodyname)])):
+            body_part_locs[('dodson',ibodyname)] = body_part_locs_notfix[('dodson',ibodyname)]
+            body_part_locs[('scorch',ibodyname)] = body_part_locs_notfix[('scorch',ibodyname)]
+        else:
+            body_part_locs[('dodson',ibodyname)] = body_part_locs_notfix[('scorch',ibodyname)]
+            body_part_locs[('scorch',ibodyname)] = body_part_locs_notfix[('dodson',ibodyname)]
+        
 
             
     return body_part_locs
