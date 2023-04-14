@@ -1,5 +1,5 @@
 # function - find social gaze time point based on one camera
-def find_socialgaze_timepoint_singlecam(bodyparts_locs_camN, lever_loc_both, tube_loc_both, considerlevertube, angle_thres):
+def find_socialgaze_timepoint_singlecam(bodyparts_locs_camN, lever_loc_both, tube_loc_both, considerlevertube, considertubeonly, angle_thres):
     
     import pandas as pd
     import numpy as np
@@ -34,8 +34,8 @@ def find_socialgaze_timepoint_singlecam(bodyparts_locs_camN, lever_loc_both, tub
     for ianimal in np.arange(0,nanimals,1):
 
         iname = animal_names_unique[ianimal]
-        lever_loc = lever_loc_both[ianimal]
-        tube_loc = tube_loc_both[ianimal]
+        lever_loc = lever_loc_both[iname]
+        tube_loc = tube_loc_both[iname]
  
         head_vect_frames = []
         other_eye_vect_frames = []
@@ -128,21 +128,27 @@ def find_socialgaze_timepoint_singlecam(bodyparts_locs_camN, lever_loc_both, tub
                 if (considerlevertube):
                     if ((other_eye_angle>lever_eye_angle)&(other_eye_angle>tube_eye_angle)):
                         look_at_other_iframe = 1
+                elif (considertubeonly):
+                    if (other_eye_angle>tube_eye_angle):
+                        look_at_other_iframe = 1
                 else:
                     look_at_other_iframe = 1
             look_at_other_frames.append(look_at_other_iframe)
             #
             look_at_lever_iframe = 0
-            if (considerlevertube):
-                if ((lever_eye_angle<np.pi)&(lever_eye_angle>angle_thres)):
+            if ((lever_eye_angle<np.pi)&(lever_eye_angle>angle_thres)):
+                if (considerlevertube):       
                     if ((lever_eye_angle>other_eye_angle)&(lever_eye_angle>tube_eye_angle)):
                         look_at_lever_iframe = 1
             look_at_lever_frames.append(look_at_lever_iframe)
             #
             look_at_tube_iframe = 0
-            if (considerlevertube):
-                if ((tube_eye_angle<np.pi)&(tube_eye_angle>angle_thres)):
+            if ((tube_eye_angle<np.pi)&(tube_eye_angle>angle_thres)):
+                if (considerlevertube):
                     if ((tube_eye_angle>other_eye_angle)&(tube_eye_angle>lever_eye_angle)):
+                        look_at_tube_iframe = 1
+                elif (considertubeonly):
+                    if (tube_eye_angle>other_eye_angle):
                         look_at_tube_iframe = 1
             look_at_tube_frames.append(look_at_tube_iframe)
         
@@ -156,7 +162,7 @@ def find_socialgaze_timepoint_singlecam(bodyparts_locs_camN, lever_loc_both, tub
         # angle between head vector and each of the gaze vector
         other_eye_angle_all_merge[(iname)] = other_eye_angle_frames
         lever_eye_angle_all_merge[(iname)] = lever_eye_angle_frames
-        tube_eye_angle_all_merge[(iname)] = tube_eye_angle 
+        tube_eye_angle_all_merge[(iname)] = tube_eye_angle_frames 
         # 
         look_at_other_or_not_merge[(iname)] = look_at_other_frames
         look_at_tube_or_not_merge[(iname)] = look_at_tube_frames

@@ -70,7 +70,10 @@ def body_part_locs_singlecam(bodyparts_camN_camNM,singlecam_ana_type,animalnames
 	    #
             yyy = yyy_filled
 
-            body_part_locs[(iname,ibodyname)] = np.transpose(np.vstack((np.array(xxx),np.array(yyy))))
+            if (np.nanmean(xxx)>1000):
+                body_part_locs[('dodson',ibodyname)] = np.transpose(np.vstack((np.array(xxx),np.array(yyy))))
+            else:
+                body_part_locs[('scorch',ibodyname)] = np.transpose(np.vstack((np.array(xxx),np.array(yyy))))
 
             
     return body_part_locs
