@@ -1,4 +1,4 @@
-#  function - compare the body track result from different camera pairs
+#  function - compare the body track result from different only one camera
 def body_part_locs_singlecam(bodyparts_camN_camNM,singlecam_ana_type,animalnames_videotrack,bodypartnames_videotrack,date_tgt):
 
     import pandas as pd
