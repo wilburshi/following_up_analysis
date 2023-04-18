@@ -59,9 +59,24 @@ def find_socialgaze_timepoint_singlecam(bodyparts_locs_camN, lever_loc_both, tub
             whiblz_loc = np.array(bodyparts_locs_camN[(iname,'whiteBlaze')])[iframe,:]
             mouth_loc = np.array(bodyparts_locs_camN[(iname,'mouth')])[iframe,:]
             #
+            # fill in the nan gaps
+            if (iframe > 0):
+                meaneye_loc_old = meaneye_loc
+                meantuft_loc_old = meantuft_loc
+                mass_loc_old = mass_loc
+            # 
             meaneye_loc = np.nanmean(np.vstack((lefteye_loc,righteye_loc)),axis=0)
+            if ((np.sum(np.isnan(meaneye_loc))>0)&(iframe>0)):
+                meaneye_loc = meaneye_loc_old
+            # 
             meantuft_loc = np.nanmean(np.vstack((lefttuft_loc,righttuft_loc)),axis=0)
+            if ((np.sum(np.isnan(meantuft_loc))>0)&(iframe>0)):
+                meantuft_loc = meantuft_loc_old
+            #  
             mass_loc = np.nanmean(np.vstack((lefteye_loc,righteye_loc,lefteye_loc,righteye_loc,whiblz_loc,mouth_loc)),axis=0)
+            if ((np.sum(np.isnan(mass_loc))>0)&(iframe>0)):
+                mass_loc = mass_loc_old            
+
 
             # examine whether this animal is looking at the other's eyes or face
             if (iname == animal_names_unique[0]): 
@@ -76,10 +91,23 @@ def find_socialgaze_timepoint_singlecam(bodyparts_locs_camN, lever_loc_both, tub
             whiblz_loc_other = np.array(bodyparts_locs_camN[(iname_other,'whiteBlaze')])[iframe,:]
             mouth_loc_other = np.array(bodyparts_locs_camN[(iname_other,'mouth')])[iframe,:]
             #
+            # fill in the nan gaps
+            if (iframe > 0):
+                meaneye_loc_other_old = meaneye_loc_other
+                meantuft_loc_other_old = meantuft_loc_other
+                mass_loc_other_old = mass_loc_other
+            # 
             meaneye_loc_other = np.nanmean(np.vstack((lefteye_loc_other,righteye_loc_other)),axis=0)
+            if ((np.sum(np.isnan(meaneye_loc_other))>0)&(iframe>0)):
+                meaneye_loc_other = meaneye_loc_other_old
+            # 
             meantuft_loc_other = np.nanmean(np.vstack((lefttuft_loc_other,righttuft_loc_other)),axis=0)
+            if ((np.sum(np.isnan(meantuft_loc_other))>0)&(iframe>0)):
+                meantuft_loc_other = meantuft_loc_other_old
+            #  
             mass_loc_other = np.nanmean(np.vstack((lefteye_loc_other,righteye_loc_other,lefteye_loc_other,righteye_loc_other,whiblz_loc_other,mouth_loc_other)),axis=0)
-
+            if ((np.sum(np.isnan(mass_loc_other))>0)&(iframe>0)):
+                mass_loc_other = mass_loc_other_old 
        
             # define important vectors
             head_vect = meantuft_loc - meaneye_loc

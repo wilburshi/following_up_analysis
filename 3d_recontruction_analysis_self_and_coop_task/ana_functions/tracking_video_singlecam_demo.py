@@ -90,12 +90,12 @@ def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_a
                 
                 ax2.set_xlim([0,nframes])  
                 ax2.set_ylim([0,1])
-                ax2.set_xlabel('frame number')
+                ax2.set_xlabel('frame number (30Hz fps)')
                 ax2.set_ylabel('')
                 ax2.set_title('animal 1 behavioral events')
                 ax3.set_xlim([0,nframes])  
                 ax3.set_ylim([0,1])
-                ax3.set_xlabel('frame number')
+                ax3.set_xlabel('frame number (30Hz fps)')
                 ax3.set_ylabel('')
                 ax3.set_title('animal 2 behavioral events')
 

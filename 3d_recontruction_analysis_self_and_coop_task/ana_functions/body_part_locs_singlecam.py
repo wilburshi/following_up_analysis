@@ -34,8 +34,8 @@ def body_part_locs_singlecam(bodyparts_camN_camNM,singlecam_ana_type,animalnames
             q3 = np.nanquantile(xxx_filled,0.75)
             thres1 = q1 - 1.5*abs(q3-q1)
             thres2 = q3 + 1.5*abs(q3-q1)
-            ind = (xxx_filled>thres2) | (xxx_filled<thres1)
-            xxx_filled[ind] = np.nan
+            ind_x = (xxx_filled>thres2) | (xxx_filled<thres1)
+            # xxx_filled[ind_x] = np.nan
             #        
             # fill in the nan data point after outlier removal
             # xxx_filled = xxx_filled.interpolate(method='linear',limit_direction='both')
@@ -59,8 +59,14 @@ def body_part_locs_singlecam(bodyparts_camN_camNM,singlecam_ana_type,animalnames
             q3 = np.nanquantile(yyy_filled,0.75)
             thres1 = q1 - 1.5*abs(q3-q1)
             thres2 = q3 + 1.5*abs(q3-q1)
-            ind = (yyy_filled>thres2) | (yyy_filled<thres1)
-            yyy_filled[ind] = np.nan
+            ind_y = (yyy_filled>thres2) | (yyy_filled<thres1)
+            # yyy_filled[ind_y] = np.nan
+
+            # xxx_filled[ind_x] = np.nan
+            # xxx_filled[ind_y] = np.nan
+            # yyy_filled[ind_x] = np.nan
+            # yyy_filled[ind_y] = np.nan
+
             #        
             # fill in the nan data point after outlier removal
             # yyy_filled = yyy_filled.interpolate(method='linear',limit_direction='both')
