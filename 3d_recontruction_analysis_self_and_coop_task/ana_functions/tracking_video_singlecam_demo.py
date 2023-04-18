@@ -1,5 +1,5 @@
 #  function - make demo videos for the body part tracking based on single camera, also show the important axes
-def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_allvectors,output_allangles,lever_loc_both, tube_loc_both,animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename,animal2_filename,nframes):
+def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_allvectors,output_allangles,lever_loc_both, tube_loc_both,animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename,animal2_filename,session_start_time,fps,nframes):
 
     import pandas as pd
     import numpy as np
@@ -44,7 +44,11 @@ def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_a
     nanimals = np.shape(animal_names_unique)[0]  
     nbodyparts = np.shape(body_parts_unique)[0]
     
-   
+    # align the plot with the session start
+    iframe_min = int(np.round(session_start_time*fps))
+    iframe_max = nframes+iframe_min   
+
+
     # set up the figure setting  
     fig = plt.figure(figsize = (15,12))
     gs=GridSpec(5,3) # 5 rows, 3 columns
@@ -59,20 +63,31 @@ def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_a
     ax1.set_ylabel('y')
     ax1.invert_yaxis()
     
-    ax2.set_xlim([0,nframes])  
+    ax2.set_xlim([iframe_min,iframe_max]) 
+    ax2.set_xticks(np.arange(iframe_min,iframe_max,300)) 
+    ax2.set_xticklabels('')
     ax2.set_ylim([0,1])
-    ax2.set_xlabel('frame number')
+    ax2.set_yticklabels('')
+    ax2.set_xlabel('')
     ax2.set_ylabel('')
-    ax3.set_xlim([0,nframes])  
+    ax2.set_title('animal 1 behavioral events')
+    
+    ax3.set_xlim([iframe_min,iframe_max])  
+    ax3.set_xticks(np.arange(iframe_min,iframe_max,300)) 
+    ax3.set_xticklabels(list(map(str,np.arange(0/fps,nframes/fps,300/fps))))
     ax3.set_ylim([0,1])
-    ax3.set_xlabel('frame number')
+    ax3.set_yticklabels('')
+    ax3.set_xlabel('time (s)')
     ax3.set_ylabel('')
+    ax3.set_title('animal 2 behavioral events')
+
 
 
     with writer.saving(fig, video_file, 100):
-        for iframe in np.arange(0,nframes,1):    
+        # for iframe in np.arange(0,nframes,1):    
+        for iframe in np.arange(iframe_min,iframe_max,1):
            
-            print("printing frame ",str(iframe+1),"/",str(nframes))
+            print("printing frame ",str(iframe+1),"/",str(iframe_max))
         
             if clear_frames:
                 fig.clear()
@@ -88,16 +103,24 @@ def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_a
                 ax1.set_ylabel('y')
                 ax1.invert_yaxis()
                 
-                ax2.set_xlim([0,nframes])  
+                ax2.set_xlim([iframe_min,iframe_max]) 
+                ax2.set_xticks(np.arange(iframe_min,iframe_max,300)) 
+                ax2.set_xticklabels('')
                 ax2.set_ylim([0,1])
-                ax2.set_xlabel('frame number (30Hz fps)')
+                ax2.set_yticklabels('')
+                ax2.set_xlabel('')
                 ax2.set_ylabel('')
                 ax2.set_title('animal 1 behavioral events')
-                ax3.set_xlim([0,nframes])  
+    
+                ax3.set_xlim([iframe_min,iframe_max])  
+                ax3.set_xticks(np.arange(iframe_min,iframe_max,300)) 
+                ax3.set_xticklabels(list(map(str,np.arange(0/fps,nframes/fps,300/fps))))
                 ax3.set_ylim([0,1])
-                ax3.set_xlabel('frame number (30Hz fps)')
+                ax3.set_yticklabels('')
+                ax3.set_xlabel('time (s)')
                 ax3.set_ylabel('')
                 ax3.set_title('animal 2 behavioral events')
+
 
             
             for ianimal in np.arange(0,nanimals,1):    
@@ -144,9 +167,12 @@ def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_a
                 rightEye_loc_iframe = np.array(bodyparts_locs_camN[(ianimal_name,'rightEye')])[iframe,:]
                 leftEye_loc_iframe = np.array(bodyparts_locs_camN[(ianimal_name,'leftEye')])[iframe,:]
                 meaneye_loc_iframe = np.nanmean(np.vstack([rightEye_loc_iframe,leftEye_loc_iframe]),axis=0)
-                head_loc_iframe = meaneye_loc_iframe + 200*np.array(output_allvectors['head_vect_all_merge'][ianimal_name])[iframe,:]
+                # head_loc_iframe = meaneye_loc_iframe + 200*np.array(output_allvectors['head_vect_all_merge'][ianimal_name])[iframe,:]
+                # # head gaze direction is assumed to be opposite to the head axis
+                head_loc_iframe = meaneye_loc_iframe - 200*np.array(output_allvectors['head_vect_all_merge'][ianimal_name])[iframe,:]
                 if (ianimal==1):
-                    ax1.plot([meaneye_loc_iframe[0],head_loc_iframe[0]],[meaneye_loc_iframe[1],head_loc_iframe[1]],'-',color = '0.75',label='head axis')
+                    # ax1.plot([meaneye_loc_iframe[0],head_loc_iframe[0]],[meaneye_loc_iframe[1],head_loc_iframe[1]],'-',color = '0.75',label='head axis')
+                    ax1.plot([meaneye_loc_iframe[0],head_loc_iframe[0]],[meaneye_loc_iframe[1],head_loc_iframe[1]],'-',color = '0.75',label='head gaze')
                 else:
                     ax1.plot([meaneye_loc_iframe[0],head_loc_iframe[0]],[meaneye_loc_iframe[1],head_loc_iframe[1]],'-',color = '0.75')     
 
@@ -172,17 +198,17 @@ def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_a
                     ax1.plot([meaneye_loc_iframe[0],lever_loc_iframe[0]],[meaneye_loc_iframe[1],lever_loc_iframe[1]],'-',color = 'g')
 
 
-                ax1.legend()
+                ax1.legend(loc='upper right')
                          
 
 
                 # draw animal behavioral events
                 look_at_other_framenum_all = np.where(np.array(output_look_ornot["look_at_other_or_not_merge"][ianimal_name])==1)[0]
-                look_at_other_framenum_plot = look_at_other_framenum_all[look_at_other_framenum_all<iframe]
+                look_at_other_framenum_plot = look_at_other_framenum_all[(look_at_other_framenum_all<=iframe)&(look_at_other_framenum_all>iframe_min)]
                 look_at_lever_framenum_all = np.where(np.array(output_look_ornot["look_at_lever_or_not_merge"][ianimal_name])==1)[0]
-                look_at_lever_framenum_plot = look_at_lever_framenum_all[look_at_lever_framenum_all<iframe]
+                look_at_lever_framenum_plot = look_at_lever_framenum_all[(look_at_lever_framenum_all<=iframe)&(look_at_lever_framenum_all>iframe_min)]
                 look_at_tube_framenum_all = np.where(np.array(output_look_ornot["look_at_tube_or_not_merge"][ianimal_name])==1)[0]
-                look_at_tube_framenum_plot = look_at_tube_framenum_all[look_at_tube_framenum_all<iframe]
+                look_at_tube_framenum_plot = look_at_tube_framenum_all[(look_at_tube_framenum_all<=iframe)&(look_at_tube_framenum_all>iframe_min)]
 
                 bhv_events_plot = np.hstack([look_at_other_framenum_plot,look_at_lever_framenum_plot,look_at_tube_framenum_plot])
                 nplotframes = np.shape(bhv_events_plot)[0]
