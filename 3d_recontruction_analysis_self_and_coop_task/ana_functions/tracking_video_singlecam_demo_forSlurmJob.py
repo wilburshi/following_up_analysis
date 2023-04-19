@@ -1,5 +1,5 @@
 #  function - make demo videos for the body part tracking based on single camera, also show the important axes
-def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_allvectors,output_allangles,lever_loc_both, tube_loc_both,time_point_pull1,time_point_pull2,animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename,animal2_filename,session_start_time,fps,nframes):
+def tracking_video_singlecam_demo_forSlurmJob(bodyparts_locs_camN,output_look_ornot,output_allvectors,output_allangles,lever_loc_both, tube_loc_both,animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename,animal2_filename,session_start_time,fps,nframes):
 
     import pandas as pd
     import numpy as np
@@ -27,7 +27,7 @@ def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_a
     import matplotlib.animation as animation
 
     # Settings
-    video_file = "../3d_recontruction_analysis_self_and_coop_task/example_videos_singlecam_demo/"+date_tgt+"_"+animal1_filename+animal2_filename+"_cam2only_tracking_demo.mp4"
+    video_file = "../3d_recontruction_analysis_self_and_coop_task/example_videos_singlecam_demo/"+date_tgt+"_"+animal1_filename+animal2_filename+"_cam2only_tracking_demo_fromSlurmJob.mp4"
     clear_frames = True     # Should it clear the figure between each frame?
     fps = 30
 
@@ -210,14 +210,8 @@ def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_a
                 look_at_tube_framenum_all = np.where(np.array(output_look_ornot["look_at_tube_or_not_merge"][ianimal_name])==1)[0]
                 look_at_tube_framenum_plot = look_at_tube_framenum_all[(look_at_tube_framenum_all<=iframe)&(look_at_tube_framenum_all>iframe_min)]
 
-                pull1_framenum = (time_point_pull1 + session_start_time)*fps
-                pull1_framenum_plot = pull1_framenum[(pull1_framenum<=iframe)&(pull1_framenum>iframe_min)]
-                pull2_framenum = (time_point_pull2 + session_start_time)*fps
-                pull2_framenum_plot = pull2_framenum[(pull2_framenum<=iframe)&(pull2_framenum>iframe_min)]
-
-                bhv_events_plot = np.hstack([look_at_other_framenum_plot,look_at_lever_framenum_plot,look_at_tube_framenum_plot,pull1_framenum_plot,pull2_framenum_plot])
+                bhv_events_plot = np.hstack([look_at_other_framenum_plot,look_at_lever_framenum_plot,look_at_tube_framenum_plot])
                 nplotframes = np.shape(bhv_events_plot)[0]
-                
 
                 for iplotframe in np.arange(0,nplotframes,1):
                     bhv_events_iframe = bhv_events_plot[iplotframe]
@@ -228,10 +222,8 @@ def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_a
                             ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'g')
                         elif (np.isin(bhv_events_iframe,look_at_tube_framenum_plot)): 
                             ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'y')
-                        elif (np.isin(bhv_events_iframe,pull1_framenum_plot)): 
-                            ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'k')
-                        # else:
-                        #     ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = '0.5')
+                        else:
+                            ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = '0.5')
                     elif (ianimal == 1):
                         if (np.isin(bhv_events_iframe,look_at_other_framenum_plot)): 
                             ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = colors[np.absolute(ianimal-1)])
@@ -239,10 +231,8 @@ def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_a
                             ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'g')
                         elif (np.isin(bhv_events_iframe,look_at_tube_framenum_plot)): 
                             ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'y')
-                        elif (np.isin(bhv_events_iframe,pull2_framenum_plot)): 
-                            ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'k')
-                        # else:
-                        #     ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = '0.5')                          
+                        else:
+                            ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = '0.5')                          
                     
 
             writer.grab_frame()            
