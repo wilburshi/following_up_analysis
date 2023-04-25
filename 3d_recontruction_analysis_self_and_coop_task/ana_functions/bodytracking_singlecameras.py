@@ -1,5 +1,5 @@
 #  function - compare the body track result from different camera pairs
-def bodytracking_singlecameras(body_part_locs_camera12,body_part_locs_camera23,bodyparts_cam1_cam12,bodyparts_cam2_cam12,bodyparts_cam2_cam23,bodyparts_cam3_cam23,animal1_fixedorder,animal2_fixedorder,date_tgt,saveornot):
+def bodytracking_singlecameras(body_part_locs_camera12,body_part_locs_camera23,bodyparts_cam1_cam12,bodyparts_cam2_cam12,bodyparts_cam2_cam23,bodyparts_cam3_cam23,animal1_fixedorder,animal2_fixedorder,date_tgt,cameraID,saveornot):
 
     import pandas as pd
     import numpy as np
@@ -71,7 +71,7 @@ def bodytracking_singlecameras(body_part_locs_camera12,body_part_locs_camera23,b
                             continue
 
         if saveornot:
-            plt.savefig("bodypart_singlecamera_comparison_"+animal1_fixedorder+animal2_fixedorder+"/"+date_tgt+"_"+iname+".pdf")
+            plt.savefig("bodypart_singlecamera_comparison_"+animal1_fixedorder+animal2_fixedorder+"/"+cameraID+"/"+date_tgt+"_"+iname+".pdf")
 
 
 

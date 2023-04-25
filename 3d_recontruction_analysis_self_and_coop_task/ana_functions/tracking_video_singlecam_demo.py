@@ -1,5 +1,5 @@
 #  function - make demo videos for the body part tracking based on single camera, also show the important axes
-def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_allvectors,output_allangles,lever_loc_both, tube_loc_both,time_point_pull1,time_point_pull2,animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename,animal2_filename,session_start_time,fps,nframes):
+def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_allvectors,output_allangles,lever_loc_both, tube_loc_both,time_point_pull1,time_point_pull2,animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename,animal2_filename,session_start_time,fps,nframes,cameraID):
 
     import pandas as pd
     import numpy as np
@@ -27,7 +27,7 @@ def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_a
     import matplotlib.animation as animation
 
     # Settings
-    video_file = "../3d_recontruction_analysis_self_and_coop_task/example_videos_singlecam_demo/"+date_tgt+"_"+animal1_filename+animal2_filename+"_cam2only_tracking_demo.mp4"
+    video_file = "../3d_recontruction_analysis_self_and_coop_task/example_videos_singlecam_demo/"+cameraID+"/"+date_tgt+"_"+animal1_filename+animal2_filename+"singlecam_tracking_demo.mp4"
     clear_frames = True     # Should it clear the figure between each frame?
     fps = 30
 
