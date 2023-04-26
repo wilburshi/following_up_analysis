@@ -11,7 +11,8 @@ def body_part_locs_singlecam(bodyparts_camN_camNM,singlecam_ana_type,animalnames
 
     # load camN h5 file
     bodyparts_camN_camNM_data = pd.read_hdf(bodyparts_camN_camNM)
-    
+    nframes = bodyparts_camN_camNM_data.shape[0]    
+
     # get body part location from one single camera
     body_part_locs_notfix = {}
     body_part_locs = {}
@@ -79,16 +80,52 @@ def body_part_locs_singlecam(bodyparts_camN_camNM,singlecam_ana_type,animalnames
 
             body_part_locs_notfix[(iname,ibodyname)] = np.transpose(np.vstack((np.array(xxx),np.array(yyy))))
  
+
     # fix the messed up dodson and scorch id (messed up animal1 and animal2)
+    # dodson (animal1) has larger x axis number 
+    meanx_allbd_animal1 = []
+    meanx_allbd_animal2 = []
     for ibody in np.arange(0,nbodies,1):
         ibodyname = bodypartnames_videotrack[ibody]
-   
-        if(np.nanmean(body_part_locs_notfix[('dodson',ibodyname)])>np.nanmean(body_part_locs_notfix[('scorch',ibodyname)])):
-            body_part_locs[('dodson',ibodyname)] = body_part_locs_notfix[('dodson',ibodyname)]
-            body_part_locs[('scorch',ibodyname)] = body_part_locs_notfix[('scorch',ibodyname)]
+        if ibody == 0:
+            meanx_allbd_animal1 = body_part_locs_notfix[('dodson',ibodyname)]
+            meanx_allbd_animal2 = body_part_locs_notfix[('scorch',ibodyname)]
         else:
-            body_part_locs[('dodson',ibodyname)] = body_part_locs_notfix[('scorch',ibodyname)]
-            body_part_locs[('scorch',ibodyname)] = body_part_locs_notfix[('dodson',ibodyname)]
+            meanx_allbd_animal1 = np.vstack((meanx_allbd_animal1,body_part_locs_notfix[('dodson',ibodyname)]))
+            meanx_allbd_animal2 = np.vstack((meanx_allbd_animal2,body_part_locs_notfix[('scorch',ibodyname)]))
+    animal12_x_separate = (np.nanmean(meanx_allbd_animal1[:,0])+np.nanmean(meanx_allbd_animal2[:,0]))/2
+    
+    swap_animals = 0
+    for iframe in np.arange(0,nframes,1):
+        for ibody in np.arange(0,nbodies,1):
+            ibodyname = bodypartnames_videotrack[ibody] 
+
+            if (body_part_locs_notfix[('dodson',ibodyname)][iframe,0]>body_part_locs_notfix[('scorch',ibodyname)][iframe,0]):
+                swap_animals = 0
+            elif (body_part_locs_notfix[('dodson',ibodyname)][iframe,0]<body_part_locs_notfix[('scorch',ibodyname)][iframe,0]):
+                swap_animals = 1
+            elif (body_part_locs_notfix[('dodson',ibodyname)][iframe,0]>animal12_x_separate):
+                swap_animals = 0
+            elif (body_part_locs_notfix[('scorch',ibodyname)][iframe,0]>animal12_x_separate):
+                swap_animals = 1    
+            else:
+                swap_animals = swap_animals
+                
+            #         
+            if not swap_animals:
+                if iframe == 0:
+                    body_part_locs[('dodson',ibodyname)] = body_part_locs_notfix[('dodson',ibodyname)][iframe]
+                    body_part_locs[('scorch',ibodyname)] = body_part_locs_notfix[('scorch',ibodyname)][iframe]
+                else:
+                    body_part_locs[('dodson',ibodyname)] = np.vstack((body_part_locs[('dodson',ibodyname)],body_part_locs_notfix[('dodson',ibodyname)][iframe]))
+                    body_part_locs[('scorch',ibodyname)] = np.vstack((body_part_locs[('scorch',ibodyname)],body_part_locs_notfix[('scorch',ibodyname)][iframe]))
+            elif swap_animals:
+                if iframe == 0:
+                    body_part_locs[('dodson',ibodyname)] = body_part_locs_notfix[('scorch',ibodyname)][iframe]
+                    body_part_locs[('scorch',ibodyname)] = body_part_locs_notfix[('dodson',ibodyname)][iframe]
+                else:
+                    body_part_locs[('dodson',ibodyname)] = np.vstack((body_part_locs[('dodson',ibodyname)],body_part_locs_notfix[('scorch',ibodyname)][iframe]))
+                    body_part_locs[('scorch',ibodyname)] = np.vstack((body_part_locs[('scorch',ibodyname)],body_part_locs_notfix[('dodson',ibodyname)][iframe]))
         
 
             
