@@ -51,10 +51,10 @@ def bhv_events_interval(totalsess_time, session_start_time, time_point_pull1, ti
         low_lim = 0.1
     if up_lim <0.2:
         # up_lim = 0.2
-        up_lim = 2  
+        up_lim = 1  
     # if up_lim < 1:
     #     up_lim = np.max(bhv_events_interval)/2
-    if up_lim > 10:
-        up_lim = 10
+    if up_lim > 2:
+        up_lim = 2
     
     return low_lim, up_lim, bhv_events_interval
