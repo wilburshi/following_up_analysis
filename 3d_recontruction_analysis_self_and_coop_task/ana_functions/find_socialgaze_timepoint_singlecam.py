@@ -150,7 +150,7 @@ def find_socialgaze_timepoint_singlecam(bodyparts_locs_camN, lever_loc_both, tub
             tube_eye_vect_frames.append(tube_eye_vect)
         
         
-            # define important angles
+            # define important angles (attention! it is defined based on the head_vect, opposite to the head gaze direction)
             other_eye_angle=np.arccos(np.clip(np.dot(head_vect,other_eye_vect),-1,1))
             lever_eye_angle=np.arccos(np.clip(np.dot(head_vect,lever_eye_vect),-1,1))
             tube_eye_angle =np.arccos(np.clip(np.dot(head_vect,tube_eye_vect),-1,1))

@@ -1,5 +1,5 @@
 #  function - make demo videos for the body part tracking based on single camera, also show the important axes
-def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_allvectors,output_allangles,lever_loc_both, tube_loc_both,time_point_pull1,time_point_pull2,animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename,animal2_filename,session_start_time,fps,nframes,cameraID):
+def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_allvectors,output_allangles,lever_loc_both, tube_loc_both,time_point_pull1,time_point_pull2,animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename,animal2_filename,session_start_time,fps,nframes,cameraID,video_file_original):
 
     import pandas as pd
     import numpy as np
@@ -9,6 +9,7 @@ def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_a
     import string
     import warnings
     import pickle
+    import cv2
    
     skeletons = [ ['rightTuft','rightEye'],
                   ['rightTuft','whiteBlaze'],
@@ -30,6 +31,9 @@ def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_a
     video_file = "../3d_recontruction_analysis_self_and_coop_task/example_videos_singlecam_demo/"+cameraID+"/"+date_tgt+"_"+animal1_filename+animal2_filename+"_singlecam_tracking_demo.mp4"
     clear_frames = True     # Should it clear the figure between each frame?
     fps = 30
+
+    # load the original video
+    vidcap = cv2.VideoCapture(video_file_original)
 
     # Output video writer
     FFMpegWriter = animation.writers['ffmpeg']
@@ -121,6 +125,10 @@ def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_a
                 ax3.set_ylabel('')
                 ax3.set_title('animal 2 behavioral events')
 
+                # plot the original videos
+                vidcap.set(cv2.CAP_PROP_POS_FRAMES, iframe)
+                ret, image_original = vidcap.read()
+                ax1.imshow(image_original)
 
             
             for ianimal in np.arange(0,nanimals,1):    
