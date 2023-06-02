@@ -22,7 +22,7 @@ def bodytracking_singlecameras(body_part_locs_camera12,body_part_locs_camera23,b
                 try:
                     bodyparts_cam3_cam23_data = pd.read_hdf(bodyparts_cam3_cam23)
                 except:
-                    continue
+                    return 0
 
 
 # plot and compare the body track results from different camera pairs

@@ -93,10 +93,38 @@ def body_part_locs_singlecam(bodyparts_camN_camNM,singlecam_ana_type,animalnames
         else:
             meanx_allbd_animal1 = np.vstack((meanx_allbd_animal1,body_part_locs_notfix[('dodson',ibodyname)]))
             meanx_allbd_animal2 = np.vstack((meanx_allbd_animal2,body_part_locs_notfix[('scorch',ibodyname)]))
-    animal12_x_separate = (np.nanmean(meanx_allbd_animal1[:,0])+np.nanmean(meanx_allbd_animal2[:,0]))/2
+    ratio1 = (np.nanstd(meanx_allbd_animal1[:,0]))/(np.nanstd(meanx_allbd_animal1[:,0])+np.nanstd(meanx_allbd_animal2[:,0]))
+    ratio2 = (np.nanstd(meanx_allbd_animal2[:,0]))/(np.nanstd(meanx_allbd_animal1[:,0])+np.nanstd(meanx_allbd_animal2[:,0]))
+    animal12_x_separate = np.nanmean(meanx_allbd_animal1[:,0])*0.5+np.nanmean(meanx_allbd_animal2[:,0])*0.5
     
     swap_animals = 0
     for iframe in np.arange(0,nframes,1):
+
+        lefteye_loc_a1 = np.array(body_part_locs_notfix[('dodson','leftEye')])[iframe,:]
+        righteye_loc_a1 = np.array(body_part_locs_notfix[('dodson','rightEye')])[iframe,:]
+        lefttuft_loc_a1 = np.array(body_part_locs_notfix[('dodson','leftTuft')])[iframe,:]
+        righttuft_loc_a1 = np.array(body_part_locs_notfix[('dodson','rightTuft')])[iframe,:]
+        whiblz_loc_a1 = np.array(body_part_locs_notfix[('dodson','whiteBlaze')])[iframe,:]
+        mouth_loc_a1 = np.array(body_part_locs_notfix[('dodson','mouth')])[iframe,:]
+        if (iframe>0):
+            mass_loc_a1_old = mass_loc_a1
+        mass_loc_a1 = np.nanmean(np.vstack((lefteye_loc_a1,righteye_loc_a1,lefteye_loc_a1,righteye_loc_a1,whiblz_loc_a1,mouth_loc_a1)),axis=0)
+        if ((np.sum(np.isnan(mass_loc_a1))>0)&(iframe>0)):
+            mass_loc_a1 = mass_loc_a1_old  
+
+        lefteye_loc_a2 = np.array(body_part_locs_notfix[('scorch','leftEye')])[iframe,:]
+        righteye_loc_a2 = np.array(body_part_locs_notfix[('scorch','rightEye')])[iframe,:]
+        lefttuft_loc_a2 = np.array(body_part_locs_notfix[('scorch','leftTuft')])[iframe,:]
+        righttuft_loc_a2 = np.array(body_part_locs_notfix[('scorch','rightTuft')])[iframe,:]
+        whiblz_loc_a2 = np.array(body_part_locs_notfix[('scorch','whiteBlaze')])[iframe,:]
+        mouth_loc_a2 = np.array(body_part_locs_notfix[('scorch','mouth')])[iframe,:]
+        if (iframe>0):
+            mass_loc_a2_old = mass_loc_a2
+        mass_loc_a2 = np.nanmean(np.vstack((lefteye_loc_a2,righteye_loc_a2,lefteye_loc_a2,righteye_loc_a2,whiblz_loc_a2,mouth_loc_a2)),axis=0)
+        if ((np.sum(np.isnan(mass_loc_a2))>0)&(iframe>0)):
+            mass_loc_a2 = mass_loc_a2_old 
+
+
         for ibody in np.arange(0,nbodies,1):
             ibodyname = bodypartnames_videotrack[ibody] 
 
@@ -104,10 +132,14 @@ def body_part_locs_singlecam(bodyparts_camN_camNM,singlecam_ana_type,animalnames
                 swap_animals = 0
             elif (body_part_locs_notfix[('dodson',ibodyname)][iframe,0]<body_part_locs_notfix[('scorch',ibodyname)][iframe,0]):
                 swap_animals = 1
-            elif (body_part_locs_notfix[('dodson',ibodyname)][iframe,0]>animal12_x_separate):
+            elif ((body_part_locs_notfix[('dodson',ibodyname)][iframe,0]>mass_loc_a2[0])|(body_part_locs_notfix[('scorch',ibodyname)][iframe,0]<mass_loc_a1[0])):
                 swap_animals = 0
-            elif (body_part_locs_notfix[('scorch',ibodyname)][iframe,0]>animal12_x_separate):
-                swap_animals = 1    
+            elif ((body_part_locs_notfix[('dodson',ibodyname)][iframe,0]<mass_loc_a2[0])|(body_part_locs_notfix[('scorch',ibodyname)][iframe,0]>mass_loc_a1[0])):
+                swap_animals = 1  
+            #elif ((body_part_locs_notfix[('dodson',ibodyname)][iframe,0]>animal12_x_separate)|(body_part_locs_notfix[('scorch',ibodyname)][iframe,0]<animal12_x_separate)):
+            #    swap_animals = 0
+            #elif ((body_part_locs_notfix[('dodson',ibodyname)][iframe,0]<animal12_x_separate)|(body_part_locs_notfix[('scorch',ibodyname)][iframe,0]>animal12_x_separate)):
+            #    swap_animals = 1 
             else:
                 swap_animals = swap_animals
                 
