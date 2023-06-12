@@ -1,4 +1,0 @@
-# videos.txt
-file 'camera-3_new_position_20221109.MP4'
-file 'camera-3_new_position_20221109_2.MP4'
-
