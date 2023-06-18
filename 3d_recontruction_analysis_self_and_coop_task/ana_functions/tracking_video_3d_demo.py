@@ -1,5 +1,5 @@
 #  function - make demo videos for the body part tracking after 3d reconrstruct
-def tracking_video_3d_demo(bodyparts_locs_3d,animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename,animal2_filename,session_start_time,fps,nframes,video_file):
+def tracking_video_3d_demo(bodyparts_locs_3d,animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename,animal2_filename,session_start_time,fps,nframes,video_file,withboxCorner):
 
     import pandas as pd
     import numpy as np
@@ -16,16 +16,32 @@ def tracking_video_3d_demo(bodyparts_locs_3d,animalnames_videotrack,bodypartname
     import warnings
     warnings.filterwarnings("ignore")    
 
-    skeletons = [ ['rightTuft','rightEye'],
-                  ['rightTuft','whiteBlaze'],
-                  ['leftTuft','leftEye'],
-                  ['leftTuft','whiteBlaze'],
-                  ['rightEye','whiteBlaze'],
-                  ['leftEye','whiteBlaze'],
-                  ['rightEye','mouth'],
-                  ['leftEye','mouth'],
-                  ['leftEye','rightEye']
-                ]
+    # if withboxCorner:
+    if 1:
+        skeletons = [ ['rightTuft','rightEye'],
+                      ['rightTuft','whiteBlaze'],
+                      ['leftTuft','leftEye'],
+                      ['leftTuft','whiteBlaze'],
+                      ['rightEye','whiteBlaze'],
+                      ['leftEye','whiteBlaze'],
+                      ['rightEye','mouth'],
+                      ['leftEye','mouth'],
+                      ['leftEye','rightEye'],
+                      ['boxCorner1','boxCorner2'],
+                      ['boxCorner2','boxCorner3'],
+                      ['boxCorner3','boxCorner4']
+                    ]
+    else:
+        skeletons = [ ['rightTuft','rightEye'],
+                      ['rightTuft','whiteBlaze'],
+                      ['leftTuft','leftEye'],
+                      ['leftTuft','whiteBlaze'],
+                      ['rightEye','whiteBlaze'],
+                      ['leftEye','whiteBlaze'],
+                      ['rightEye','mouth'],
+                      ['leftEye','mouth'],
+                      ['leftEye','rightEye']
+                    ]
     nskeletons = np.shape(skeletons)[0]
     
     colors = ['b','r','k']
@@ -55,9 +71,50 @@ def tracking_video_3d_demo(bodyparts_locs_3d,animalnames_videotrack,bodypartname
             else:
                 xxx2 = np.array(bodyparts_locs_3d[(animal_names_unique[iname],body_parts_unique[ibody])])
                 xxx = np.concatenate([xxx,xxx2])
+    
+    if withboxCorner:
+        # rotate the x y z axis
+        X = xxx[:,0]
+        Y = xxx[:,1]
+        Z = xxx[:,2]
+    
+        old_axis_x = np.array([1, 0, 0])
+        old_axis_y = np.array([0, 1, 0])
+        old_axis_z = np.array([0, 0, 1])
+
+        new_axis_x = np.array(bodyparts_locs_3d[('dodson','boxCorner3')])[0,:]-np.array(bodyparts_locs_3d[('scorch','boxCorner3')])[0,:]
+        new_axis_y = np.array(bodyparts_locs_3d[('dodson','boxCorner4')])[0,:]-np.array(bodyparts_locs_3d[('dodson','boxCorner3')])[0,:] 
+        new_axis_z = np.array(bodyparts_locs_3d[('dodson','boxCorner1')])[0,:]-np.array(bodyparts_locs_3d[('dodson','boxCorner2')])[0,:] 
+
+        rot_axis_x = np.array([0,new_axis_x[1],new_axis_x[2]])
+        rot_axis_y = np.array([new_axis_x[0],0,new_axis_x[2]])
+        rot_axis_z = np.array([new_axis_x[0],new_axis_x[1],0])
+
+        # rotate angles
+        angle_x_rad = np.arccos(np.dot(old_axis_z, rot_axis_x) / (np.linalg.norm(old_axis_z) * np.linalg.norm(rot_axis_x))) 
+        angle_y_rad = np.arccos(np.dot(old_axis_x, rot_axis_y) / (np.linalg.norm(old_axis_x) * np.linalg.norm(rot_axis_y))) 
+        angle_z_rad = np.arccos(np.dot(old_axis_x, rot_axis_z) / (np.linalg.norm(old_axis_x) * np.linalg.norm(rot_axis_z)))
+
+        # rotate
+        X_rot = X * np.cos(angle_y_rad) * np.cos(angle_z_rad) + \
+                Y * (np.cos(angle_z_rad) * np.sin(angle_x_rad) * np.sin(angle_y_rad) - np.cos(angle_x_rad) * np.sin(angle_z_rad)) + \
+                Z * (np.sin(angle_x_rad) * np.sin(angle_z_rad) * np.cos(angle_y_rad) + np.cos(angle_x_rad) * np.sin(angle_y_rad))
+
+        Y_rot = X * np.cos(angle_y_rad) * np.sin(angle_z_rad) + \
+                Y * (np.cos(angle_x_rad) * np.cos(angle_z_rad) + np.sin(angle_x_rad) * np.sin(angle_y_rad) * np.sin(angle_z_rad)) + \
+                Z * (-np.cos(angle_z_rad) * np.sin(angle_x_rad) + np.cos(angle_x_rad) * np.sin(angle_y_rad) * np.sin(angle_z_rad))
+
+        Z_rot = -X * np.sin(angle_y_rad) + \
+                 Y * np.cos(angle_y_rad) * np.sin(angle_x_rad) + \
+                 Z * np.cos(angle_x_rad) * np.cos(angle_y_rad)
+
+        xxx[:,0] = X_rot
+        xxx[:,1] = Y_rot
+        xxx[:,2] = Z_rot
+
+    #
     xyz_min = np.nanmin(xxx,axis=0)
     xyz_max = np.nanmax(xxx,axis=0)
-
 
 
     # align the plot with the session start
@@ -157,6 +214,31 @@ def tracking_video_3d_demo(bodyparts_locs_3d,animalnames_videotrack,bodypartname
 
                     ibdpart_name = body_parts_unique[ibdpart]
                     bodypart_loc_iframe[ibdpart,:] = np.array(bodyparts_locs_3d[(ianimal_name,ibdpart_name)])[iframe,:]
+
+                    if withboxCorner:
+                        # rotate the x y z axis
+                        X = bodypart_loc_iframe[ibdpart,0]
+                        Y = bodypart_loc_iframe[ibdpart,1]
+                        Z = bodypart_loc_iframe[ibdpart,2]
+
+                        # rotate
+                        X_rot = X * np.cos(angle_y_rad) * np.cos(angle_z_rad) + \
+                                Y * (np.cos(angle_z_rad) * np.sin(angle_x_rad) * np.sin(angle_y_rad) - np.cos(angle_x_rad) * np.sin(angle_z_rad)) + \
+                                Z * (np.sin(angle_x_rad) * np.sin(angle_z_rad) * np.cos(angle_y_rad) + np.cos(angle_x_rad) * np.sin(angle_y_rad))
+
+                        Y_rot = X * np.cos(angle_y_rad) * np.sin(angle_z_rad) + \
+                                Y * (np.cos(angle_x_rad) * np.cos(angle_z_rad) + np.sin(angle_x_rad) * np.sin(angle_y_rad) * np.sin(angle_z_rad)) + \
+                                Z * (-np.cos(angle_z_rad) * np.sin(angle_x_rad) + np.cos(angle_x_rad) * np.sin(angle_y_rad) * np.sin(angle_z_rad))
+
+                        Z_rot = -X * np.sin(angle_y_rad) + \
+                                 Y * np.cos(angle_y_rad) * np.sin(angle_x_rad) + \
+                                 Z * np.cos(angle_x_rad) * np.cos(angle_y_rad)
+
+                        bodypart_loc_iframe[ibdpart,0] = X_rot
+                        bodypart_loc_iframe[ibdpart,1] = Y_rot
+                        bodypart_loc_iframe[ibdpart,2] = Z_rot
+
+
                 # plot the body parts
                 if (ianimal==0): 
                     ax1.plot3D(bodypart_loc_iframe[:,0], bodypart_loc_iframe[:,1],bodypart_loc_iframe[:,2], '.', color=colors[ianimal],label ='animal1')
@@ -174,6 +256,53 @@ def tracking_video_3d_demo(bodyparts_locs_3d,animalnames_videotrack,bodypartname
                         #
                         skelbody12_loc_iframe[0,:] = np.array(bodyparts_locs_3d[(ianimal_name,skel_body1_name)])[iframe,:]
                         skelbody12_loc_iframe[1,:] = np.array(bodyparts_locs_3d[(ianimal_name,skel_body2_name)])[iframe,:]
+
+                        if withboxCorner:
+                            # rotate the x y z axis
+                            X = skelbody12_loc_iframe[0,0]
+                            Y = skelbody12_loc_iframe[0,1]
+                            Z = skelbody12_loc_iframe[0,2]            
+                            # rotate
+                            X_rot = X * np.cos(angle_y_rad) * np.cos(angle_z_rad) + \
+                                    Y * (np.cos(angle_z_rad) * np.sin(angle_x_rad) * np.sin(angle_y_rad) - np.cos(angle_x_rad) * np.sin(angle_z_rad)) + \
+                                    Z * (np.sin(angle_x_rad) * np.sin(angle_z_rad) * np.cos(angle_y_rad) + np.cos(angle_x_rad) * np.sin(angle_y_rad))
+
+                            Y_rot = X * np.cos(angle_y_rad) * np.sin(angle_z_rad) + \
+                                    Y * (np.cos(angle_x_rad) * np.cos(angle_z_rad) + np.sin(angle_x_rad) * np.sin(angle_y_rad) * np.sin(angle_z_rad)) + \
+                                    Z * (-np.cos(angle_z_rad) * np.sin(angle_x_rad) + np.cos(angle_x_rad) * np.sin(angle_y_rad) * np.sin(angle_z_rad))
+   
+                            Z_rot = -X * np.sin(angle_y_rad) + \
+                                     Y * np.cos(angle_y_rad) * np.sin(angle_x_rad) + \
+                                     Z * np.cos(angle_x_rad) * np.cos(angle_y_rad)
+                            #
+                            skelbody12_loc_iframe[0,0] = X_rot
+                            skelbody12_loc_iframe[0,1] = Y_rot
+                            skelbody12_loc_iframe[0,2] = Z_rot
+ 
+                            #
+                            # rotate the x y z axis
+                            X = skelbody12_loc_iframe[1,0]
+                            Y = skelbody12_loc_iframe[1,1]
+                            Z = skelbody12_loc_iframe[1,2]            
+                            # rotate
+                            X_rot = X * np.cos(angle_y_rad) * np.cos(angle_z_rad) + \
+                                    Y * (np.cos(angle_z_rad) * np.sin(angle_x_rad) * np.sin(angle_y_rad) - np.cos(angle_x_rad) * np.sin(angle_z_rad)) + \
+                                    Z * (np.sin(angle_x_rad) * np.sin(angle_z_rad) * np.cos(angle_y_rad) + np.cos(angle_x_rad) * np.sin(angle_y_rad))
+
+                            Y_rot = X * np.cos(angle_y_rad) * np.sin(angle_z_rad) + \
+                                    Y * (np.cos(angle_x_rad) * np.cos(angle_z_rad) + np.sin(angle_x_rad) * np.sin(angle_y_rad) * np.sin(angle_z_rad)) + \
+                                    Z * (-np.cos(angle_z_rad) * np.sin(angle_x_rad) + np.cos(angle_x_rad) * np.sin(angle_y_rad) * np.sin(angle_z_rad))
+   
+                            Z_rot = -X * np.sin(angle_y_rad) + \
+                                     Y * np.cos(angle_y_rad) * np.sin(angle_x_rad) + \
+                                     Z * np.cos(angle_x_rad) * np.cos(angle_y_rad)
+                            #
+                            skelbody12_loc_iframe[1,0] = X_rot
+                            skelbody12_loc_iframe[1,1] = Y_rot
+                            skelbody12_loc_iframe[1,2] = Z_rot
+
+
+
                         # plot one skeleton
                         ax1.plot3D(skelbody12_loc_iframe[:,0],skelbody12_loc_iframe[:,1],skelbody12_loc_iframe[:,2],'-',color=colors[ianimal])
                     except:

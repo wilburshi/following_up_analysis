@@ -8,6 +8,10 @@ from aniposelib.utils import load_pose2d_fnames
 import os
 
 
+## caution!! Don't forget to fix the animal swapping problem first!!
+# the scripts are in /home/ws523/marmoset_tracking_DLCv2/following_up_analysis/slurm_run_job/marmosets_tracking_3d_training_fixAnimalSwapping_multi_sessions.py
+
+
 ## section 1 - cammera calibration
 # calibrate the cameras for 3d
 
@@ -51,45 +55,59 @@ else:
 
 
 # dates for Eddie and Sparkle
-analyzed_dates = [
-                  "20221122","20221125","20221128","20221129","20221130","20221202","20221206",
-                  "20221207","20221208","20221209","20230126","20230127","20230130","20230201","20230203-1",
-                  "20230206","20230207","20230208-1","20230209","20230222","20230223-1","20230227-1",
-                  "20230228-1","20230302-1","20230307-2","20230313","20230315","20230316","20230317",
-                  "20230321","20230322","20230324","20230327","20230328",
-                  "20230330","20230331","20230403","20230404","20230405",
-                  "20230406","20230407"
-               ]
+# analyzed_dates = [
+#                   "20221122","20221125","20221128","20221129","20221130","20221202","20221206",
+#                   "20221207","20221208","20221209","20230126","20230127","20230130","20230201","20230203-1",
+#                   "20230206","20230207","20230208-1","20230209","20230222","20230223-1","20230227-1",
+#                   "20230228-1","20230302-1","20230307-2","20230313","20230315","20230316","20230317",
+#                   "20230321","20230322","20230324","20230327","20230328",
+#                   "20230330","20230331","20230403","20230404","20230405",
+#                   "20230406","20230407"
+#                ]
 
-# analyzed_dates = ["20221128"]
+analyzed_dates = ["20221128"]
 
-session_start_times = [ 
-                            8.00,38.00,1.00,3.00,5.00,9.50,1.00,
-                            4.50,4.50,5.00,38.00,166.00,4.20,3.80,3.60,
-                            7.50,9.00,7.50,8.50,14.50,7.80,8.00,7.50,
-                            8.00,8.00,4.00,123.00,14.00,8.80,
-                            7.00,7.50,5.50,11.00,9.00,
-                            17.00,4.50,9.30,25.50,20.40,
-                            21.30,24.80
-                         ]
+# session_start_times = [ 
+#                             8.00,38.00,1.00,3.00,5.00,9.50,1.00,
+#                             4.50,4.50,5.00,38.00,166.00,4.20,3.80,3.60,
+#                             7.50,9.00,7.50,8.50,14.50,7.80,8.00,7.50,
+#                             8.00,8.00,4.00,123.00,14.00,8.80,
+#                             7.00,7.50,5.50,11.00,9.00,
+#                             17.00,4.50,9.30,25.50,20.40,
+#                             21.30,24.80
+#                          ]
 
-# session_start_times = [1.00]
+session_start_times = [1.00]
 
 animal1 = "Eddie"
 animal2 = "Sparkle"
 
+# get this information using DLC animal tracking GUI, the results are stored: 
+# /home/ws523/marmoset_tracking_DLCv2/marmoset_tracking_with_lever_tube-weikang-2023-04-13/labeled-data/
 lever_locs_all = {'camera-1':{('dodson'):np.array([645, 600]),('scorch'):np.array([425, 435])},
                   'camera-2':{('dodson'):np.array([1335,715]),('scorch'):np.array([550, 715])},
                   'camera-3':{('dodson'):np.array([1580,440]),('scorch'):np.array([1296,540])}}
 tube_locs_all = {'camera-1':{('dodson'):np.array([1350,630]),('scorch'):np.array([555, 345])},
                  'camera-2':{('dodson'):np.array([1550,515]),('scorch'):np.array([350, 515])},
                  'camera-3':{('dodson'):np.array([1470,375]),('scorch'):np.array([805,475])}}
+boxCorner1_locs_all = {'camera-1':{('dodson'):np.array([673, 421]),('scorch'):np.array([659, 408])},
+                       'camera-2':{('dodson'):np.array([936, 527]),('scorch'):np.array([902, 526])},
+                       'camera-3':{('dodson'):np.array([1323,395]),('scorch'):np.array([1310,398])}}
+boxCorner2_locs_all = {'camera-1':{('dodson'):np.array([700, 682]),('scorch'):np.array([679, 665])},
+                       'camera-2':{('dodson'):np.array([951, 773]),('scorch'):np.array([912, 775])},
+                       'camera-3':{('dodson'):np.array([1285,634]),('scorch'):np.array([1270,641])}}
+boxCorner3_locs_all = {'camera-1':{('dodson'):np.array([1232,1070]),('scorch'):np.array([501,513])},
+                       'camera-2':{('dodson'):np.array([1599, 748]),('scorch'):np.array([236,791])},
+                       'camera-3':{('dodson'):np.array([1525, 528]),('scorch'):np.array([734,864])}}
+boxCorner4_locs_all = {'camera-1':{('dodson'):np.array([1585, 698]),('scorch'):np.array([842,446])},
+                       'camera-2':{('dodson'):np.array([1343, 424]),('scorch'):np.array([502,461])},
+                       'camera-3':{('dodson'):np.array([1190, 426]),('scorch'):np.array([511,581])}}
 
 ndates = np.shape(analyzed_dates)[0]
 
 singlecam_ana_type = "DLC_dlcrnetms5_marmoset_tracking_with_middle_cameraSep1shuffle1_150000"
 animalnames_videotrack = ['dodson','scorch'] # does not really mean dodson and scorch, instead, indicate animal1 and animal2
-bodypartnames_videotrack = ['rightTuft','whiteBlaze','leftTuft','rightEye','leftEye','mouth']
+bodypartnames_videotrack = ['rightTuft','whiteBlaze','leftTuft','rightEye','leftEye','mouth','lever','tube','boxCorner1','boxCorner2','boxCorner3','boxCorner4']
 
 nanimals_ana = np.shape(animalnames_videotrack)[0]
 nbodyparts_ana = np.shape(bodypartnames_videotrack)[0]
@@ -120,7 +138,7 @@ for idate in np.arange(0,ndates,1):
             do_3dconstruct = 1
         except:
             do_3dconstruct = 1
-    #do_3dconstruct=0
+    # do_3dconstruct = 1
 
 
     if do_3dconstruct:   
@@ -145,6 +163,49 @@ for idate in np.arange(0,ndates,1):
             bodyparts_cam1_cam12_singleAni_data = {}
             bodyparts_cam1_cam12_singleAni_data[singlecam_ana_type]=bodyparts_cam1_cam12_data.loc[:,(singlecam_ana_type,animalname_ana)]
             bodyparts_cam1_cam12_singleAni_data=pd.concat(bodyparts_cam1_cam12_singleAni_data, axis=1)
+            # add lever
+            lever_x = np.ones((1,np.shape(bodyparts_cam1_cam12_singleAni_data)[0]))*lever_locs_all['camera-1'][animalname_ana][0]
+            lever_y = np.ones((1,np.shape(bodyparts_cam1_cam12_singleAni_data)[0]))*lever_locs_all['camera-1'][animalname_ana][1]
+            lever_likelihood = np.ones((1,np.shape(bodyparts_cam1_cam12_singleAni_data)[0]))
+            bodyparts_cam1_cam12_singleAni_data[(singlecam_ana_type,'lever','x')]=lever_x[0]
+            bodyparts_cam1_cam12_singleAni_data[(singlecam_ana_type,'lever','y')]=lever_y[0]
+            bodyparts_cam1_cam12_singleAni_data[(singlecam_ana_type,'lever','likelihood')]=lever_likelihood[0]
+            # add tube
+            tube_x = np.ones((1,np.shape(bodyparts_cam1_cam12_singleAni_data)[0]))*tube_locs_all['camera-1'][animalname_ana][0]
+            tube_y = np.ones((1,np.shape(bodyparts_cam1_cam12_singleAni_data)[0]))*tube_locs_all['camera-1'][animalname_ana][1]
+            tube_likelihood = np.ones((1,np.shape(bodyparts_cam1_cam12_singleAni_data)[0]))
+            bodyparts_cam1_cam12_singleAni_data[(singlecam_ana_type,'tube','x')]=tube_x[0]
+            bodyparts_cam1_cam12_singleAni_data[(singlecam_ana_type,'tube','y')]=tube_y[0]
+            bodyparts_cam1_cam12_singleAni_data[(singlecam_ana_type,'tube','likelihood')]=tube_likelihood[0]
+            # add boxCorner1
+            boxCorner1_x = np.ones((1,np.shape(bodyparts_cam1_cam12_singleAni_data)[0]))*boxCorner1_locs_all['camera-1'][animalname_ana][0]
+            boxCorner1_y = np.ones((1,np.shape(bodyparts_cam1_cam12_singleAni_data)[0]))*boxCorner1_locs_all['camera-1'][animalname_ana][1]
+            boxCorner1_likelihood = np.ones((1,np.shape(bodyparts_cam1_cam12_singleAni_data)[0]))
+            bodyparts_cam1_cam12_singleAni_data[(singlecam_ana_type,'boxCorner1','x')]=boxCorner1_x[0]
+            bodyparts_cam1_cam12_singleAni_data[(singlecam_ana_type,'boxCorner1','y')]=boxCorner1_y[0]
+            bodyparts_cam1_cam12_singleAni_data[(singlecam_ana_type,'boxCorner1','likelihood')]=boxCorner1_likelihood[0]
+            # add boxCorner2
+            boxCorner2_x = np.ones((1,np.shape(bodyparts_cam1_cam12_singleAni_data)[0]))*boxCorner2_locs_all['camera-1'][animalname_ana][0]
+            boxCorner2_y = np.ones((1,np.shape(bodyparts_cam1_cam12_singleAni_data)[0]))*boxCorner2_locs_all['camera-1'][animalname_ana][1]
+            boxCorner2_likelihood = np.ones((1,np.shape(bodyparts_cam1_cam12_singleAni_data)[0]))
+            bodyparts_cam1_cam12_singleAni_data[(singlecam_ana_type,'boxCorner2','x')]=boxCorner2_x[0]
+            bodyparts_cam1_cam12_singleAni_data[(singlecam_ana_type,'boxCorner2','y')]=boxCorner2_y[0]
+            bodyparts_cam1_cam12_singleAni_data[(singlecam_ana_type,'boxCorner2','likelihood')]=boxCorner2_likelihood[0]
+            # add boxCorner3
+            boxCorner3_x = np.ones((1,np.shape(bodyparts_cam1_cam12_singleAni_data)[0]))*boxCorner3_locs_all['camera-1'][animalname_ana][0]
+            boxCorner3_y = np.ones((1,np.shape(bodyparts_cam1_cam12_singleAni_data)[0]))*boxCorner3_locs_all['camera-1'][animalname_ana][1]
+            boxCorner3_likelihood = np.ones((1,np.shape(bodyparts_cam1_cam12_singleAni_data)[0]))
+            bodyparts_cam1_cam12_singleAni_data[(singlecam_ana_type,'boxCorner3','x')]=boxCorner3_x[0]
+            bodyparts_cam1_cam12_singleAni_data[(singlecam_ana_type,'boxCorner3','y')]=boxCorner3_y[0]
+            bodyparts_cam1_cam12_singleAni_data[(singlecam_ana_type,'boxCorner3','likelihood')]=boxCorner3_likelihood[0]
+            # add boxCorner4
+            boxCorner4_x = np.ones((1,np.shape(bodyparts_cam1_cam12_singleAni_data)[0]))*boxCorner4_locs_all['camera-1'][animalname_ana][0]
+            boxCorner4_y = np.ones((1,np.shape(bodyparts_cam1_cam12_singleAni_data)[0]))*boxCorner4_locs_all['camera-1'][animalname_ana][1]
+            boxCorner4_likelihood = np.ones((1,np.shape(bodyparts_cam1_cam12_singleAni_data)[0]))
+            bodyparts_cam1_cam12_singleAni_data[(singlecam_ana_type,'boxCorner4','x')]=boxCorner4_x[0]
+            bodyparts_cam1_cam12_singleAni_data[(singlecam_ana_type,'boxCorner4','y')]=boxCorner4_y[0]
+            bodyparts_cam1_cam12_singleAni_data[(singlecam_ana_type,'boxCorner4','likelihood')]=boxCorner4_likelihood[0]
+            #      
             bodyparts_cam1_cam12_singleAni_data.to_hdf(bodyparts_cam1_cam12_singleAni,key='tracks')
 
             # cam2 
@@ -152,6 +213,49 @@ for idate in np.arange(0,ndates,1):
             bodyparts_cam2_cam12_singleAni_data = {}
             bodyparts_cam2_cam12_singleAni_data[singlecam_ana_type]=bodyparts_cam2_cam12_data.loc[:,(singlecam_ana_type,animalname_ana)]
             bodyparts_cam2_cam12_singleAni_data=pd.concat(bodyparts_cam2_cam12_singleAni_data, axis=1)
+            # add lever
+            lever_x = np.ones((1,np.shape(bodyparts_cam2_cam12_singleAni_data)[0]))*lever_locs_all['camera-2'][animalname_ana][0]
+            lever_y = np.ones((1,np.shape(bodyparts_cam2_cam12_singleAni_data)[0]))*lever_locs_all['camera-2'][animalname_ana][1]
+            lever_likelihood = np.ones((1,np.shape(bodyparts_cam2_cam12_singleAni_data)[0]))
+            bodyparts_cam2_cam12_singleAni_data[(singlecam_ana_type,'lever','x')]=lever_x[0]
+            bodyparts_cam2_cam12_singleAni_data[(singlecam_ana_type,'lever','y')]=lever_y[0]
+            bodyparts_cam2_cam12_singleAni_data[(singlecam_ana_type,'lever','likelihood')]=lever_likelihood[0]
+            # add tube
+            tube_x = np.ones((1,np.shape(bodyparts_cam2_cam12_singleAni_data)[0]))*tube_locs_all['camera-2'][animalname_ana][0]
+            tube_y = np.ones((1,np.shape(bodyparts_cam2_cam12_singleAni_data)[0]))*tube_locs_all['camera-2'][animalname_ana][1]
+            tube_likelihood = np.ones((1,np.shape(bodyparts_cam2_cam12_singleAni_data)[0]))
+            bodyparts_cam2_cam12_singleAni_data[(singlecam_ana_type,'tube','x')]=tube_x[0]
+            bodyparts_cam2_cam12_singleAni_data[(singlecam_ana_type,'tube','y')]=tube_y[0]
+            bodyparts_cam2_cam12_singleAni_data[(singlecam_ana_type,'tube','likelihood')]=tube_likelihood[0]
+            # add boxCorner1
+            boxCorner1_x = np.ones((1,np.shape(bodyparts_cam2_cam12_singleAni_data)[0]))*boxCorner1_locs_all['camera-2'][animalname_ana][0]
+            boxCorner1_y = np.ones((1,np.shape(bodyparts_cam2_cam12_singleAni_data)[0]))*boxCorner1_locs_all['camera-2'][animalname_ana][1]
+            boxCorner1_likelihood = np.ones((1,np.shape(bodyparts_cam2_cam12_singleAni_data)[0]))
+            bodyparts_cam2_cam12_singleAni_data[(singlecam_ana_type,'boxCorner1','x')]=boxCorner1_x[0]
+            bodyparts_cam2_cam12_singleAni_data[(singlecam_ana_type,'boxCorner1','y')]=boxCorner1_y[0]
+            bodyparts_cam2_cam12_singleAni_data[(singlecam_ana_type,'boxCorner1','likelihood')]=boxCorner1_likelihood[0]
+            # add boxCorner2
+            boxCorner2_x = np.ones((1,np.shape(bodyparts_cam2_cam12_singleAni_data)[0]))*boxCorner2_locs_all['camera-2'][animalname_ana][0]
+            boxCorner2_y = np.ones((1,np.shape(bodyparts_cam2_cam12_singleAni_data)[0]))*boxCorner2_locs_all['camera-2'][animalname_ana][1]
+            boxCorner2_likelihood = np.ones((1,np.shape(bodyparts_cam2_cam12_singleAni_data)[0]))
+            bodyparts_cam2_cam12_singleAni_data[(singlecam_ana_type,'boxCorner2','x')]=boxCorner2_x[0]
+            bodyparts_cam2_cam12_singleAni_data[(singlecam_ana_type,'boxCorner2','y')]=boxCorner2_y[0]
+            bodyparts_cam2_cam12_singleAni_data[(singlecam_ana_type,'boxCorner2','likelihood')]=boxCorner2_likelihood[0]
+            # add boxCorner3
+            boxCorner3_x = np.ones((1,np.shape(bodyparts_cam2_cam12_singleAni_data)[0]))*boxCorner3_locs_all['camera-2'][animalname_ana][0]
+            boxCorner3_y = np.ones((1,np.shape(bodyparts_cam2_cam12_singleAni_data)[0]))*boxCorner3_locs_all['camera-2'][animalname_ana][1]
+            boxCorner3_likelihood = np.ones((1,np.shape(bodyparts_cam2_cam12_singleAni_data)[0]))
+            bodyparts_cam2_cam12_singleAni_data[(singlecam_ana_type,'boxCorner3','x')]=boxCorner3_x[0]
+            bodyparts_cam2_cam12_singleAni_data[(singlecam_ana_type,'boxCorner3','y')]=boxCorner3_y[0]
+            bodyparts_cam2_cam12_singleAni_data[(singlecam_ana_type,'boxCorner3','likelihood')]=boxCorner3_likelihood[0]
+            # add boxCorner4
+            boxCorner4_x = np.ones((1,np.shape(bodyparts_cam2_cam12_singleAni_data)[0]))*boxCorner4_locs_all['camera-2'][animalname_ana][0]
+            boxCorner4_y = np.ones((1,np.shape(bodyparts_cam2_cam12_singleAni_data)[0]))*boxCorner4_locs_all['camera-2'][animalname_ana][1]
+            boxCorner4_likelihood = np.ones((1,np.shape(bodyparts_cam2_cam12_singleAni_data)[0]))
+            bodyparts_cam2_cam12_singleAni_data[(singlecam_ana_type,'boxCorner4','x')]=boxCorner4_x[0]
+            bodyparts_cam2_cam12_singleAni_data[(singlecam_ana_type,'boxCorner4','y')]=boxCorner4_y[0]
+            bodyparts_cam2_cam12_singleAni_data[(singlecam_ana_type,'boxCorner4','likelihood')]=boxCorner4_likelihood[0]
+            #      
             bodyparts_cam2_cam12_singleAni_data.to_hdf(bodyparts_cam2_cam12_singleAni,key='tracks')
 
             # cam3
@@ -159,6 +263,49 @@ for idate in np.arange(0,ndates,1):
             bodyparts_cam3_cam23_singleAni_data = {}
             bodyparts_cam3_cam23_singleAni_data[singlecam_ana_type]=bodyparts_cam3_cam23_data.loc[:,(singlecam_ana_type,animalname_ana)]
             bodyparts_cam3_cam23_singleAni_data=pd.concat(bodyparts_cam3_cam23_singleAni_data, axis=1)
+            # add lever
+            lever_x = np.ones((1,np.shape(bodyparts_cam3_cam23_singleAni_data)[0]))*lever_locs_all['camera-3'][animalname_ana][0]
+            lever_y = np.ones((1,np.shape(bodyparts_cam3_cam23_singleAni_data)[0]))*lever_locs_all['camera-3'][animalname_ana][1]
+            lever_likelihood = np.ones((1,np.shape(bodyparts_cam3_cam23_singleAni_data)[0]))
+            bodyparts_cam3_cam23_singleAni_data[(singlecam_ana_type,'lever','x')]=lever_x[0]
+            bodyparts_cam3_cam23_singleAni_data[(singlecam_ana_type,'lever','y')]=lever_y[0]
+            bodyparts_cam3_cam23_singleAni_data[(singlecam_ana_type,'lever','likelihood')]=lever_likelihood[0]
+            # add tube
+            tube_x = np.ones((1,np.shape(bodyparts_cam3_cam23_singleAni_data)[0]))*tube_locs_all['camera-3'][animalname_ana][0]
+            tube_y = np.ones((1,np.shape(bodyparts_cam3_cam23_singleAni_data)[0]))*tube_locs_all['camera-3'][animalname_ana][1]
+            tube_likelihood = np.ones((1,np.shape(bodyparts_cam3_cam23_singleAni_data)[0]))
+            bodyparts_cam3_cam23_singleAni_data[(singlecam_ana_type,'tube','x')]=tube_x[0]
+            bodyparts_cam3_cam23_singleAni_data[(singlecam_ana_type,'tube','y')]=tube_y[0]
+            bodyparts_cam3_cam23_singleAni_data[(singlecam_ana_type,'tube','likelihood')]=tube_likelihood[0]
+            # add boxCorner1
+            boxCorner1_x = np.ones((1,np.shape(bodyparts_cam3_cam23_singleAni_data)[0]))*boxCorner1_locs_all['camera-3'][animalname_ana][0]
+            boxCorner1_y = np.ones((1,np.shape(bodyparts_cam3_cam23_singleAni_data)[0]))*boxCorner1_locs_all['camera-3'][animalname_ana][1]
+            boxCorner1_likelihood = np.ones((1,np.shape(bodyparts_cam3_cam23_singleAni_data)[0]))
+            bodyparts_cam3_cam23_singleAni_data[(singlecam_ana_type,'boxCorner1','x')]=boxCorner1_x[0]
+            bodyparts_cam3_cam23_singleAni_data[(singlecam_ana_type,'boxCorner1','y')]=boxCorner1_y[0]
+            bodyparts_cam3_cam23_singleAni_data[(singlecam_ana_type,'boxCorner1','likelihood')]=boxCorner1_likelihood[0]
+            # add boxCorner2
+            boxCorner2_x = np.ones((1,np.shape(bodyparts_cam3_cam23_singleAni_data)[0]))*boxCorner2_locs_all['camera-3'][animalname_ana][0]
+            boxCorner2_y = np.ones((1,np.shape(bodyparts_cam3_cam23_singleAni_data)[0]))*boxCorner2_locs_all['camera-3'][animalname_ana][1]
+            boxCorner2_likelihood = np.ones((1,np.shape(bodyparts_cam3_cam23_singleAni_data)[0]))
+            bodyparts_cam3_cam23_singleAni_data[(singlecam_ana_type,'boxCorner2','x')]=boxCorner2_x[0]
+            bodyparts_cam3_cam23_singleAni_data[(singlecam_ana_type,'boxCorner2','y')]=boxCorner2_y[0]
+            bodyparts_cam3_cam23_singleAni_data[(singlecam_ana_type,'boxCorner2','likelihood')]=boxCorner2_likelihood[0]
+            # add boxCorner3
+            boxCorner3_x = np.ones((1,np.shape(bodyparts_cam3_cam23_singleAni_data)[0]))*boxCorner3_locs_all['camera-3'][animalname_ana][0]
+            boxCorner3_y = np.ones((1,np.shape(bodyparts_cam3_cam23_singleAni_data)[0]))*boxCorner3_locs_all['camera-3'][animalname_ana][1]
+            boxCorner3_likelihood = np.ones((1,np.shape(bodyparts_cam3_cam23_singleAni_data)[0]))
+            bodyparts_cam3_cam23_singleAni_data[(singlecam_ana_type,'boxCorner3','x')]=boxCorner3_x[0]
+            bodyparts_cam3_cam23_singleAni_data[(singlecam_ana_type,'boxCorner3','y')]=boxCorner3_y[0]
+            bodyparts_cam3_cam23_singleAni_data[(singlecam_ana_type,'boxCorner3','likelihood')]=boxCorner3_likelihood[0]
+            # add boxCorner4
+            boxCorner4_x = np.ones((1,np.shape(bodyparts_cam3_cam23_singleAni_data)[0]))*boxCorner4_locs_all['camera-3'][animalname_ana][0]
+            boxCorner4_y = np.ones((1,np.shape(bodyparts_cam3_cam23_singleAni_data)[0]))*boxCorner4_locs_all['camera-3'][animalname_ana][1]
+            boxCorner4_likelihood = np.ones((1,np.shape(bodyparts_cam3_cam23_singleAni_data)[0]))
+            bodyparts_cam3_cam23_singleAni_data[(singlecam_ana_type,'boxCorner4','x')]=boxCorner4_x[0]
+            bodyparts_cam3_cam23_singleAni_data[(singlecam_ana_type,'boxCorner4','y')]=boxCorner4_y[0]
+            bodyparts_cam3_cam23_singleAni_data[(singlecam_ana_type,'boxCorner4','likelihood')]=boxCorner4_likelihood[0]
+            #      
             bodyparts_cam3_cam23_singleAni_data.to_hdf(bodyparts_cam3_cam23_singleAni,key='tracks')
 
 
@@ -231,7 +378,7 @@ for idate in np.arange(0,ndates,1):
     ## Section 3 - plot the demo videos
     if do_videodemos:
 
-        print('make the demo Anipose video for '+animalname_ana)
+        print('make the demo Anipose video for '+animal1+' '+animal2)
 
         import sys
         sys.path.append('/home/ws523/marmoset_tracking_DLCv2/following_up_analysis/3d_recontruction_analysis_self_and_coop_task/ana_functions')
@@ -239,15 +386,18 @@ for idate in np.arange(0,ndates,1):
 
         session_start_time = session_start_times[idate]
         fps = 30 
-        nframes = 60*fps
+        nframes = 3*fps
 
         animal1_filename = animal1
         animal2_filename = animal2
 
+        withboxCorner = 0
+         
         add_date_dir = twocamera_videos_cam12+'/anipose_cam123_3d_demo_videos/'+date_tgt+'_'+animal1_filename+'_'+animal2_filename
         if not os.path.exists(add_date_dir):
             os.makedirs(add_date_dir)
         video_file = add_date_dir+'/'+date_tgt+'_'+animal1_filename+'_'+animal2_filename+'_anipose_3d_tracking_demo.mp4'
-        tracking_video_3d_demo(bodyparts_3d_anipose['weikang'],animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename, animal2_filename,session_start_time,fps,nframes,video_file)
+    
+        tracking_video_3d_demo(bodyparts_3d_anipose['weikang'],animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename, animal2_filename,session_start_time,fps,nframes,video_file,withboxCorner)
 
       

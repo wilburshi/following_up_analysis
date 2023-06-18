@@ -10,7 +10,8 @@ def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_a
     import warnings
     import pickle
     import cv2
-   
+    
+
     skeletons = [ ['rightTuft','rightEye'],
                   ['rightTuft','whiteBlaze'],
                   ['leftTuft','leftEye'],
