@@ -166,7 +166,7 @@ animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename,animal
     fig = plt.figure(figsize = (36,16))
     gs=GridSpec(4,8) # 5 rows, 3 columns
 
-    ax1=fig.add_subplot(gs[0:3,0:3],projection='3d') # animal tracking frame
+    ax1=fig.add_subplot(gs[0:4,0:4],projection='3d') # animal tracking frame
     ax2=fig.add_subplot(gs[0,4:7]) # animal1 behavioral events
     ax3=fig.add_subplot(gs[2,4:7]) # animal2 behavioral events
 
@@ -176,27 +176,32 @@ animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename,animal
     ax1.set_xlim([xyz_min[0],xyz_max[0]])
     ax1.set_ylim([xyz_min[1],xyz_max[1]])
     ax1.set_zlim([xyz_min[2],xyz_max[2]])
-    ax1.set_xlabel('x')
-    ax1.set_ylabel('y')
-    ax1.set_zlabel('z')
+    ax1.tick_params(axis='x', labelsize=20) 
+    ax1.tick_params(axis='y', labelsize=20) 
+    ax1.tick_params(axis='z', labelsize=20) 
+    ax1.set_xlabel('x',fontsize = 24)
+    ax1.set_ylabel('y',fontsize = 24)
+    ax1.set_zlabel('z',fontsize = 24)
     
     ax2.set_xlim([iframe_min,iframe_max]) 
-    ax2.set_xticks(np.arange(iframe_min,iframe_max,300)) 
+    ax2.set_xticks(np.arange(iframe_min,iframe_max,300))
+    ax2.tick_params(axis='x', labelsize=20) 
     ax2.set_xticklabels('')
     ax2.set_ylim([0,1])
     ax2.set_yticklabels('')
     ax2.set_xlabel('')
     ax2.set_ylabel('')
-    ax2.set_title(animal1_real+' behavioral events')
+    ax2.set_title('animal 1 behavioral events',fontsize = 26)
 
     ax3.set_xlim([iframe_min,iframe_max])  
-    ax3.set_xticks(np.arange(iframe_min,iframe_max,300)) 
+    ax3.set_xticks(np.arange(iframe_min,iframe_max,300))
+    ax3.tick_params(axis='x', labelsize=20)
     ax3.set_xticklabels(list(map(str,np.arange(0/fps,nframes/fps,300/fps))))
     ax3.set_ylim([0,1])
     ax3.set_yticklabels('')
-    ax3.set_xlabel('time (s)')
+    ax3.set_xlabel('time (s)',fontsize = 24)
     ax3.set_ylabel('')
-    ax3.set_title(animal2_real+' behavioral events')
+    ax3.set_title('animal 2 behavioral events',fontsize = 26)
 
 
 
@@ -210,7 +215,7 @@ animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename,animal
                 fig.clear()
                 #gs=GridSpec(5,3) # 5 rows, 3 columns
 
-                ax1=fig.add_subplot(gs[0:3,0:3],projection='3d') # animal tracking frame
+                ax1=fig.add_subplot(gs[0:4,0:4],projection='3d') # animal tracking frame
                 ax2=fig.add_subplot(gs[0,4:7]) # animal1 behavioral events
                 ax3=fig.add_subplot(gs[2,4:7]) # animal2 behavioral events
                 # ax1 = fig.add_subplot(projection='3d')
@@ -221,27 +226,32 @@ animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename,animal
                 ax1.set_xlim([xyz_min[0],xyz_max[0]])
                 ax1.set_ylim([xyz_min[1],xyz_max[1]])
                 ax1.set_zlim([xyz_min[2],xyz_max[2]])
-                ax1.set_xlabel('x')
-                ax1.set_ylabel('y')
-                ax1.set_zlabel('z')
+                ax1.tick_params(axis='x', labelsize=20) 
+                ax1.tick_params(axis='y', labelsize=20) 
+                ax1.tick_params(axis='z', labelsize=20) 
+                ax1.set_xlabel('x',fontsize = 24)
+                ax1.set_ylabel('y',fontsize = 24)
+                ax1.set_zlabel('z',fontsize = 24)
                 
                 ax2.set_xlim([iframe_min,iframe_max]) 
                 ax2.set_xticks(np.arange(iframe_min,iframe_max,300)) 
+                ax2.tick_params(axis='x', labelsize=20)
                 ax2.set_xticklabels('')
                 ax2.set_ylim([0,1])
                 ax2.set_yticklabels('')
                 ax2.set_xlabel('')
                 ax2.set_ylabel('')
-                ax2.set_title(animal1_real+' behavioral events')
+                ax2.set_title('animal 1 behavioral events',fontsize = 26)
     
                 ax3.set_xlim([iframe_min,iframe_max])  
                 ax3.set_xticks(np.arange(iframe_min,iframe_max,300)) 
+                ax3.tick_params(axis='x', labelsize=20)
                 ax3.set_xticklabels(list(map(str,np.arange(0/fps,nframes/fps,300/fps))))
                 ax3.set_ylim([0,1])
                 ax3.set_yticklabels('')
-                ax3.set_xlabel('time (s)')
+                ax3.set_xlabel('time (s)',fontsize = 24)
                 ax3.set_ylabel('')
-                ax3.set_title(animal2_real+' behavioral events')
+                ax3.set_title('animal 2 behavioral events',fontsize = 26)
 
             
             for ianimal in np.arange(0,nanimals,1):    
@@ -322,7 +332,7 @@ animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename,animal
                     ax1.plot3D([meaneye_loc_iframe[0],gaze_dir_iframe[0]],[meaneye_loc_iframe[1],gaze_dir_iframe[1]],[meaneye_loc_iframe[2],gaze_dir_iframe[2]],'-',color = '0.25')     
 
 
-                ax1.legend(loc='upper right')
+                # ax1.legend(loc='upper right',fontsize = 28)
                          
 
 

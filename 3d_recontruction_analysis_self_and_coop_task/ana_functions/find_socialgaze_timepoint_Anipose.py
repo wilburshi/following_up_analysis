@@ -16,6 +16,7 @@ def normalize_vector(vector):
         return vector  # Avoid division by zero
     return vector / magnitude
 
+
 def find_socialgaze_timepoint_Anipose(body_part_locs_Anipose, min_length, angle_thres,with_tubelever):
     
     import pandas as pd
@@ -91,6 +92,7 @@ def find_socialgaze_timepoint_Anipose(body_part_locs_Anipose, min_length, angle_
         look_at_othertube_frames = []
         look_at_otherlever_frames = []
         
+        
         for iframe in np.arange(0,min_length,1):
 
             # define the position of the animal's face part
@@ -127,6 +129,7 @@ def find_socialgaze_timepoint_Anipose(body_part_locs_Anipose, min_length, angle_
             # 
             if ((np.sum(np.isnan(whiblz_loc))>0)&(iframe>0)):
                 whiblz_loc = whiblz_loc_old         
+
 
             # examine whether this animal is looking at the other's eyes or face
             #
@@ -267,15 +270,15 @@ def find_socialgaze_timepoint_Anipose(body_part_locs_Anipose, min_length, angle_
         look_at_othertube_or_not_Anipose[(iname)] = look_at_othertube_frames
         look_at_otherlever_or_not_Anipose[(iname)] = look_at_otherlever_frames
 
+
     output_allvectors = {"eye_direction_Anipose":eye_direction_Anipose,"face_eye_vect_all_Anipose":face_eye_vect_all_Anipose,"selflever_eye_vect_all_Anipose":selflever_eye_vect_all_Anipose,"selftube_eye_vect_all_Anipose":selftube_eye_vect_all_Anipose,"otherlever_eye_vect_all_Anipose":otherlever_eye_vect_all_Anipose,"othertube_eye_vect_all_Anipose":othertube_eye_vect_all_Anipose}       
 
     output_allangles = {"face_eye_angle_all_Anipose":face_eye_angle_all_Anipose,"selflever_eye_angle_all_Anipose":selflever_eye_angle_all_Anipose,"selftube_eye_angle_all_Anipose":selftube_eye_angle_all_Anipose,"otherlever_eye_angle_all_Anipose":otherlever_eye_angle_all_Anipose,"othertube_eye_angle_all_Anipose":othertube_eye_angle_all_Anipose} 
 
     output_look_ornot = {"look_at_face_or_not_Anipose":look_at_face_or_not_Anipose,"look_at_selftube_or_not_Anipose":look_at_selftube_or_not_Anipose,"look_at_selflever_or_not_Anipose":look_at_selflever_or_not_Anipose,"look_at_othertube_or_not_Anipose":look_at_othertube_or_not_Anipose,"look_at_otherlever_or_not_Anipose":look_at_otherlever_or_not_Anipose}
        
- 
+   
     return output_look_ornot, output_allvectors, output_allangles
-
 
 
 

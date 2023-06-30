@@ -67,8 +67,10 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
 
     ax1.set_xlim([0,1920])
     ax1.set_ylim([0,1080])
-    ax1.set_xlabel('x')
-    ax1.set_ylabel('y')
+    ax1.set_xlabel('x (pixel)',fontsize = 24)
+    ax1.set_ylabel('y (pixel)',fontsize = 24)
+    ax1.tick_params(axis='x', labelsize=20)
+    ax1.tick_params(axis='y', labelsize=20)
     ax1.invert_yaxis()
     ax1.xaxis.set_ticks_position('top')
     ax1.xaxis.set_label_position('top')
@@ -80,16 +82,17 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
     ax2.set_yticklabels('')
     ax2.set_xlabel('')
     ax2.set_ylabel('')
-    ax2.set_title('animal 1 behavioral events')
+    # ax2.set_title('animal 1 behavioral events')
     
     ax3.set_xlim([iframe_min,iframe_max])  
     ax3.set_xticks(np.arange(iframe_min,iframe_max,300)) 
     ax3.set_xticklabels(list(map(str,np.arange(0/fps,nframes/fps,300/fps))))
+    ax3.tick_params(axis='x', labelsize=20)
     ax3.set_ylim([0,1])
     ax3.set_yticklabels('')
-    ax3.set_xlabel('time (s)')
+    ax3.set_xlabel('time (s)',fontsize = 24)
     ax3.set_ylabel('')
-    ax3.set_title('animal 2 behavioral events')
+    # ax3.set_title('animal 2 behavioral events')
 
 
 
@@ -109,8 +112,10 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
 
                 ax1.set_xlim([0,1920])
                 ax1.set_ylim([0,1080])
-                ax1.set_xlabel('x')
-                ax1.set_ylabel('y')
+                ax1.set_xlabel('x (pixel)',fontsize=24)
+                ax1.set_ylabel('y (pixel)',fontsize=24)
+                ax1.tick_params(axis='x', labelsize=20)
+                ax1.tick_params(axis='y', labelsize=20)
                 ax1.invert_yaxis()
                 ax1.xaxis.set_ticks_position('top')
                 ax1.xaxis.set_label_position('top')
@@ -123,16 +128,17 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
                 ax2.set_yticklabels('')
                 ax2.set_xlabel('')
                 ax2.set_ylabel('')
-                ax2.set_title('animal 1 behavioral events')
+                #ax2.set_title('animal 1 behavioral events')
     
                 ax3.set_xlim([iframe_min,iframe_max])  
                 ax3.set_xticks(np.arange(iframe_min,iframe_max,300)) 
                 ax3.set_xticklabels(list(map(str,np.arange(0/fps,nframes/fps,300/fps))))
+                ax3.tick_params(axis='x', labelsize=20)
                 ax3.set_ylim([0,1])
                 ax3.set_yticklabels('')
-                ax3.set_xlabel('time (s)')
+                ax3.set_xlabel('time (s)',fontsize = 24)
                 ax3.set_ylabel('')
-                ax3.set_title('animal 2 behavioral events')
+                #ax3.set_title('animal 2 behavioral events')
 
                 # plot the original videos
                 vidcap.set(cv2.CAP_PROP_POS_FRAMES, iframe)
@@ -265,7 +271,7 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
                         ax1.plot([meaneye_loc_iframe[0],lever_loc_iframe[0]],[meaneye_loc_iframe[1],lever_loc_iframe[1]],'-',color = 'g')
 
 
-                ax1.legend(loc='upper right')
+                ax1.legend(loc='upper right',fontsize=15)
                          
 
 
