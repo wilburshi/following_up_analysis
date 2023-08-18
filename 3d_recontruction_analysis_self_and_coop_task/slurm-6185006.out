@@ -1,0 +1,8 @@
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) StdEnv
+  File "DBN_and_bhv_Aniposelib3d_ana_combinesessions_morevars_task.py", line 673
+    ¶
+    ^
+SyntaxError: invalid character in identifier
