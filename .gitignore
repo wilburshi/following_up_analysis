@@ -4,3 +4,7 @@ slurm_run_job
 *.PDF
 *.mp4
 *.MP4
+*.jpg
+*.png
+*.JPG
+*.jpeg
