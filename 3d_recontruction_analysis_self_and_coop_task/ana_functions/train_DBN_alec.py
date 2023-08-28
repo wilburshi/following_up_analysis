@@ -163,33 +163,32 @@ def train_DBN_alec_create_df_only(totalsess_time, session_start_time, temp_resol
     time_point_onewaygaze2_round = time_point_onewaygaze2_round[(time_point_onewaygaze2_round>0)&(time_point_onewaygaze2_round<total_time)]
     time_point_mutualgaze1_round = time_point_mutualgaze1_round[(time_point_mutualgaze1_round>0)&(time_point_mutualgaze1_round<total_time)]
     time_point_mutualgaze2_round = time_point_mutualgaze2_round[(time_point_mutualgaze2_round>0)&(time_point_mutualgaze2_round<total_time)]
-    # t0
-    pull1_t0 = np.zeros((total_time+1,1))
-    pull1_t0[np.array(time_point_pull1_round)] = 1
-    pull2_t0 = np.zeros((total_time+1,1))
-    pull2_t0[np.array(time_point_pull2_round)] = 1
-    owgaze1_t0 = np.zeros((total_time+1,1))
-    owgaze1_t0[np.array(time_point_onewaygaze1_round)] = 1
-    owgaze2_t0 = np.zeros((total_time+1,1))
-    owgaze2_t0[np.array(time_point_onewaygaze2_round)] = 1
-    mtgaze1_t0 = np.zeros((total_time+1,1))
-    mtgaze1_t0[np.array(time_point_mutualgaze1_round)] = 1
-    mtgaze2_t0 = np.zeros((total_time+1,1))
-    mtgaze2_t0[np.array(time_point_mutualgaze2_round)] = 1
-    # t1
+    # t1 - current
     pull1_t1 = np.zeros((total_time+1,1))
-    pull1_t1[np.array(time_point_pull1_round)+1] = 1
+    pull1_t1[np.array(time_point_pull1_round)] = 1
     pull2_t1 = np.zeros((total_time+1,1))
-    pull2_t1[np.array(time_point_pull2_round)+1] = 1
+    pull2_t1[np.array(time_point_pull2_round)] = 1
     owgaze1_t1 = np.zeros((total_time+1,1))
-    owgaze1_t1[np.array(time_point_onewaygaze1_round)+1] = 1
+    owgaze1_t1[np.array(time_point_onewaygaze1_round)] = 1
     owgaze2_t1 = np.zeros((total_time+1,1))
-    owgaze2_t1[np.array(time_point_onewaygaze2_round)+1] = 1
+    owgaze2_t1[np.array(time_point_onewaygaze2_round)] = 1
     mtgaze1_t1 = np.zeros((total_time+1,1))
-    mtgaze1_t1[np.array(time_point_mutualgaze1_round)+1] = 1
-
+    mtgaze1_t1[np.array(time_point_mutualgaze1_round)] = 1
     mtgaze2_t1 = np.zeros((total_time+1,1))
-    mtgaze2_t1[np.array(time_point_mutualgaze2_round)+1] = 1
+    mtgaze2_t1[np.array(time_point_mutualgaze2_round)] = 1
+    # t0 - last step
+    pull1_t0 = np.zeros((total_time+1,1))
+    pull1_t0[np.array(time_point_pull1_round)+1] = 1
+    pull2_t0 = np.zeros((total_time+1,1))
+    pull2_t0[np.array(time_point_pull2_round)+1] = 1
+    owgaze1_t0 = np.zeros((total_time+1,1))
+    owgaze1_t0[np.array(time_point_onewaygaze1_round)+1] = 1
+    owgaze2_t0 = np.zeros((total_time+1,1))
+    owgaze2_t0[np.array(time_point_onewaygaze2_round)+1] = 1
+    mtgaze1_t0 = np.zeros((total_time+1,1))
+    mtgaze1_t0[np.array(time_point_mutualgaze1_round)+1] = 1
+    mtgaze2_t0 = np.zeros((total_time+1,1))
+    mtgaze2_t0[np.array(time_point_mutualgaze2_round)+1] = 1
     
     # clean up dataframe
     data = np.concatenate((pull1_t0,pull2_t0,owgaze1_t0,owgaze2_t0,pull1_t1,pull2_t1,owgaze1_t1,owgaze2_t1),axis = 1)
@@ -292,32 +291,32 @@ def train_DBN_alec(totalsess_time, session_start_time, temp_resolu, time_point_p
     time_point_onewaygaze2_round = time_point_onewaygaze2_round[(time_point_onewaygaze2_round>0)&(time_point_onewaygaze2_round<total_time)]
     time_point_mutualgaze1_round = time_point_mutualgaze1_round[(time_point_mutualgaze1_round>0)&(time_point_mutualgaze1_round<total_time)]
     time_point_mutualgaze2_round = time_point_mutualgaze2_round[(time_point_mutualgaze2_round>0)&(time_point_mutualgaze2_round<total_time)]
-    # t0
-    pull1_t0 = np.zeros((total_time+1,1))
-    pull1_t0[np.array(time_point_pull1_round)] = 1
-    pull2_t0 = np.zeros((total_time+1,1))
-    pull2_t0[np.array(time_point_pull2_round)] = 1
-    owgaze1_t0 = np.zeros((total_time+1,1))
-    owgaze1_t0[np.array(time_point_onewaygaze1_round)] = 1
-    owgaze2_t0 = np.zeros((total_time+1,1))
-    owgaze2_t0[np.array(time_point_onewaygaze2_round)] = 1
-    mtgaze1_t0 = np.zeros((total_time+1,1))
-    mtgaze1_t0[np.array(time_point_mutualgaze1_round)] = 1
-    mtgaze2_t0 = np.zeros((total_time+1,1))
-    mtgaze2_t0[np.array(time_point_mutualgaze2_round)] = 1
     # t1
     pull1_t1 = np.zeros((total_time+1,1))
-    pull1_t1[np.array(time_point_pull1_round)+1] = 1
+    pull1_t1[np.array(time_point_pull1_round)] = 1
     pull2_t1 = np.zeros((total_time+1,1))
-    pull2_t1[np.array(time_point_pull2_round)+1] = 1
+    pull2_t1[np.array(time_point_pull2_round)] = 1
     owgaze1_t1 = np.zeros((total_time+1,1))
-    owgaze1_t1[np.array(time_point_onewaygaze1_round)+1] = 1
+    owgaze1_t1[np.array(time_point_onewaygaze1_round)] = 1
     owgaze2_t1 = np.zeros((total_time+1,1))
-    owgaze2_t1[np.array(time_point_onewaygaze2_round)+1] = 1
+    owgaze2_t1[np.array(time_point_onewaygaze2_round)] = 1
     mtgaze1_t1 = np.zeros((total_time+1,1))
-    mtgaze1_t1[np.array(time_point_mutualgaze1_round)+1] = 1
+    mtgaze1_t1[np.array(time_point_mutualgaze1_round)] = 1
     mtgaze2_t1 = np.zeros((total_time+1,1))
-    mtgaze2_t1[np.array(time_point_mutualgaze2_round)+1] = 1
+    mtgaze2_t1[np.array(time_point_mutualgaze2_round)] = 1
+    # t0
+    pull1_t0 = np.zeros((total_time+1,1))
+    pull1_t0[np.array(time_point_pull1_round)+1] = 1
+    pull2_t0 = np.zeros((total_time+1,1))
+    pull2_t0[np.array(time_point_pull2_round)+1] = 1
+    owgaze1_t0 = np.zeros((total_time+1,1))
+    owgaze1_t0[np.array(time_point_onewaygaze1_round)+1] = 1
+    owgaze2_t0 = np.zeros((total_time+1,1))
+    owgaze2_t0[np.array(time_point_onewaygaze2_round)+1] = 1
+    mtgaze1_t0 = np.zeros((total_time+1,1))
+    mtgaze1_t0[np.array(time_point_mutualgaze1_round)+1] = 1
+    mtgaze2_t0 = np.zeros((total_time+1,1))
+    mtgaze2_t0[np.array(time_point_mutualgaze2_round)+1] = 1
     
     # clean up dataframe
     data = np.concatenate((pull1_t0,pull2_t0,owgaze1_t0,owgaze2_t0,pull1_t1,pull2_t1,owgaze1_t1,owgaze2_t1),axis = 1)
@@ -392,33 +391,33 @@ def train_DBN_alec_eachtrial(totalsess_time, session_start_time, temp_resolu, ti
     time_point_onewaygaze2_round = time_point_onewaygaze2_round[(time_point_onewaygaze2_round>0)&(time_point_onewaygaze2_round<total_time)]
     time_point_mutualgaze1_round = time_point_mutualgaze1_round[(time_point_mutualgaze1_round>0)&(time_point_mutualgaze1_round<total_time)]
     time_point_mutualgaze2_round = time_point_mutualgaze2_round[(time_point_mutualgaze2_round>0)&(time_point_mutualgaze2_round<total_time)]
-    # t0
-    pull1_t0 = np.zeros((total_time+1,1))
-    pull1_t0[np.array(time_point_pull1_round)] = 1
-    pull2_t0 = np.zeros((total_time+1,1))
-    pull2_t0[np.array(time_point_pull2_round)] = 1
-    owgaze1_t0 = np.zeros((total_time+1,1))
-    owgaze1_t0[np.array(time_point_onewaygaze1_round)] = 1
-    owgaze2_t0 = np.zeros((total_time+1,1))
-    owgaze2_t0[np.array(time_point_onewaygaze2_round)] = 1
-    mtgaze1_t0 = np.zeros((total_time+1,1))
-    mtgaze1_t0[np.array(time_point_mutualgaze1_round)] = 1
-    mtgaze2_t0 = np.zeros((total_time+1,1))
-    mtgaze2_t0[np.array(time_point_mutualgaze2_round)] = 1
-    
     # t1
     pull1_t1 = np.zeros((total_time+1,1))
-    pull1_t1[np.array(time_point_pull1_round)+1] = 1
+    pull1_t1[np.array(time_point_pull1_round)] = 1
     pull2_t1 = np.zeros((total_time+1,1))
-    pull2_t1[np.array(time_point_pull2_round)+1] = 1
+    pull2_t1[np.array(time_point_pull2_round)] = 1
     owgaze1_t1 = np.zeros((total_time+1,1))
-    owgaze1_t1[np.array(time_point_onewaygaze1_round)+1] = 1
+    owgaze1_t1[np.array(time_point_onewaygaze1_round)] = 1
     owgaze2_t1 = np.zeros((total_time+1,1))
-    owgaze2_t1[np.array(time_point_onewaygaze2_round)+1] = 1
+    owgaze2_t1[np.array(time_point_onewaygaze2_round)] = 1
     mtgaze1_t1 = np.zeros((total_time+1,1))
-    mtgaze1_t1[np.array(time_point_mutualgaze1_round)+1] = 1
+    mtgaze1_t1[np.array(time_point_mutualgaze1_round)] = 1
     mtgaze2_t1 = np.zeros((total_time+1,1))
-    mtgaze2_t1[np.array(time_point_mutualgaze2_round)+1] = 1
+    mtgaze2_t1[np.array(time_point_mutualgaze2_round)] = 1
+    
+    # t0
+    pull1_t0 = np.zeros((total_time+1,1))
+    pull1_t0[np.array(time_point_pull1_round)+1] = 1
+    pull2_t0 = np.zeros((total_time+1,1))
+    pull2_t0[np.array(time_point_pull2_round)+1] = 1
+    owgaze1_t0 = np.zeros((total_time+1,1))
+    owgaze1_t0[np.array(time_point_onewaygaze1_round)+1] = 1
+    owgaze2_t0 = np.zeros((total_time+1,1))
+    owgaze2_t0[np.array(time_point_onewaygaze2_round)+1] = 1
+    mtgaze1_t0 = np.zeros((total_time+1,1))
+    mtgaze1_t0[np.array(time_point_mutualgaze1_round)+1] = 1
+    mtgaze2_t0 = np.zeros((total_time+1,1))
+    mtgaze2_t0[np.array(time_point_mutualgaze2_round)+1] = 1
     
     # clean up dataframe
     data = np.concatenate((pull1_t0,pull2_t0,owgaze1_t0,owgaze2_t0,pull1_t1,pull2_t1,owgaze1_t1,owgaze2_t1),axis = 1)
@@ -508,32 +507,32 @@ def train_DBN_gaze_start_stop(gaze_thresold, totalsess_time, session_start_time,
     time_point_gaze2start_round = time_point_gaze2start_round[(time_point_gaze2start_round>0)&(time_point_gaze2start_round<total_time)]
     time_point_gaze1stop_round = time_point_gaze1stop_round[(time_point_gaze1stop_round>0)&(time_point_gaze1stop_round<total_time)]
     time_point_gaze2stop_round = time_point_gaze2stop_round[(time_point_gaze2stop_round>0)&(time_point_gaze2stop_round<total_time)]
-    # t0
-    pull1_t0 = np.zeros((total_time+1,1))
-    pull1_t0[np.array(time_point_pull1_round)] = 1
-    pull2_t0 = np.zeros((total_time+1,1))
-    pull2_t0[np.array(time_point_pull2_round)] = 1
-    gaze1start_t0 = np.zeros((total_time+1,1))
-    gaze1start_t0[np.array(time_point_gaze1start_round)] = 1
-    gaze2start_t0 = np.zeros((total_time+1,1))
-    gaze2start_t0[np.array(time_point_gaze2start_round)] = 1
-    gaze1stop_t0 = np.zeros((total_time+1,1))
-    gaze1stop_t0[np.array(time_point_gaze1stop_round)] = 1
-    gaze2stop_t0 = np.zeros((total_time+1,1))
-    gaze2stop_t0[np.array(time_point_gaze2stop_round)] = 1
     # t1
     pull1_t1 = np.zeros((total_time+1,1))
-    pull1_t1[np.array(time_point_pull1_round)+1] = 1
+    pull1_t1[np.array(time_point_pull1_round)] = 1
     pull2_t1 = np.zeros((total_time+1,1))
-    pull2_t1[np.array(time_point_pull2_round)+1] = 1
+    pull2_t1[np.array(time_point_pull2_round)] = 1
     gaze1start_t1 = np.zeros((total_time+1,1))
-    gaze1start_t1[np.array(time_point_gaze1start_round)+1] = 1
+    gaze1start_t1[np.array(time_point_gaze1start_round)] = 1
     gaze2start_t1 = np.zeros((total_time+1,1))
-    gaze2start_t1[np.array(time_point_gaze2start_round)+1] = 1
+    gaze2start_t1[np.array(time_point_gaze2start_round)] = 1
     gaze1stop_t1 = np.zeros((total_time+1,1))
-    gaze1stop_t1[np.array(time_point_gaze1stop_round)+1] = 1
+    gaze1stop_t1[np.array(time_point_gaze1stop_round)] = 1
     gaze2stop_t1 = np.zeros((total_time+1,1))
-    gaze2stop_t1[np.array(time_point_gaze2stop_round)+1] = 1
+    gaze2stop_t1[np.array(time_point_gaze2stop_round)] = 1
+    # t0
+    pull1_t0 = np.zeros((total_time+1,1))
+    pull1_t0[np.array(time_point_pull1_round)+1] = 1
+    pull2_t0 = np.zeros((total_time+1,1))
+    pull2_t0[np.array(time_point_pull2_round)+1] = 1
+    gaze1start_t0 = np.zeros((total_time+1,1))
+    gaze1start_t0[np.array(time_point_gaze1start_round)+1] = 1
+    gaze2start_t0 = np.zeros((total_time+1,1))
+    gaze2start_t0[np.array(time_point_gaze2start_round)+1] = 1
+    gaze1stop_t0 = np.zeros((total_time+1,1))
+    gaze1stop_t0[np.array(time_point_gaze1stop_round)+1] = 1
+    gaze2stop_t0 = np.zeros((total_time+1,1))
+    gaze2stop_t0[np.array(time_point_gaze2stop_round)+1] = 1
     
     # clean up dataframe
     data = np.concatenate((pull1_t0,pull2_t0,gaze1start_t0,gaze2start_t0,gaze1stop_t0,gaze2stop_t0,pull1_t1,pull2_t1,gaze1start_t1,gaze2start_t1,gaze1stop_t1,gaze2stop_t1),axis = 1)

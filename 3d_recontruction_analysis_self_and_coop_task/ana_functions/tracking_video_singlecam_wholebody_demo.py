@@ -143,7 +143,7 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
                 # plot the original videos
                 vidcap.set(cv2.CAP_PROP_POS_FRAMES, iframe)
                 ret, image_original = vidcap.read()
-                ax1.imshow(image_original)
+                ax1.imshow(cv2.cvtColor(image_original, cv2.COLOR_BGR2RGB))
 
             
             for ianimal in np.arange(0,nanimals,1):    

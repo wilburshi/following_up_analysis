@@ -29,7 +29,7 @@ def tracking_video_singlecam_demo(bodyparts_locs_camN,output_look_ornot,output_a
     import matplotlib.animation as animation
 
     # Settings
-    video_file = "../3d_recontruction_analysis_self_and_coop_task/example_videos_singlecam_demo/"+cameraID+"/"+date_tgt+"_"+animal1_filename+animal2_filename+"_singlecam_tracking_demo.mp4"
+    video_file = "/gpfs/gibbs/pi/jadi/VideoTracker_SocialInter/3d_recontruction_analysis_self_and_coop_task_data_saved/example_videos_singlecam_demo/"+cameraID+"/"+date_tgt+"_"+animal1_filename+animal2_filename+"_singlecam_tracking_demo.mp4"
     clear_frames = True     # Should it clear the figure between each frame?
     fps = 30
 
