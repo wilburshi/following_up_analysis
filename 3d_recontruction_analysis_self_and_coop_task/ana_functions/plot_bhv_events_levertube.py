@@ -14,7 +14,7 @@ def plot_bhv_events_levertube(date_tgt, animal1, animal2, session_start_time, se
     fig.set_figheight(5)
     fig.set_figwidth(25)
     # plot for animal 1
-    ind_plot = time_point_pull1 < (session_plot_time - session_start_time)
+    ind_plot = time_point_pull1 < (session_plot_time-session_start_time)
     #for itime in np.arange(0,720,1):
     #    plt.plot([itime,itime],[0,1],linewidth = 2.0,color=(0.5,0.5,0.5))
     for itime in time_point_pull1[ind_plot]:
@@ -55,7 +55,7 @@ def plot_bhv_events_levertube(date_tgt, animal1, animal2, session_start_time, se
             axs[0].legend(handles=[line1,line4,line5], fontsize = 13)    
 
     # plot for animal 2
-    ind_plot = time_point_pull2 < (session_plot_time - session_start_time)
+    ind_plot = time_point_pull2 < (session_plot_time-session_start_time)
     #for itime in np.arange(0,720,1):
     #    plt.plot([itime,itime],[0,1],linewidth = 2.0,color=(0.5,0.5,0.5))
     for itime in time_point_pull2[ind_plot]:

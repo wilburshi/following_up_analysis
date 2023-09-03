@@ -10,6 +10,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import seaborn
 import scipy
 import string
@@ -116,9 +117,6 @@ with_tubelever = 1 # 1: consider the location of tubes and levers, only works if
 # get the fps of the analyzed video
 fps = 30
 
-# frame number of the demo video
-nframes = 1*30
-
 # re-analyze the video or not
 reanalyze_video = 0
 redo_anystep = 0
@@ -136,7 +134,7 @@ else:
 # currently the session_start_time will be manually typed in. It can be updated after a better method is used
 
 # dodson scorch
-if 0:
+if 1:
     if not do_bestsession:
         dates_list = [
                       "20220909","20220912","20220915","20220920","20220922","20220923","20221010",
@@ -165,6 +163,7 @@ if 0:
                       "20221022","20221026","20221028","20221030","20230209",
                       "20221125","20221128","20221129","20230214","20230215",                  
                       "20221205","20221206","20221209","20221214","20230112",
+                      "20230117","20230118","20230124","20230126",
                      ]
         session_start_times = [ 
                                 18.10,  0.00, 33.03,  6.50,  0.00, 
@@ -172,6 +171,7 @@ if 0:
                                 51.90, 21.00, 30.80, 17.50,  0.00,                    
                                 26.40, 22.50, 28.50,  0.00, 33.00,                     
                                  0.00,  0.00, 21.70, 17.00, 14.20, 
+                                 0.00,  0.00,  0.00,  0.00,  
                               ] # in second
     
     animal1_fixedorder = ['dodson']
@@ -181,7 +181,7 @@ if 0:
     animal2_filename = "Scorch"
     
 # eddie sparkle
-if 1:
+if 0:
     if not do_bestsession:
         dates_list = [
                       "20221122","20221125","20221128","20221129","20221130","20221202","20221206",
@@ -226,7 +226,7 @@ if 1:
     animal2_filename = "Sparkle"
     
 # ginger kanga
-if 0:
+if 1:
     if not do_bestsession:
         dates_list = [
                       "20230209","20230213","20230214","20230216","20230222","20230223","20230228","20230302",
@@ -239,19 +239,19 @@ if 0:
     elif do_bestsession:   
         dates_list = [
                       "20230213","20230214","20230216",
-                      "20230228","20230302","20230303",
-                      "20230307",          
+                      "20230228","20230302","20230303","20230307",          
                       "20230314","20230315","20230316","20230317",
                       "20230301","20230320","20230321","20230322",
-                      "20230323","20230412","20230413","20230517","20230614","20230615"
+                      "20230323","20230412","20230413","20230517","20230614","20230615",
+                      "20230522_ws","20230524","20230605_1","20230606","20230607"
                    ]
         session_start_times = [ 
                                  0.00,  0.00, 48.00, 
-                                23.00, 28.50, 34.00, 
-                                25.50, 
+                                23.00, 28.50, 34.00, 25.50, 
                                 25.50, 31.50, 28.00, 30.50,
                                 33.50, 22.20, 50.00,  0.00, 
-                                33.00, 18.20, 22.80, 31.00, 24.00, 21.00
+                                33.00, 18.20, 22.80, 31.00, 24.00, 21.00,
+                                 0.00,  0.00,  0.00,  0.00,  0.00,
                               ] # in second 
     
     animal1_fixedorder = ['ginger']
@@ -314,8 +314,8 @@ if not os.path.exists(video_file_dir):
 try:
     if redo_anystep:
         dummy
-    
-    data_saved_subfolder = data_saved_folder+'data_saved_combinedsessions_Anipose'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
+
+        data_saved_subfolder = data_saved_folder+'data_saved_combinedsessions_Anipose'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
     with open(data_saved_subfolder+'/owgaze1_num_all_dates_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
         owgaze1_num_all_dates = pickle.load(f)
     with open(data_saved_subfolder+'/owgaze2_num_all_dates_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
@@ -513,43 +513,14 @@ except:
             timepoint_lever2 = output_time_points_levertube['time_point_lookatlever2']   
             timepoint_tube1 = output_time_points_levertube['time_point_lookattube1']   
             timepoint_tube2 = output_time_points_levertube['time_point_lookattube2']   
-                
-            # # plot behavioral events
-            if 0:
-                if np.isin(animal1,animal1_fixedorder):
-                    plot_bhv_events_levertube(date_tgt+merge_campair,animal1, animal2, session_start_time, totalsess_time, 
-                                              time_point_pull1, time_point_pull2, oneway_gaze1, oneway_gaze2, mutual_gaze1, mutual_gaze2,
-                                              timepoint_lever1,timepoint_lever2,timepoint_tube1,timepoint_tube2)
-                else:
-                    plot_bhv_events_levertube(date_tgt+merge_campair,animal2, animal1, session_start_time, totalsess_time, 
-                                              time_point_pull2, time_point_pull1, oneway_gaze2, oneway_gaze1, mutual_gaze2, mutual_gaze1,
-                                              timepoint_lever2,timepoint_lever1,timepoint_tube2,timepoint_tube1)
-            #
-            # save behavioral events plot
-            if 0:
-                current_dir = data_saved_folder+'/bhv_events_Anipose/'+animal1_fixedorder[0]+animal2_fixedorder[0]
-                add_date_dir = os.path.join(current_dir+'/'+date_tgt)
-                if not os.path.exists(add_date_dir):
-                    os.makedirs(add_date_dir)
-                plt.savefig(data_saved_folder+"bhv_events_Anipose/"+animal1_fixedorder[0]+animal2_fixedorder[0]+"/"+date_tgt+'/'+date_tgt+"_Anipose.pdf")
-  
+              
             #
             owgaze1_num_all_dates[idate] = np.shape(oneway_gaze1)[0]
             owgaze2_num_all_dates[idate] = np.shape(oneway_gaze2)[0]
             mtgaze1_num_all_dates[idate] = np.shape(mutual_gaze1)[0]
             mtgaze2_num_all_dates[idate] = np.shape(mutual_gaze2)[0]
-
             
-            # plot key continuous behavioral variables
-            if 0:
-                filepath_cont_var = data_saved_folder+'bhv_events_continuous_variables_Anipose/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'+date_tgt+'/'
-                if not os.path.exists(filepath_cont_var):
-                    os.makedirs(filepath_cont_var)
-                plot_continuous_bhv_var(filepath_cont_var+date_tgt+merge_campair,animal1, animal2, session_start_time, min_length, 
-                                        time_point_pull1, time_point_pull2,animalnames_videotrack,
-                                        output_look_ornot, output_allvectors, output_allangles,output_key_locations)
-                
-                
+            
             # analyze the events interval, especially for the pull to other and other to pull interval
             # could be used for define time bin for DBN
             if 1:
@@ -560,15 +531,7 @@ except:
                 bhv_intv_all_dates[date_tgt] = {'pull_to_other':pullTOother_itv,'other_to_pull':otherTOpull_itv,
                                 'pull_other_pooled': pull_other_pool_itv}
         
-        
-            
-            # plot the tracking demo video
-            if 0:      
-                video_file = video_file_dir+'/'+date_tgt+'_'+animal1_filename+'_'+animal2_filename+'_anipose_bhv_demo.mp4'
-                tracking_video_Anipose_events_demo(body_part_locs_Anipose,output_look_ornot,output_allvectors,output_allangles,
-                                                   time_point_pull1,time_point_pull2,animalnames_videotrack,bodypartnames_videotrack,
-                                                   date_tgt,animal1_filename,animal2_filename,animal1,animal2,
-                                                   session_start_time,fps,nframes,video_file,withboxCorner)
+           
 
     # save data
     if 1:
@@ -677,7 +640,7 @@ print(np.nanmean(pull_other_intv_forplots))
 
 savefigs = 1
 if savefigs:
-    figsavefolder = data_saved_folder+'figs_for_DBN_and_bhv_Aniposelib3d_ana_combinesessions_morevars_task/'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
+    figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_Aniposelib3d_combinesessions_basicEvents/'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
     if not os.path.exists(figsavefolder):
         os.makedirs(figsavefolder)
     plt.savefig(figsavefolder+"bhvInterval_hist_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'.jpg')
@@ -694,7 +657,7 @@ DBN_group_typeIDs  =  [1,3,3,  3,3,5]
 DBN_group_coopthres = [0,3,2,1.5,1,0]
 nDBN_groups = np.shape(DBN_group_typenames)[0]
 
-prepare_input_data = 0
+prepare_input_data = 1
 
 DBN_input_data_alltypes = dict.fromkeys(DBN_group_typenames, [])
 
@@ -819,15 +782,15 @@ if prepare_input_data:
             bhv_df = []
 
             if np.isin(animal1,animal1_fixedorder):
-                bhv_df_itr = train_DBN_multiLag_create_df_only(totalsess_time, session_start_time, temp_resolu, time_point_pull1, time_point_pull2, oneway_gaze1, oneway_gaze2, mutual_gaze1, mutual_gaze2)
+                bhv_df_itr,_,_ = train_DBN_multiLag_create_df_only(totalsess_time, session_start_time, temp_resolu, time_point_pull1, time_point_pull2, oneway_gaze1, oneway_gaze2, mutual_gaze1, mutual_gaze2)
             else:
-                bhv_df_itr = train_DBN_multiLag_create_df_only(totalsess_time, session_start_time, temp_resolu, time_point_pull2, time_point_pull1, oneway_gaze2, oneway_gaze1, mutual_gaze2, mutual_gaze1)     
+                bhv_df_itr,_,_ = train_DBN_multiLag_create_df_only(totalsess_time, session_start_time, temp_resolu, time_point_pull2, time_point_pull1, oneway_gaze2, oneway_gaze1, mutual_gaze2, mutual_gaze1)     
 
             if len(bhv_df)==0:
                 bhv_df = bhv_df_itr
             else:
                 bhv_df = pd.concat([bhv_df,bhv_df_itr])                   
-                #bhv_df = bhv_df.reset_index(drop=True)        
+                bhv_df = bhv_df.reset_index(drop=True)        
 
             # merge sessions from the same condition
             for iDBN_group in np.arange(0,nDBN_groups,1):
@@ -863,6 +826,188 @@ if prepare_input_data:
 
 
 # ### run the DBN model on the combined session data set
+
+# #### a test run
+
+# In[ ]:
+
+
+# run DBN on the large table with merged sessions
+
+mergetempRos = 0 # 1: merge different time bins
+
+moreSampSize = 0 # 1: use more sample size (more than just minimal row number and max row number)
+
+num_starting_points = 1 # number of random starting points/graphs
+nbootstraps = 1
+
+if 0:
+
+    if moreSampSize:
+        # different data (down/re)sampling numbers
+        samplingsizes = np.arange(1100,3000,100)
+        # samplingsizes = [100,500,1000,1500,2000,2500,3000]        
+        # samplingsizes = [100,500]
+        # samplingsizes_name = ['100','500','1000','1500','2000','2500','3000']
+        samplingsizes_name = list(map(str, samplingsizes))
+        nsamplings = np.shape(samplingsizes)[0]
+
+    weighted_graphs_diffTempRo_diffSampSize = {}
+    weighted_graphs_shuffled_diffTempRo_diffSampSize = {}
+    sig_edges_diffTempRo_diffSampSize = {}
+    DAGscores_diffTempRo_diffSampSize = {}
+    DAGscores_shuffled_diffTempRo_diffSampSize = {}
+
+    totalsess_time = 600 # total session time in s
+    # temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+    temp_resolus = [1] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+    ntemp_reses = np.shape(temp_resolus)[0]
+
+    # try different temporal resolutions, remember to use the same settings as in the previous ones
+    for temp_resolu in temp_resolus:
+
+        data_saved_subfolder = data_saved_folder+'data_saved_combinedsessions_Anipose'+savefile_sufix+'_3Lags/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
+        if not mergetempRos:
+            with open(data_saved_subfolder+'/DBN_input_data_alltypes_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'sReSo.pkl', 'rb') as f:
+                DBN_input_data_alltypes = pickle.load(f)
+        else:
+            with open(data_saved_subfolder+'//DBN_input_data_alltypes_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_mergeTempsReSo.pkl', 'rb') as f:
+                DBN_input_data_alltypes = pickle.load(f)
+
+                
+        # only try two sample sizes - minimal row number (require data downsample) and maximal row number (require data upsample)
+       
+        if not moreSampSize:
+            key_to_value_lengths = {k:len(v) for k, v in DBN_input_data_alltypes.items()}
+            key_to_value_lengths_array = np.fromiter(key_to_value_lengths.values(),dtype=float)
+            key_to_value_lengths_array[key_to_value_lengths_array==0]=np.nan
+            min_samplesize = np.nanmin(key_to_value_lengths_array)
+            min_samplesize = int(min_samplesize/100)*100
+            max_samplesize = np.nanmax(key_to_value_lengths_array)
+            max_samplesize = int(max_samplesize/100)*100
+            samplingsizes = [min_samplesize,max_samplesize]
+            samplingsizes_name = ['min_row_number','max_row_number']   
+            nsamplings = np.shape(samplingsizes)[0]
+            print(samplingsizes)
+                
+        # try different down/re-sampling size
+        # for jj in np.arange(0,nsamplings,1):
+        for jj in np.arange(0,1,1):
+            
+            isamplingsize = samplingsizes[jj]
+            
+            DAGs_alltypes = dict.fromkeys(DBN_group_typenames, [])
+            DAGs_shuffle_alltypes = dict.fromkeys(DBN_group_typenames, [])
+            DAGs_scores_alltypes = dict.fromkeys(DBN_group_typenames, [])
+            DAGs_shuffle_scores_alltypes = dict.fromkeys(DBN_group_typenames, [])
+
+            weighted_graphs_alltypes = dict.fromkeys(DBN_group_typenames, [])
+            weighted_graphs_shuffled_alltypes = dict.fromkeys(DBN_group_typenames, [])
+            sig_edges_alltypes = dict.fromkeys(DBN_group_typenames, [])
+
+            # different session conditions (aka DBN groups)
+            # for iDBN_group in np.arange(0,nDBN_groups,1):
+            for iDBN_group in np.arange(0,1,1):
+                iDBN_group_typename = DBN_group_typenames[iDBN_group] 
+                iDBN_group_typeID =  DBN_group_typeIDs[iDBN_group] 
+                iDBN_group_cothres = DBN_group_coopthres[iDBN_group] 
+
+                try:
+                    bhv_df_all = DBN_input_data_alltypes[iDBN_group_typename]
+                    # bhv_df = bhv_df_all.sample(30*100,replace = True, random_state = round(time())) # take the subset for DBN training
+
+                    #Anirban(Alec) shuffle, slow
+                    # bhv_df_shuffle, df_shufflekeys = EfficientShuffle(bhv_df,round(time()))
+
+
+                    # define DBN graph structures; make sure they are the same as in the train_DBN_multiLag
+                    colnames = list(bhv_df_all.columns)
+                    eventnames = ["pull1","pull2","owgaze1","owgaze2"]
+                    nevents = np.size(eventnames)
+
+                    all_pops = list(bhv_df_all.columns)
+                    from_pops = [pop for pop in all_pops if not pop.endswith('t3')]
+                    to_pops = [pop for pop in all_pops if pop.endswith('t3')]
+                    causal_whitelist = [(from_pop,to_pop) for from_pop in from_pops for to_pop in to_pops]
+
+                    nFromNodes = np.shape(from_pops)[0]
+                    nToNodes = np.shape(to_pops)[0]
+
+                    DAGs_randstart = np.zeros((num_starting_points, nFromNodes, nToNodes))
+                    DAGs_randstart_shuffle = np.zeros((num_starting_points, nFromNodes, nToNodes))
+                    score_randstart = np.zeros((num_starting_points))
+                    score_randstart_shuffle = np.zeros((num_starting_points))
+
+                    # step 1: randomize the starting point for num_starting_points times
+                    for istarting_points in np.arange(0,num_starting_points,1):
+
+                        # try different down/re-sampling size
+                        bhv_df = bhv_df_all.sample(isamplingsize,replace = True, random_state = istarting_points) # take the subset for DBN training
+                        aic = AicScore(bhv_df)
+
+                        #Anirban(Alec) shuffle, slow
+                        bhv_df_shuffle, df_shufflekeys = EfficientShuffle(bhv_df,round(time()))
+                        aic_shuffle = AicScore(bhv_df_shuffle)
+
+                        np.random.seed(istarting_points)
+                        random.seed(istarting_points)
+                        starting_edges = random.sample(causal_whitelist, np.random.randint(1,len(causal_whitelist)))
+                        starting_graph = DAG()
+                        starting_graph.add_nodes_from(nodes=all_pops)
+                        starting_graph.add_edges_from(ebunch=starting_edges)
+
+                        best_model,edges,DAGs = train_DBN_multiLag_training_only(bhv_df,starting_graph,colnames,eventnames,from_pops,to_pops)           
+                        DAGs[0][np.isnan(DAGs[0])]=0
+
+                        DAGs_randstart[istarting_points,:,:] = DAGs[0]
+                        score_randstart[istarting_points] = aic.score(best_model)
+
+                        # step 2: add the shffled data results
+                        # shuffled bhv_df
+                        best_model,edges,DAGs = train_DBN_multiLag_training_only(bhv_df_shuffle,starting_graph,colnames,eventnames,from_pops,to_pops)           
+                        DAGs[0][np.isnan(DAGs[0])]=0
+
+                        DAGs_randstart_shuffle[istarting_points,:,:] = DAGs[0]
+                        score_randstart_shuffle[istarting_points] = aic_shuffle.score(best_model)
+
+                    DAGs_alltypes[iDBN_group_typename] = DAGs_randstart 
+                    DAGs_shuffle_alltypes[iDBN_group_typename] = DAGs_randstart_shuffle
+
+                    DAGs_scores_alltypes[iDBN_group_typename] = score_randstart
+                    DAGs_shuffle_scores_alltypes[iDBN_group_typename] = score_randstart_shuffle
+
+                    weighted_graphs = get_weighted_dags(DAGs_alltypes[iDBN_group_typename],nbootstraps)
+                    weighted_graphs_shuffled = get_weighted_dags(DAGs_shuffle_alltypes[iDBN_group_typename],nbootstraps)
+                    sig_edges = get_significant_edges(weighted_graphs,weighted_graphs_shuffled)
+
+                    weighted_graphs_alltypes[iDBN_group_typename] = weighted_graphs
+                    weighted_graphs_shuffled_alltypes[iDBN_group_typename] = weighted_graphs_shuffled
+                    sig_edges_alltypes[iDBN_group_typename] = sig_edges
+                    
+                except:
+                    DAGs_alltypes[iDBN_group_typename] = [] 
+                    DAGs_shuffle_alltypes[iDBN_group_typename] = []
+
+                    DAGs_scores_alltypes[iDBN_group_typename] = []
+                    DAGs_shuffle_scores_alltypes[iDBN_group_typename] = []
+
+                    weighted_graphs_alltypes[iDBN_group_typename] = []
+                    weighted_graphs_shuffled_alltypes[iDBN_group_typename] = []
+                    sig_edges_alltypes[iDBN_group_typename] = []
+                
+            DAGscores_diffTempRo_diffSampSize[(str(temp_resolu),samplingsizes_name[jj])] = DAGs_scores_alltypes
+            DAGscores_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),samplingsizes_name[jj])] = DAGs_shuffle_scores_alltypes
+
+            weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),samplingsizes_name[jj])] = weighted_graphs_alltypes
+            weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),samplingsizes_name[jj])] = weighted_graphs_shuffled_alltypes
+            sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),samplingsizes_name[jj])] = sig_edges_alltypes
+
+    print(weighted_graphs_diffTempRo_diffSampSize)
+            
+   
+
+
+# #### run on the entire population
 
 # In[ ]:
 
@@ -1093,249 +1238,7 @@ except:
             pickle.dump(sig_edges_diffTempRo_diffSampSize, f)
 
 
-# ### plot graphs - plot the two time step separately
-# #### not use anymore 
-
-# In[ ]:
-
-
-if 0:
-    # make sure these variables are the same as in the previous steps
-    # temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
-    temp_resolus = [1,1] # temporal resolution in the DBN model, eg: 0.5 means 500ms
-    ntemp_reses = np.shape(temp_resolus)[0]
-    #
-    if moreSampSize:
-        # different data (down/re)sampling numbers
-        samplingsizes = np.arange(1100,3000,100)
-        # samplingsizes = [100,500,1000,1500,2000,2500,3000]        
-        # samplingsizes = [100,500]
-        # samplingsizes_name = ['100','500','1000','1500','2000','2500','3000']
-        samplingsizes_name = list(map(str, samplingsizes))
-    else:
-        samplingsizes_name = ['min_row_number','max_row_number']   
-    nsamplings = np.shape(samplingsizes_name)[0]
-
-    # make sure these variables are consistent with the train_DBN_alec.py settings
-    eventnames = ["pull1","pull2","owgaze1","owgaze2"]
-    nevents = np.size(eventnames)
-    eventnodes_color = ['b','r','y','g']
-    nFromNodes = nevents
-    nToNodes = nevents
-
-    savefigs = 1  
-
-    # different session conditions (aka DBN groups)
-    for iDBN_group in np.arange(0,nDBN_groups,1):
-
-        try: 
-            iDBN_group_typename = DBN_group_typenames[iDBN_group]
-
-            fig, axs = plt.subplots(nsamplings,ntemp_reses)
-            fig.set_figheight(5*nsamplings)
-            fig.set_figwidth(20)
-
-            # different time bin size
-            for ii in np.arange(0,ntemp_reses,1):    
-
-                temp_resolu = temp_resolus[ii]
-
-                # different down/re-sampling size
-                for jj in np.arange(0,nsamplings,1):
-
-                    j_sampsize_name = samplingsizes_name[jj]
-
-                    weighted_graphs_tgt = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][iDBN_group_typename]
-                    sig_edges_tgt = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][iDBN_group_typename]
-
-                    sig_avg_dags = weighted_graphs_tgt.mean(axis = 0) * sig_edges_tgt
-
-                    # plot
-                    axs[jj,ii].set_title(iDBN_group_typename+'; '+str(temp_resolu)+'s bin; '+j_sampsize_name)
-                    axs[jj,ii].set_xlim([-0.5,1.5])
-                    axs[jj,ii].set_xticks([0,1])
-                    axs[jj,ii].set_xticklabels(['t_0','t_1'])
-                    axs[jj,ii].set_ylim([-1,nevents])
-                    axs[jj,ii].set_yticks(np.arange(0,nevents,1))
-                    axs[jj,ii].set_yticklabels(eventnames)
-                    #axs[jj,ii].spines['top'].set_visible(False)
-                    #axs[jj,ii].spines['right'].set_visible(False)
-                    #axs[jj,ii].spines['bottom'].set_visible(False)
-                    #axs[jj,ii].spines['left'].set_visible(False)
-
-                    for ieventnode in np.arange(0,nevents,1):
-                        # plot the event nodes
-                        axs[jj,ii].plot(0,ieventnode,'.',markersize=60,markerfacecolor=eventnodes_color[ieventnode],markeredgecolor='none')
-                        axs[jj,ii].plot(1,ieventnode,'.',markersize=60,markerfacecolor=eventnodes_color[ieventnode],markeredgecolor='none')
-
-                        # plot the event edges
-                        for ifromNode in np.arange(0,nFromNodes,1):
-                            for itoNode in np.arange(0,nToNodes,1):
-                                edge_weight_tgt = sig_avg_dags[ifromNode,itoNode]
-                                if edge_weight_tgt>0:
-                                    axs[jj,ii].plot([0,1],[ifromNode,itoNode],'k-',linewidth=edge_weight_tgt*3)
-
-            if savefigs:
-                if moreSampSize:
-                    figsavefolder = data_saved_folder+'figs_for_DBN_and_bhv_Aniposelib3d_ana_combinesessions_morevars_task/'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
-                    if not os.path.exists(figsavefolder):
-                        os.makedirs(figsavefolder)
-                    plt.savefig(figsavefolder+"oneTimeLag_DAGs_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+iDBN_group_typename+'_moreSampSize.jpg')
-                else:
-                    figsavefolder = data_saved_folder+'figs_for_DBN_and_bhv_Aniposelib3d_ana_combinesessions_morevars_task/'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
-                    if not os.path.exists(figsavefolder):
-                        os.makedirs(figsavefolder)
-                    plt.savefig(figsavefolder+"oneTimeLag_DAGs_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+iDBN_group_typename+'.jpg')
-
-        except:
-            continue
-
-
-# ### plot graphs - show the edge with arrows
-# #### not use anymore
-
-# In[ ]:
-
-
-if 0:
-    # make sure these variables are the same as in the previous steps
-    temp_resolus = [1,1] # temporal resolution in the DBN model, eg: 0.5 means 500ms
-    # temp_resolus = [1] # temporal resolution in the DBN model, eg: 0.5 means 500ms
-    ntemp_reses = np.shape(temp_resolus)[0]
-    #
-    if moreSampSize:
-        # different data (down/re)sampling numbers
-        samplingsizes = np.arange(1100,3000,100)
-        # samplingsizes = [100,500,1000,1500,2000,2500,3000]        
-        # samplingsizes = [100,500]
-        # samplingsizes_name = ['100','500','1000','1500','2000','2500','3000']
-        samplingsizes_name = list(map(str, samplingsizes))
-    else:
-        samplingsizes_name = ['min_row_number','max_row_number']   
-    nsamplings = np.shape(samplingsizes_name)[0]
-
-    # make sure these variables are consistent with the train_DBN_alec.py settings
-    eventnames = ["pull1","pull2","owgaze1","owgaze2"]
-    eventnode_locations = [[0,1],[1,1],[0,0],[1,0]]
-    eventname_locations = [[-0.4,1.0],[1.2,1],[-0.5,0],[1.2,0]]
-    # indicate where edge starts
-    # for the self edge, it's the center of the self loop
-    nodearrow_locations = [[[0.00,1.25],[0.25,1.10],[-.10,0.75],[0.15,0.65]],
-                           [[0.75,1.00],[1.00,1.25],[0.85,0.65],[1.10,0.75]],
-                           [[0.00,0.25],[0.25,0.35],[0.00,-.25],[0.25,-.10]],
-                           [[0.75,0.35],[1.00,0.25],[0.75,0.00],[1.00,-.25]]]
-    # indicate where edge goes
-    # for the self edge, it's the theta1 and theta2 (with fixed radius)
-    nodearrow_directions = [[[ -45,-180],[0.50,0.00],[0.00,-.50],[0.50,-.50]],
-                            [[-.50,0.00],[ -45,-180],[-.50,-.50],[0.00,-.50]],
-                            [[0.00,0.50],[0.50,0.50],[ 180,  45],[0.50,0.00]],
-                            [[-.50,0.50],[0.00,0.50],[-.50,0.00],[ 180,  45]]]
-
-    nevents = np.size(eventnames)
-    eventnodes_color = ['b','r','y','g']
-    nFromNodes = nevents
-    nToNodes = nevents
-
-    savefigs = 1
-
-    # different session conditions (aka DBN groups)
-    for iDBN_group in np.arange(0,nDBN_groups,1):
-
-        try:
-            iDBN_group_typename = DBN_group_typenames[iDBN_group]
-
-            fig, axs = plt.subplots(nsamplings,ntemp_reses)
-            fig.set_figheight(5*nsamplings)
-            fig.set_figwidth(20)
-
-            # different time bin size
-            for ii in np.arange(0,ntemp_reses,1):    
-
-                temp_resolu = temp_resolus[ii]
-
-                # different down/re-sampling size
-                for jj in np.arange(0,nsamplings,1):
-
-                    j_sampsize_name = samplingsizes_name[jj]
-
-                    weighted_graphs_tgt = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][iDBN_group_typename]
-                    sig_edges_tgt = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][iDBN_group_typename]
-
-                    sig_avg_dags = weighted_graphs_tgt.mean(axis = 0) * sig_edges_tgt
-
-                    # plot
-                    axs[jj,ii].set_title(iDBN_group_typename+'; '+str(temp_resolu)+'s bin; '+j_sampsize_name)
-                    axs[jj,ii].set_xlim([-0.5,1.5])
-                    axs[jj,ii].set_ylim([-0.5,1.5])
-                    axs[jj,ii].set_xticks([])
-                    axs[jj,ii].set_xticklabels([])
-                    axs[jj,ii].set_yticks([])
-                    axs[jj,ii].set_yticklabels([])
-                    axs[jj,ii].spines['top'].set_visible(False)
-                    axs[jj,ii].spines['right'].set_visible(False)
-                    axs[jj,ii].spines['bottom'].set_visible(False)
-                    axs[jj,ii].spines['left'].set_visible(False)
-                    # axs[jj,ii].axis('equal')
-
-                    for ieventnode in np.arange(0,nevents,1):
-                        # plot the event nodes
-                        axs[jj,ii].plot(eventnode_locations[ieventnode][0],eventnode_locations[ieventnode][1],'.',markersize=60,markerfacecolor=eventnodes_color[ieventnode],markeredgecolor='none')              
-                        axs[jj,ii].text(eventname_locations[ieventnode][0],eventname_locations[ieventnode][1],
-                                        eventnames[ieventnode],fontsize=10)
-
-                        # plot the event edges
-                        for ifromNode in np.arange(0,nFromNodes,1):
-                            for itoNode in np.arange(0,nToNodes,1):
-                                edge_weight_tgt = sig_avg_dags[ifromNode,itoNode]
-                                if edge_weight_tgt>0:
-                                    if not ifromNode == itoNode:
-                                        #axs[jj,ii].plot(eventnode_locations[ifromNode],eventnode_locations[itoNode],'k-',linewidth=edge_weight_tgt*3)
-                                        axs[jj,ii].arrow(nodearrow_locations[ifromNode][itoNode][0],
-                                                         nodearrow_locations[ifromNode][itoNode][1],
-                                                         nodearrow_directions[ifromNode][itoNode][0],
-                                                         nodearrow_directions[ifromNode][itoNode][1],
-                                                         head_width=0.08*edge_weight_tgt,width=0.04*edge_weight_tgt)
-                                    if ifromNode == itoNode:
-                                        ring = mpatches.Wedge(nodearrow_locations[ifromNode][itoNode],
-                                                              .1, nodearrow_directions[ifromNode][itoNode][0],
-                                                              nodearrow_directions[ifromNode][itoNode][1], 
-                                                              0.04*edge_weight_tgt)
-                                        p = PatchCollection(
-                                            [ring], 
-                                            facecolor='#2693de', 
-                                            edgecolor='#000000'
-                                        )
-                                        axs[jj,ii].add_collection(p)
-                                        # add arrow head
-                                        if ifromNode < 2:
-                                            axs[jj,ii].arrow(nodearrow_locations[ifromNode][itoNode][0]-0.1+0.02*edge_weight_tgt,
-                                                             nodearrow_locations[ifromNode][itoNode][1],
-                                                             0,-0.05,fc='#2693de',
-                                                             head_width=0.08*edge_weight_tgt,width=0.04*edge_weight_tgt)
-                                        else:
-                                            axs[jj,ii].arrow(nodearrow_locations[ifromNode][itoNode][0]-0.1+0.02*edge_weight_tgt,
-                                                             nodearrow_locations[ifromNode][itoNode][1],
-                                                             0,0.02,fc='#2693de',
-                                                             head_width=0.08*edge_weight_tgt,width=0.04*edge_weight_tgt)
-
-
-            if savefigs:
-                if moreSampSize:
-                    figsavefolder = data_saved_folder+'figs_for_DBN_and_bhv_Aniposelib3d_ana_combinesessions_morevars_task/'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
-                    if not os.path.exists(figsavefolder):
-                        os.makedirs(figsavefolder)
-                    plt.savefig(figsavefolder+"oneTimeLag_DAGs_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+iDBN_group_typename+'_moreSampSize_onelagplot.jpg')
-                else:
-                    figsavefolder = data_saved_folder+'figs_for_DBN_and_bhv_Aniposelib3d_ana_combinesessions_morevars_task/'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
-                    if not os.path.exists(figsavefolder):
-                        os.makedirs(figsavefolder)
-                    plt.savefig(figsavefolder+"oneTimeLag_DAGs_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+iDBN_group_typename+'_onelagplot.jpg')
-
-        except:
-            continue
-
-
-# ### plot graphs - show the edge with arrows; show the best time bin and row number
+# ### plot graphs - show the edge with arrows; show the best time bin and row number; show the three time lag separately
 
 # In[ ]:
 
@@ -1358,173 +1261,6 @@ else:
 nsamplings = np.shape(samplingsizes_name)[0]
 
 # make sure these variables are consistent with the train_DBN_alec.py settings
-ventnames = ["pull1","pull2","gaze1","gaze2"]
-# eventnames = ["M1pull","M2pull","M1gazeM2","M2gazeM1"]
-eventnode_locations = [[0,1],[1,1],[0,0],[1,0]]
-eventname_locations = [[-0.5,1.0],[1.2,1],[-0.6,0],[1.2,0]]
-# indicate where edge starts
-# for the self edge, it's the center of the self loop
-nodearrow_locations = [[[0.00,1.25],[0.25,1.10],[-.10,0.75],[0.15,0.65]],
-                       [[0.75,1.00],[1.00,1.25],[0.85,0.65],[1.10,0.75]],
-                       [[0.00,0.25],[0.25,0.35],[0.00,-.25],[0.25,-.10]],
-                       [[0.75,0.35],[1.00,0.25],[0.75,0.00],[1.00,-.25]]]
-# indicate where edge goes
-# for the self edge, it's the theta1 and theta2 (with fixed radius)
-nodearrow_directions = [[[ -45,-180],[0.50,0.00],[0.00,-.50],[0.50,-.50]],
-                        [[-.50,0.00],[ -45,-180],[-.50,-.50],[0.00,-.50]],
-                        [[0.00,0.50],[0.50,0.50],[ 180,  45],[0.50,0.00]],
-                        [[-.50,0.50],[0.00,0.50],[-.50,0.00],[ 180,  45]]]
-
-nevents = np.size(eventnames)
-eventnodes_color = ['b','r','y','g']
-nFromNodes = nevents
-nToNodes = nevents
-    
-savefigs = 1
-
-# different session conditions (aka DBN groups)
-fig, axs = plt.subplots(2,nDBN_groups)
-fig.set_figheight(10)
-fig.set_figwidth(30)
-    
-for iDBN_group in np.arange(0,nDBN_groups,1):
-    
-    try:
-
-        iDBN_group_typename = DBN_group_typenames[iDBN_group]
-
-        temp_resolu = temp_resolus[0]
-
-        j_sampsize_name = samplingsizes_name[0]
-
-        weighted_graphs_tgt = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][iDBN_group_typename]
-        sig_edges_tgt = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][iDBN_group_typename]
-
-        sig_avg_dags = weighted_graphs_tgt.mean(axis = 0) * sig_edges_tgt
-
-        # plot
-        axs[0,iDBN_group].set_title(iDBN_group_typename,fontsize=15)
-        axs[0,iDBN_group].set_xlim([-0.5,1.5])
-        axs[0,iDBN_group].set_ylim([-0.5,1.5])
-        axs[0,iDBN_group].set_xticks([])
-        axs[0,iDBN_group].set_xticklabels([])
-        axs[0,iDBN_group].set_yticks([])
-        axs[0,iDBN_group].set_yticklabels([])
-        axs[0,iDBN_group].spines['top'].set_visible(False)
-        axs[0,iDBN_group].spines['right'].set_visible(False)
-        axs[0,iDBN_group].spines['bottom'].set_visible(False)
-        axs[0,iDBN_group].spines['left'].set_visible(False)
-        # axs[0,iDBN_group].axis('equal')
-
-        for ieventnode in np.arange(0,nevents,1):
-            # plot the event nodes
-            axs[0,iDBN_group].plot(eventnode_locations[ieventnode][0],eventnode_locations[ieventnode][1],'.',markersize=60,markerfacecolor=eventnodes_color[ieventnode],markeredgecolor='none')              
-            axs[0,iDBN_group].text(eventname_locations[ieventnode][0],eventname_locations[ieventnode][1],
-                                   eventnames[ieventnode],fontsize=10)
-
-            # plot the event edges
-            for ifromNode in np.arange(0,nFromNodes,1):
-                for itoNode in np.arange(0,nToNodes,1):
-                    edge_weight_tgt = sig_avg_dags[ifromNode,itoNode]
-                    if edge_weight_tgt>0:
-                        if not ifromNode == itoNode:
-                            #axs[0,iDBN_group].plot(eventnode_locations[ifromNode],eventnode_locations[itoNode],'k-',linewidth=edge_weight_tgt*3)
-                            axs[0,iDBN_group].arrow(nodearrow_locations[ifromNode][itoNode][0],
-                                                    nodearrow_locations[ifromNode][itoNode][1],
-                                                    nodearrow_directions[ifromNode][itoNode][0],
-                                                    nodearrow_directions[ifromNode][itoNode][1],
-                                                    head_width=0.08*edge_weight_tgt,width=0.04*edge_weight_tgt)
-                        if ifromNode == itoNode:
-                            ring = mpatches.Wedge(nodearrow_locations[ifromNode][itoNode],
-                                                  .1, nodearrow_directions[ifromNode][itoNode][0],
-                                                  nodearrow_directions[ifromNode][itoNode][1], 
-                                                  0.04*edge_weight_tgt)
-                            p = PatchCollection(
-                                [ring], 
-                                facecolor='#2693de', 
-                                edgecolor='#000000'
-                            )
-                            axs[0,iDBN_group].add_collection(p)
-                            # add arrow head
-                            if ifromNode < 2:
-                                axs[0,iDBN_group].arrow(nodearrow_locations[ifromNode][itoNode][0]-0.1+0.02*edge_weight_tgt,
-                                                        nodearrow_locations[ifromNode][itoNode][1],
-                                                        0,-0.05,fc='#2693de',
-                                                        head_width=0.08*edge_weight_tgt,width=0.04*edge_weight_tgt)
-                            else:
-                                axs[0,iDBN_group].arrow(nodearrow_locations[ifromNode][itoNode][0]-0.1+0.02*edge_weight_tgt,
-                                                        nodearrow_locations[ifromNode][itoNode][1],
-                                                        0,0.02,fc='#2693de',
-                                                        head_width=0.08*edge_weight_tgt,width=0.04*edge_weight_tgt)
-
-        # heatmap for the weights
-        sig_avg_dags_df = pd.DataFrame(sig_avg_dags)
-        sig_avg_dags_df.columns = eventnames
-        sig_avg_dags_df.index = eventnames
-        vmin,vmax = 0,1
-        import matplotlib as mpl
-        norm = mpl.colors.Normalize(vmin=vmin, vmax=vmax)
-        im = axs[1,iDBN_group].pcolormesh(sig_avg_dags_df,cmap="Blues",norm=norm)
-        #
-        if iDBN_group == nDBN_groups-1:
-            cax = axs[1,iDBN_group].inset_axes([1.04, 0.2, 0.05, 0.8])
-            fig.colorbar(im, ax=axs[1,iDBN_group], cax=cax,label='edge confidence')
-
-        axs[1,iDBN_group].axis('equal')
-        axs[1,iDBN_group].set_xlabel('to Node',fontsize=14)
-        axs[1,iDBN_group].set_xticks(np.arange(0.5,4.5,1))
-        axs[1,iDBN_group].set_xticklabels(eventnames)
-        if iDBN_group == 0:
-            axs[1,iDBN_group].set_ylabel('from Node',fontsize=14)
-            axs[1,iDBN_group].set_yticks(np.arange(0.5,4.5,1))
-            axs[1,iDBN_group].set_yticklabels(eventnames)
-        else:
-            axs[1,iDBN_group].set_yticks([])
-            axs[1,iDBN_group].set_yticklabels([])
-                                     
-    except:
-        continue
-    
-if savefigs:
-    if moreSampSize:
-        figsavefolder = data_saved_folder+'figs_for_DBN_and_bhv_Aniposelib3d_ana_combinesessions_morevars_task/'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
-        if not os.path.exists(figsavefolder):
-            os.makedirs(figsavefolder)
-        plt.savefig(figsavefolder+"oneTimeLag_DAGs_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_'+str(j_sampsize_name)+'_rows.jpg')
-    else:
-        figsavefolder = data_saved_folder+'figs_for_DBN_and_bhv_Aniposelib3d_ana_combinesessions_morevars_task/'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
-        if not os.path.exists(figsavefolder):
-            os.makedirs(figsavefolder)
-        plt.savefig(figsavefolder+"oneTimeLag_DAGs_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_'+j_sampsize_name+'.jpg')
-            
-            
-            
-
-
-# ### plot graphs - show the edge with arrows; show the best time bin and all the row numbers
-
-# In[ ]:
-
-
-# make sure these variables are the same as in the previous steps
-# temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
-temp_resolus = [1] # temporal resolution in the DBN model, eg: 0.5 means 500ms
-ntemp_reses = np.shape(temp_resolus)[0]
-#
-if moreSampSize:
-    # different data (down/re)sampling numbers
-    samplingsizes = np.arange(1100,3000,100)
-    # samplingsizes = [1100]
-    # samplingsizes = [100,500,1000,1500,2000,2500,3000]        
-    # samplingsizes = [100,500]
-    # samplingsizes_name = ['100','500','1000','1500','2000','2500','3000']
-    samplingsizes_name = list(map(str, samplingsizes))
-else:
-    samplingsizes_name = ['min_row_number','max_row_number']   
-nsamplings = np.shape(samplingsizes_name)[0]
-
-
-# make sure these variables are consistent with the train_DBN_alec.py settings
 eventnames = ["pull1","pull2","gaze1","gaze2"]
 # eventnames = ["M1pull","M2pull","M1gazeM2","M2gazeM1"]
 eventnode_locations = [[0,1],[1,1],[0,0],[1,0]]
@@ -1544,35 +1280,100 @@ nodearrow_directions = [[[ -45,-180],[0.50,0.00],[0.00,-.50],[0.50,-.50]],
 
 nevents = np.size(eventnames)
 eventnodes_color = ['b','r','y','g']
-nFromNodes = nevents
-nToNodes = nevents
     
 savefigs = 1
 
 # different session conditions (aka DBN groups)
-fig, axs = plt.subplots(nsamplings,nDBN_groups)
-fig.set_figheight(3*nsamplings)
-fig.set_figwidth(20)
-    
-temp_resolu = temp_resolus[0]    
-    
-# different time bin size
-for ii in np.arange(0,nsamplings,1):    
+# different time lags (t_-3, t_-2 and t_-1)
+fig, axs = plt.subplots(6,nDBN_groups)
+fig.set_figheight(45)
+fig.set_figwidth(45)
 
-    j_sampsize_name = samplingsizes_name[ii]   
+time_lags = ['t_-3','t_-2','t_-1']
+fromRowIDs =[[0,1,2,3],[4,5,6,7],[8,9,10,11]]
+ntime_lags = np.shape(time_lags)[0]
+
+temp_resolu = temp_resolus[0]
+j_sampsize_name = samplingsizes_name[0]    
+
+for ilag in np.arange(0,ntime_lags,1):
+    
+    time_lag_name = time_lags[ilag]
+    fromRowID = fromRowIDs[ilag]
     
     for iDBN_group in np.arange(0,nDBN_groups,1):
 
         try:
 
-            iDBN_group_typename = DBN_group_typenames[iDBN_group]        
+            iDBN_group_typename = DBN_group_typenames[iDBN_group]
 
             weighted_graphs_tgt = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][iDBN_group_typename]
             sig_edges_tgt = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][iDBN_group_typename]
 
             sig_avg_dags = weighted_graphs_tgt.mean(axis = 0) * sig_edges_tgt
+            sig_avg_dags = sig_avg_dags[fromRowID,:]
 
             # plot
+            axs[ilag*2+0,iDBN_group].set_title(iDBN_group_typename,fontsize=18)
+            axs[ilag*2+0,iDBN_group].set_xlim([-0.5,1.5])
+            axs[ilag*2+0,iDBN_group].set_ylim([-0.5,1.5])
+            axs[ilag*2+0,iDBN_group].set_xticks([])
+            axs[ilag*2+0,iDBN_group].set_xticklabels([])
+            axs[ilag*2+0,iDBN_group].set_yticks([])
+            axs[ilag*2+0,iDBN_group].set_yticklabels([])
+            axs[ilag*2+0,iDBN_group].spines['top'].set_visible(False)
+            axs[ilag*2+0,iDBN_group].spines['right'].set_visible(False)
+            axs[ilag*2+0,iDBN_group].spines['bottom'].set_visible(False)
+            axs[ilag*2+0,iDBN_group].spines['left'].set_visible(False)
+            # axs[ilag*2+0,iDBN_group].axis('equal')
+
+            
+            for ieventnode in np.arange(0,nevents,1):
+                # plot the event nodes
+                axs[ilag*2+0,iDBN_group].plot(eventnode_locations[ieventnode][0],eventnode_locations[ieventnode][1],'.',markersize=60,markerfacecolor=eventnodes_color[ieventnode],markeredgecolor='none')              
+                axs[ilag*2+0,iDBN_group].text(eventname_locations[ieventnode][0],eventname_locations[ieventnode][1],
+                                       eventnames[ieventnode],fontsize=15)
+                
+                clmap = mpl.cm.get_cmap('Blues')
+                
+                # plot the event edges
+                for ifromNode in np.arange(0,nevents,1):
+                    for itoNode in np.arange(0,nevents,1):
+                        edge_weight_tgt = sig_avg_dags[ifromNode,itoNode]
+                        if edge_weight_tgt>0:
+                            if not ifromNode == itoNode:
+                                #axs[ilag*2+0,iDBN_group].plot(eventnode_locations[ifromNode],eventnode_locations[itoNode],'k-',linewidth=edge_weight_tgt*3)
+                                axs[ilag*2+0,iDBN_group].arrow(nodearrow_locations[ifromNode][itoNode][0],
+                                                        nodearrow_locations[ifromNode][itoNode][1],
+                                                        nodearrow_directions[ifromNode][itoNode][0],
+                                                        nodearrow_directions[ifromNode][itoNode][1],
+                                                        head_width=0.08*abs(edge_weight_tgt),
+                                                        width=0.04*abs(edge_weight_tgt),
+                                                        color = clmap(edge_weight_tgt))
+                            if ifromNode == itoNode:
+                                ring = mpatches.Wedge(nodearrow_locations[ifromNode][itoNode],
+                                                      .1, nodearrow_directions[ifromNode][itoNode][0],
+                                                      nodearrow_directions[ifromNode][itoNode][1], 
+                                                      0.04*abs(edge_weight_tgt),
+                                                      color = clmap(edge_weight_tgt))
+                                p = PatchCollection(
+                                    [ring], 
+                                    facecolor=clmap(edge_weight_tgt), 
+                                    edgecolor=clmap(edge_weight_tgt)
+                                )
+                                axs[ilag*2+0,iDBN_group].add_collection(p)
+                                # add arrow head
+                                if ifromNode < 2:
+                                    axs[ilag*2+0,iDBN_group].arrow(nodearrow_locations[ifromNode][itoNode][0]-0.1+0.02*edge_weight_tgt,
+                                                            nodearrow_locations[ifromNode][itoNode][1],
+                                                            0,-0.05,color=clmap(edge_weight_tgt),
+                                                            head_width=0.08*edge_weight_tgt,width=0.04*edge_weight_tgt)
+                                else:
+                                    axs[ilag*2+0,iDBN_group].arrow(nodearrow_locations[ifromNode][itoNode][0]-0.1+0.02*edge_weight_tgt,
+                                                            nodearrow_locations[ifromNode][itoNode][1],
+                                                            0,0.02,color=clmap(edge_weight_tgt),
+                                                            head_width=0.08*edge_weight_tgt,width=0.04*edge_weight_tgt)
+
             # heatmap for the weights
             sig_avg_dags_df = pd.DataFrame(sig_avg_dags)
             sig_avg_dags_df.columns = eventnames
@@ -1580,44 +1381,40 @@ for ii in np.arange(0,nsamplings,1):
             vmin,vmax = 0,1
             import matplotlib as mpl
             norm = mpl.colors.Normalize(vmin=vmin, vmax=vmax)
-            im = axs[ii,iDBN_group].pcolormesh(sig_avg_dags_df,cmap="Blues",norm=norm)
+            im = axs[ilag*2+1,iDBN_group].pcolormesh(sig_avg_dags_df,cmap="Blues",norm=norm)
             #
             if iDBN_group == nDBN_groups-1:
-                cax = axs[1,iDBN_group].inset_axes([1.04, 0.2, 0.05, 0.8])
-                fig.colorbar(im, ax=axs[1,iDBN_group], cax=cax,label='edge confidence')
+                cax = axs[ilag*2+1,iDBN_group].inset_axes([1.04, 0.2, 0.05, 0.8])
+                fig.colorbar(im, ax=axs[ilag*2+1,iDBN_group], cax=cax,label='edge confidence')
 
-            axs[ii,iDBN_group].axis('equal')
-            axs[ii,iDBN_group].set_title(iDBN_group_typename+' '+j_sampsize_name+' rows')
-            if ii == nsamplings-1:
-                axs[ii,iDBN_group].set_xlabel('to Node',fontsize=14)
-                axs[ii,iDBN_group].set_xticks(np.arange(0.5,4.5,1))
-                axs[ii,iDBN_group].set_xticklabels(eventnames,rotation=45)
-            else:
-                axs[ii,iDBN_group].set_xticklabels([])
-                axs[ii,iDBN_group].set_xticks([])
-                
+            axs[ilag*2+1,iDBN_group].axis('equal')
+            axs[ilag*2+1,iDBN_group].set_xlabel('to Node',fontsize=14)
+            axs[ilag*2+1,iDBN_group].set_xticks(np.arange(0.5,4.5,1))
+            axs[ilag*2+1,iDBN_group].set_xticklabels(eventnames)
             if iDBN_group == 0:
-                axs[ii,iDBN_group].set_ylabel('from Node',fontsize=14)
-                axs[ii,iDBN_group].set_yticks(np.arange(0.5,4.5,1))
-                axs[ii,iDBN_group].set_yticklabels(eventnames)
+                axs[ilag*2+1,iDBN_group].set_ylabel('from Node',fontsize=14)
+                axs[ilag*2+1,iDBN_group].set_yticks(np.arange(0.5,4.5,1))
+                axs[ilag*2+1,iDBN_group].set_yticklabels(eventnames)
+                axs[ilag*2+1,iDBN_group].text(-1.5,1,time_lag_name+' time lag',rotation=90,fontsize=20)
+                axs[ilag*2+0,iDBN_group].text(-1.25,0,time_lag_name+' time lag',rotation=90,fontsize=20)
             else:
-                axs[ii,iDBN_group].set_yticks([])
-                axs[ii,iDBN_group].set_yticklabels([])
+                axs[ilag*2+1,iDBN_group].set_yticks([])
+                axs[ilag*2+1,iDBN_group].set_yticklabels([])
 
         except:
             continue
     
 if savefigs:
     if moreSampSize:
-        figsavefolder = data_saved_folder+'figs_for_DBN_and_bhv_Aniposelib3d_ana_combinesessions_morevars_task/'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_Aniposelib3d_combinesessions_basicEvents/'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
         if not os.path.exists(figsavefolder):
             os.makedirs(figsavefolder)
-        plt.savefig(figsavefolder+"oneTimeLag_DAGs_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_multirows.jpg')
+        plt.savefig(figsavefolder+"threeTimeLag_DAGs_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_'+str(j_sampsize_name)+'_rows.jpg')
     else:
-        figsavefolder = data_saved_folder+'figs_for_DBN_and_bhv_Aniposelib3d_ana_combinesessions_morevars_task/'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_Aniposelib3d_combinesessions_basicEvents/'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
         if not os.path.exists(figsavefolder):
             os.makedirs(figsavefolder)
-        plt.savefig(figsavefolder+"oneTimeLag_DAGs_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_multirows.jpg')
+        plt.savefig(figsavefolder+"threeTimeLag_DAGs_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_'+j_sampsize_name+'.jpg')
             
             
             
@@ -1673,254 +1470,155 @@ nToNodes = nevents
 savefigs = 1
 
 # different session conditions (aka DBN groups)
-fig, axs = plt.subplots(2,nDBN_groups)
-fig.set_figheight(10)
-fig.set_figwidth(30)
-    
+# different time lags (t_-3, t_-2 and t_-1)
+fig, axs = plt.subplots(6,nDBN_groups)
+fig.set_figheight(45)
+fig.set_figwidth(45)
+
+time_lags = ['t_-3','t_-2','t_-1']
+fromRowIDs =[[0,1,2,3],[4,5,6,7],[8,9,10,11]]
+ntime_lags = np.shape(time_lags)[0]
+
 temp_resolu = temp_resolus[0]
 j_sampsize_name = samplingsizes_name[0]    
     
 weighted_graphs_tgt = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][basecondition]
 sig_edges_tgt = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][basecondition]
 
-sig_avg_dags_base = weighted_graphs_tgt.mean(axis = 0) * sig_edges_tgt    
+weighted_graphs_base = weighted_graphs_tgt.mean(axis = 0)
+sig_edges_base = sig_edges_tgt
+
+sig_avg_dags_base =  weighted_graphs_base * sig_edges_base
     
-for iDBN_group in np.arange(0,nDBN_groups,1):
     
-    try:
-
-        iDBN_group_typename = DBN_group_typenames[iDBN_group]        
-
-        weighted_graphs_tgt = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][iDBN_group_typename]
-        sig_edges_tgt = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][iDBN_group_typename]
-
-        sig_avg_dags = weighted_graphs_tgt.mean(axis = 0) * sig_edges_tgt - sig_avg_dags_base
-
-        # plot
-        axs[0,iDBN_group].set_title(iDBN_group_typename,fontsize=15)
-        axs[0,iDBN_group].set_xlim([-0.5,1.5])
-        axs[0,iDBN_group].set_ylim([-0.5,1.5])
-        axs[0,iDBN_group].set_xticks([])
-        axs[0,iDBN_group].set_xticklabels([])
-        axs[0,iDBN_group].set_yticks([])
-        axs[0,iDBN_group].set_yticklabels([])
-        axs[0,iDBN_group].spines['top'].set_visible(False)
-        axs[0,iDBN_group].spines['right'].set_visible(False)
-        axs[0,iDBN_group].spines['bottom'].set_visible(False)
-        axs[0,iDBN_group].spines['left'].set_visible(False)
-        # axs[0,iDBN_group].axis('equal')
-
-        for ieventnode in np.arange(0,nevents,1):
-            # plot the event nodes
-            axs[0,iDBN_group].plot(eventnode_locations[ieventnode][0],eventnode_locations[ieventnode][1],'.',markersize=60,markerfacecolor=eventnodes_color[ieventnode],markeredgecolor='none')              
-            axs[0,iDBN_group].text(eventname_locations[ieventnode][0],eventname_locations[ieventnode][1],
-                                   eventnames[ieventnode],fontsize=10)
-
-            # plot the event edges
-            for ifromNode in np.arange(0,nFromNodes,1):
-                for itoNode in np.arange(0,nToNodes,1):
-                    edge_weight_tgt = sig_avg_dags[ifromNode,itoNode]
-                    if edge_weight_tgt>0:
-                        if not ifromNode == itoNode:
-                            #axs[0,iDBN_group].plot(eventnode_locations[ifromNode],eventnode_locations[itoNode],'k-',linewidth=edge_weight_tgt*3)
-                            axs[0,iDBN_group].arrow(nodearrow_locations[ifromNode][itoNode][0],
-                                                    nodearrow_locations[ifromNode][itoNode][1],
-                                                    nodearrow_directions[ifromNode][itoNode][0],
-                                                    nodearrow_directions[ifromNode][itoNode][1],
-                                                    head_width=0.08*edge_weight_tgt,width=0.04*edge_weight_tgt)
-                        if ifromNode == itoNode:
-                            ring = mpatches.Wedge(nodearrow_locations[ifromNode][itoNode],
-                                                  .1, nodearrow_directions[ifromNode][itoNode][0],
-                                                  nodearrow_directions[ifromNode][itoNode][1], 
-                                                  0.04*edge_weight_tgt)
-                            p = PatchCollection(
-                                [ring], 
-                                facecolor='#2693de', 
-                                edgecolor='#000000'
-                            )
-                            axs[0,iDBN_group].add_collection(p)
-                            # add arrow head
-                            if ifromNode < 2:
-                                axs[0,iDBN_group].arrow(nodearrow_locations[ifromNode][itoNode][0]-0.1+0.02*edge_weight_tgt,
-                                                        nodearrow_locations[ifromNode][itoNode][1],
-                                                        0,-0.05,fc='#2693de',
-                                                        head_width=0.08*edge_weight_tgt,width=0.04*edge_weight_tgt)
-                            else:
-                                axs[0,iDBN_group].arrow(nodearrow_locations[ifromNode][itoNode][0]-0.1+0.02*edge_weight_tgt,
-                                                        nodearrow_locations[ifromNode][itoNode][1],
-                                                        0,0.02,fc='#2693de',
-                                                        head_width=0.08*edge_weight_tgt,width=0.04*edge_weight_tgt)
-
-        # heatmap for the weights
-        sig_avg_dags_df = pd.DataFrame(sig_avg_dags)
-        sig_avg_dags_df.columns = eventnames
-        sig_avg_dags_df.index = eventnames
-        vmin,vmax = 0,1
-        import matplotlib as mpl
-        norm = mpl.colors.Normalize(vmin=vmin, vmax=vmax)
-        im = axs[1,iDBN_group].pcolormesh(sig_avg_dags_df,cmap="Blues",norm=norm)
-        #
-        if iDBN_group == nDBN_groups-1:
-            cax = axs[1,iDBN_group].inset_axes([1.04, 0.2, 0.05, 0.8])
-            fig.colorbar(im, ax=axs[1,iDBN_group], cax=cax,label='edge confidence')
-
-        axs[1,iDBN_group].axis('equal')
-        axs[1,iDBN_group].set_xlabel('to Node',fontsize=14)
-        axs[1,iDBN_group].set_xticks(np.arange(0.5,4.5,1))
-        axs[1,iDBN_group].set_xticklabels(eventnames)
-        if iDBN_group == 0:
-            axs[1,iDBN_group].set_ylabel('from Node',fontsize=14)
-            axs[1,iDBN_group].set_yticks(np.arange(0.5,4.5,1))
-            axs[1,iDBN_group].set_yticklabels(eventnames)
-        else:
-            axs[1,iDBN_group].set_yticks([])
-            axs[1,iDBN_group].set_yticklabels([])
-                                     
-    except:
-        continue
+for ilag in np.arange(0,ntime_lags,1):
     
-if savefigs:
-    if moreSampSize:
-        figsavefolder = data_saved_folder+'figs_for_DBN_and_bhv_Aniposelib3d_ana_combinesessions_morevars_task/'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
-        if not os.path.exists(figsavefolder):
-            os.makedirs(figsavefolder)
-        plt.savefig(figsavefolder+"oneTimeLag_DAGs_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_'+str(j_sampsize_name)+'_rows_EdgeFifferenceFrom_'+basecondition+'AsBase.jpg')
-    else:
-        figsavefolder = data_saved_folder+'figs_for_DBN_and_bhv_Aniposelib3d_ana_combinesessions_morevars_task/'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
-        if not os.path.exists(figsavefolder):
-            os.makedirs(figsavefolder)
-        plt.savefig(figsavefolder+"oneTimeLag_DAGs_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_'+j_sampsize_name+'_EdgeFifferenceFrom_'+basecondition+'AsBase.jpg')
-            
-            
-            
-
-
-# ### plot graphs - show the edge differences, use one condition as the base; show multiple row numbers (one time bin)
-
-# In[ ]:
-
-
-# make sure these variables are the same as in the previous steps
-# temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
-temp_resolus = [1] # temporal resolution in the DBN model, eg: 0.5 means 500ms
-ntemp_reses = np.shape(temp_resolus)[0]
-#
-if moreSampSize:
-    # different data (down/re)sampling numbers
-    samplingsizes = np.arange(1100,3000,100)
-    # samplingsizes = [1100]
-    # samplingsizes = [100,500,1000,1500,2000,2500,3000]        
-    # samplingsizes = [100,500]
-    # samplingsizes_name = ['100','500','1000','1500','2000','2500','3000']
-    samplingsizes_name = list(map(str, samplingsizes))
-else:
-    samplingsizes_name = ['min_row_number','max_row_number']   
-nsamplings = np.shape(samplingsizes_name)[0]
-
-basecondition = 'coop(3s)'
-
-# make sure these variables are consistent with the train_DBN_alec.py settings
-eventnames = ["pull1","pull2","gaze1","gaze2"]
-# eventnames = ["M1pull","M2pull","M1gazeM2","M2gazeM1"]
-eventnode_locations = [[0,1],[1,1],[0,0],[1,0]]
-eventname_locations = [[-0.5,1.0],[1.2,1],[-0.6,0],[1.2,0]]
-# indicate where edge starts
-# for the self edge, it's the center of the self loop
-nodearrow_locations = [[[0.00,1.25],[0.25,1.10],[-.10,0.75],[0.15,0.65]],
-                       [[0.75,1.00],[1.00,1.25],[0.85,0.65],[1.10,0.75]],
-                       [[0.00,0.25],[0.25,0.35],[0.00,-.25],[0.25,-.10]],
-                       [[0.75,0.35],[1.00,0.25],[0.75,0.00],[1.00,-.25]]]
-# indicate where edge goes
-# for the self edge, it's the theta1 and theta2 (with fixed radius)
-nodearrow_directions = [[[ -45,-180],[0.50,0.00],[0.00,-.50],[0.50,-.50]],
-                        [[-.50,0.00],[ -45,-180],[-.50,-.50],[0.00,-.50]],
-                        [[0.00,0.50],[0.50,0.50],[ 180,  45],[0.50,0.00]],
-                        [[-.50,0.50],[0.00,0.50],[-.50,0.00],[ 180,  45]]]
-
-nevents = np.size(eventnames)
-eventnodes_color = ['b','r','y','g']
-nFromNodes = nevents
-nToNodes = nevents
+    time_lag_name = time_lags[ilag]
+    fromRowID = fromRowIDs[ilag]
     
-savefigs = 1
-
-# different session conditions (aka DBN groups)
-fig, axs = plt.subplots(nsamplings,nDBN_groups)
-fig.set_figheight(3*nsamplings)
-fig.set_figwidth(20)
-    
-temp_resolu = temp_resolus[0]    
-    
-# different time bin size
-for ii in np.arange(0,nsamplings,1):    
-
-    j_sampsize_name = samplingsizes_name[ii]   
-    
-    weighted_graphs_tgt = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][basecondition]
-    sig_edges_tgt = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][basecondition]
-    sig_avg_dags_base = weighted_graphs_tgt.mean(axis = 0) * sig_edges_tgt
-    
+       
     for iDBN_group in np.arange(0,nDBN_groups,1):
 
         try:
 
-            iDBN_group_typename = DBN_group_typenames[iDBN_group]        
+            iDBN_group_typename = DBN_group_typenames[iDBN_group]
+
 
             weighted_graphs_tgt = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][iDBN_group_typename]
             sig_edges_tgt = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][iDBN_group_typename]
 
-            sig_avg_dags = weighted_graphs_tgt.mean(axis = 0) * sig_edges_tgt - sig_avg_dags_base
+            sig_edge_either = ((sig_edges_tgt+sig_edges_base)>0)*1
+            
+            sig_avg_dags = (weighted_graphs_tgt.mean(axis = 0) - weighted_graphs_base)*sig_edge_either
+            
+            try:
+                sig_avg_dags = sig_avg_dags/(weighted_graphs_tgt.mean(axis = 0) + weighted_graphs_base )
+            except:
+                sig_avg_dags =  sig_avg_dags
+            sig_avg_dags = sig_avg_dags[fromRowID,:]
 
             # plot
+            axs[ilag*2+0,iDBN_group].set_title(iDBN_group_typename,fontsize=18)
+            axs[ilag*2+0,iDBN_group].set_xlim([-0.5,1.5])
+            axs[ilag*2+0,iDBN_group].set_ylim([-0.5,1.5])
+            axs[ilag*2+0,iDBN_group].set_xticks([])
+            axs[ilag*2+0,iDBN_group].set_xticklabels([])
+            axs[ilag*2+0,iDBN_group].set_yticks([])
+            axs[ilag*2+0,iDBN_group].set_yticklabels([])
+            axs[ilag*2+0,iDBN_group].spines['top'].set_visible(False)
+            axs[ilag*2+0,iDBN_group].spines['right'].set_visible(False)
+            axs[ilag*2+0,iDBN_group].spines['bottom'].set_visible(False)
+            axs[ilag*2+0,iDBN_group].spines['left'].set_visible(False)
+            # axs[ilag*2+0,iDBN_group].axis('equal')
+
+            for ieventnode in np.arange(0,nevents,1):
+                # plot the event nodes
+                axs[ilag*2+0,iDBN_group].plot(eventnode_locations[ieventnode][0],eventnode_locations[ieventnode][1],'.',markersize=60,markerfacecolor=eventnodes_color[ieventnode],markeredgecolor='none')              
+                axs[ilag*2+0,iDBN_group].text(eventname_locations[ieventnode][0],eventname_locations[ieventnode][1],
+                                       eventnames[ieventnode],fontsize=10)
+                
+                clmap = mpl.cm.get_cmap('bwr')
+                
+                # plot the event edges
+                for ifromNode in np.arange(0,nevents,1):
+                    for itoNode in np.arange(0,nevents,1):
+                        edge_weight_tgt = sig_avg_dags[ifromNode,itoNode]
+                        if edge_weight_tgt!=0:
+                            if not ifromNode == itoNode:
+                                #axs[ilag*2+0,iDBN_group].plot(eventnode_locations[ifromNode],eventnode_locations[itoNode],'k-',linewidth=edge_weight_tgt*3)
+                                axs[ilag*2+0,iDBN_group].arrow(nodearrow_locations[ifromNode][itoNode][0],
+                                                        nodearrow_locations[ifromNode][itoNode][1],
+                                                        nodearrow_directions[ifromNode][itoNode][0],
+                                                        nodearrow_directions[ifromNode][itoNode][1],
+                                                        head_width=0.08*abs(edge_weight_tgt),
+                                                        width=0.04*abs(edge_weight_tgt),
+                                                        color = clmap((1+edge_weight_tgt)/2))
+                            if ifromNode == itoNode:
+                                ring = mpatches.Wedge(nodearrow_locations[ifromNode][itoNode],
+                                                      .1, nodearrow_directions[ifromNode][itoNode][0],
+                                                      nodearrow_directions[ifromNode][itoNode][1], 
+                                                      0.04*abs(edge_weight_tgt))
+                                p = PatchCollection(
+                                    [ring], 
+                                    facecolor=clmap((1+edge_weight_tgt)/2), 
+                                    edgecolor=clmap((1+edge_weight_tgt)/2)
+                                )
+                                axs[ilag*2+0,iDBN_group].add_collection(p)
+                                # add arrow head
+                                if ifromNode < 2:
+                                    axs[ilag*2+0,iDBN_group].arrow(nodearrow_locations[ifromNode][itoNode][0]-0.1+0.02*edge_weight_tgt,
+                                                            nodearrow_locations[ifromNode][itoNode][1],
+                                                            0,-0.05,color=clmap((1+edge_weight_tgt)/2),
+                                                            head_width=0.08*abs(edge_weight_tgt),
+                                                            width=0.04*abs(edge_weight_tgt))
+                                else:
+                                    axs[ilag*2+0,iDBN_group].arrow(nodearrow_locations[ifromNode][itoNode][0]-0.1+0.02*edge_weight_tgt,
+                                                            nodearrow_locations[ifromNode][itoNode][1],
+                                                            0,0.02,color=clmap((1+edge_weight_tgt)/2),
+                                                            head_width=0.08*abs(edge_weight_tgt),
+                                                            width=0.04*abs(edge_weight_tgt))
+
             # heatmap for the weights
             sig_avg_dags_df = pd.DataFrame(sig_avg_dags)
             sig_avg_dags_df.columns = eventnames
             sig_avg_dags_df.index = eventnames
             vmin,vmax = -1,1
-            import matplotlib as mpl
             norm = mpl.colors.Normalize(vmin=vmin, vmax=vmax)
-            im = axs[ii,iDBN_group].pcolormesh(sig_avg_dags_df,cmap="Blues",norm=norm)
-            #
+            im = axs[ilag*2+1,iDBN_group].pcolormesh(sig_avg_dags_df,cmap="bwr",norm=norm)
+            #-
             if iDBN_group == nDBN_groups-1:
-                cax = axs[1,iDBN_group].inset_axes([1.04, 0.2, 0.05, 0.8])
-                fig.colorbar(im, ax=axs[1,iDBN_group], cax=cax,label='edge confidence')
-                
-            if iDBN_group == 0:
-                axs[ii,iDBN_group].set_ylabel('from Node',fontsize=14)
-                axs[ii,iDBN_group].set_yticks(np.arange(0.5,4.5,1))     
-                axs[ii,iDBN_group].set_yticklabels(eventnames)
-            else:
-                axs[ii,iDBN_group].set_yticks([])
-                axs[ii,iDBN_group].set_yticklabels([])
-            
+                cax = axs[ilag*2+1,iDBN_group].inset_axes([1.04, 0.2, 0.05, 0.8])
+                fig.colorbar(im, ax=axs[ilag*2+1,iDBN_group], cax=cax,label='edge confidence')
 
-            axs[ii,iDBN_group].axis('equal')
-            axs[ii,iDBN_group].set_title(iDBN_group_typename+' '+j_sampsize_name+' rows')
-            if ii == nsamplings-1:
-                axs[ii,iDBN_group].set_xlabel('to Node',fontsize=14)
-                axs[ii,iDBN_group].set_xticks(np.arange(0.5,4.5,1))
-                axs[ii,iDBN_group].set_xticklabels(eventnames,rotation=45)
+            axs[ilag*2+1,iDBN_group].axis('equal')
+            axs[ilag*2+1,iDBN_group].set_xlabel('to Node',fontsize=14)
+            axs[ilag*2+1,iDBN_group].set_xticks(np.arange(0.5,4.5,1))
+            axs[ilag*2+1,iDBN_group].set_xticklabels(eventnames)
+            if iDBN_group == 0:
+                axs[ilag*2+1,iDBN_group].set_ylabel('from Node',fontsize=14)
+                axs[ilag*2+1,iDBN_group].set_yticks(np.arange(0.5,4.5,1))
+                axs[ilag*2+1,iDBN_group].set_yticklabels(eventnames)
+                axs[ilag*2+1,iDBN_group].text(-1.5,1,time_lag_name+' time lag',rotation=90,fontsize=20)
+                axs[ilag*2+0,iDBN_group].text(-1.25,0,time_lag_name+' time lag',rotation=90,fontsize=20)
             else:
-                axs[ii,iDBN_group].set_xticklabels([])
-                axs[ii,iDBN_group].set_xticks([])
-            
-            
-            
+                axs[ilag*2+1,iDBN_group].set_yticks([])
+                axs[ilag*2+1,iDBN_group].set_yticklabels([])
 
         except:
             continue
     
+    
 if savefigs:
     if moreSampSize:
-        figsavefolder = data_saved_folder+'figs_for_DBN_and_bhv_Aniposelib3d_ana_combinesessions_morevars_task/'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_Aniposelib3d_combinesessions_basicEvents/'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
         if not os.path.exists(figsavefolder):
             os.makedirs(figsavefolder)
-        plt.savefig(figsavefolder+"oneTimeLag_DAGs_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_multirows_EdgeFifferenceFrom_'+basecondition+'AsBase.jpg')
+        plt.savefig(figsavefolder+"threeTimeLag_DAGs_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_'+str(j_sampsize_name)+'_rows_EdgeFifferenceFrom_'+basecondition+'AsBase.jpg')
     else:
-        figsavefolder = data_saved_folder+'figs_for_DBN_and_bhv_Aniposelib3d_ana_combinesessions_morevars_task/'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_Aniposelib3d_combinesessions_basicEvents/'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
         if not os.path.exists(figsavefolder):
             os.makedirs(figsavefolder)
-        plt.savefig(figsavefolder+"oneTimeLag_DAGs_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_multirows_EdgeFifferenceFrom_'+basecondition+'AsBase.jpg')
+        plt.savefig(figsavefolder+"threeTimeLag_DAGs_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_'+j_sampsize_name+'_EdgeFifferenceFrom_'+basecondition+'AsBase.jpg')
             
             
             
@@ -1929,7 +1627,37 @@ if savefigs:
 # In[ ]:
 
 
-sig_avg_dags
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
 
 # In[ ]:

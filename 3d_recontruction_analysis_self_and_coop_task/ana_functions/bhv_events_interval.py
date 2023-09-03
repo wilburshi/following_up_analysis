@@ -10,7 +10,7 @@ def bhv_events_interval(totalsess_time, session_start_time, time_point_pull1, ti
     import warnings
     import pickle
 
-    total_time = int((totalsess_time - session_start_time))
+    total_time = int((totalsess_time))
     time_point_pull1_round = time_point_pull1.reset_index(drop = True)
     time_point_pull1_round = time_point_pull1_round[time_point_pull1_round<total_time]
     time_point_pull2_round  = time_point_pull2.reset_index(drop = True)
