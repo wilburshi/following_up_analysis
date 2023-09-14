@@ -108,7 +108,7 @@ def get_significant_edges(weighted_graphs, shuffled_weighted_graphs):
             # stat,p_value = proportions_ztest(count = [np.count_nonzero(edges), np.count_nonzero(shuffled_edges)],nobs = [len(edges), len(shuffled_edges)],alternative = 'larger')
 
 
-            if (p_value) < 0.05:
+            if (p_value) < 0.001:
                 sig_edges[i,j] = 1
             
     return sig_edges
