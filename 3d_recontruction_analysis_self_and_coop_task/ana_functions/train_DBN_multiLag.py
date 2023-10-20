@@ -113,6 +113,8 @@ def get_significant_edges(weighted_graphs, shuffled_weighted_graphs):
             
     return sig_edges
 
+
+
 ########################################
 def threshold_edges(weighted_graphs, threshold=0.5):
 
@@ -133,6 +135,32 @@ def threshold_edges(weighted_graphs, threshold=0.5):
     mean_graph = weighted_graphs.mean(axis = 0)
     
     return mean_graph >= threshold
+
+
+
+########################################
+def Modulation_Index(weighted_graphs_1, weighted_graphs_2, sig_edges_1, sig_edges_2, nrepairs = 1000):
+
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+    import scipy
+    import string
+    import warnings
+    import pickle
+    
+    nbtstp1 = np.shape(weighted_graphs_1)[0]
+    nbtstp2 = np.shape(weighted_graphs_2)[0]
+
+    sig_edges_delta = ((sig_edges_1+sig_edges_2)>0)*1
+
+    graph1_ids = np.random.randint(np.zeros((1,nrepairs))[0],nbtstp1)
+    graph2_ids = np.random.randint(np.zeros((1,nrepairs))[0],nbtstp2)
+
+    MI_delta = (weighted_graphs_2[graph2_ids,:,:]-weighted_graphs_1[graph1_ids,:,:])/(weighted_graphs_2[graph2_ids,:,:]+weighted_graphs_1[graph1_ids,:,:]+0.002)
+
+    return MI_delta, sig_edges_delta
+
 
 
 ########################################

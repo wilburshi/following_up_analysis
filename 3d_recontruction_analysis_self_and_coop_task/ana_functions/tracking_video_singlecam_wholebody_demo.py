@@ -31,7 +31,7 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
 
     # Settings
     # video file path for saving
-    video_file = "/gpfs/gibbs/pi/jadi/VideoTracker_SocialInter/3d_recontruction_analysis_self_and_coop_task_data_saved/example_videos_singlecam_wholebody_demo/"+cameraID+"/"+date_tgt+"_"+animal1_filename+animal2_filename+"_singlecam_wholebody_tracking_demo.mp4"
+    video_file = "/gpfs/gibbs/pi/jadi/VideoTracker_SocialInter/3d_recontruction_analysis_self_and_coop_task_data_saved/example_videos_singlecam_wholebody_demo/"+cameraID+"/"+animal1_filename+"_"+animal2_filename+"/"+date_tgt+"_"+animal1_filename+animal2_filename+"_singlecam_wholebody_tracking_demo.mp4"
     clear_frames = True     # Should it clear the figure between each frame?
     fps = 30 
 
