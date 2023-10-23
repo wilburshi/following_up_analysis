@@ -170,7 +170,7 @@ else:
 
 
 # dodson scorch
-if 1:
+if 0:
     if not do_bestsession:
         dates_list = [
                       "20220909","20220912","20220915","20220920","20220922","20220923","20221010",
@@ -266,7 +266,7 @@ if 0:
     animal2_filename = "Sparkle"
     
 # ginger kanga
-if 0:
+if 1:
     if not do_bestsession:
         dates_list = [
                       "20230209","20230213","20230214","20230216","20230222","20230223","20230228","20230302",

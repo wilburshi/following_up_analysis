@@ -170,7 +170,7 @@ else:
 
 
 # dodson scorch
-if 1:
+if 0:
     if not do_bestsession:
         dates_list = [
                       "20220909","20220912","20220915","20220920","20220922","20220923","20221010",
@@ -304,7 +304,7 @@ if 0:
 
     
 # dannon kanga
-if 0:
+if 1:
     if not do_bestsession:
         dates_list = [
                       "20230718","20230720","20230914","20230829","20230907","20230915",
