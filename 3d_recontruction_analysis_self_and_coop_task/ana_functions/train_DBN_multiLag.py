@@ -157,7 +157,7 @@ def Modulation_Index(weighted_graphs_1, weighted_graphs_2, sig_edges_1, sig_edge
     graph1_ids = np.random.randint(np.zeros((1,nrepairs))[0],nbtstp1)
     graph2_ids = np.random.randint(np.zeros((1,nrepairs))[0],nbtstp2)
 
-    MI_delta = (weighted_graphs_2[graph2_ids,:,:]-weighted_graphs_1[graph1_ids,:,:])/(weighted_graphs_2[graph2_ids,:,:]+weighted_graphs_1[graph1_ids,:,:]+0.002)
+    MI_delta = (weighted_graphs_2[graph2_ids,:,:]-weighted_graphs_1[graph1_ids,:,:])/(abs(weighted_graphs_2[graph2_ids,:,:])+abs(weighted_graphs_1[graph1_ids,:,:])+0.002)
 
     return MI_delta, sig_edges_delta
 
