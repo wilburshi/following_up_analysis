@@ -1,0 +1,8 @@
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) StdEnv
+  File "3LagDBN_and_neuron_bhv_singlecam_wholebodylabels_allsessions_basicEvents.py", line 1769
+    analyzed_dates = ["20231107_MC","20231107_SR","20231129_MC","20231129_SR","20231204_MC","20231204_SR"]
+    ^
+IndentationError: expected an indented block

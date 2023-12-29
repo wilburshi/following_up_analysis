@@ -5,7 +5,7 @@
 # ### In this script, DBN is run with 1s time bin, 3 time lag 
 # ### In this script, the animal tracking is done with only one camera - camera 2 (middle) 
 
-# In[1]:
+# In[ ]:
 
 
 import pandas as pd
@@ -15,6 +15,8 @@ import matplotlib as mpl
 import seaborn
 import scipy
 import scipy.stats as st
+import sklearn
+from sklearn.neighbors import KernelDensity
 import string
 import warnings
 import pickle
@@ -34,7 +36,7 @@ import networkx as nx
 
 # ### function - get body part location for each pair of cameras
 
-# In[2]:
+# In[ ]:
 
 
 from ana_functions.body_part_locs_eachpair import body_part_locs_eachpair
@@ -43,7 +45,7 @@ from ana_functions.body_part_locs_singlecam import body_part_locs_singlecam
 
 # ### function - align the two cameras
 
-# In[3]:
+# In[ ]:
 
 
 from ana_functions.camera_align import camera_align       
@@ -51,7 +53,7 @@ from ana_functions.camera_align import camera_align
 
 # ### function - merge the two pairs of cameras
 
-# In[4]:
+# In[ ]:
 
 
 from ana_functions.camera_merge import camera_merge
@@ -59,7 +61,7 @@ from ana_functions.camera_merge import camera_merge
 
 # ### function - find social gaze time point
 
-# In[5]:
+# In[ ]:
 
 
 from ana_functions.find_socialgaze_timepoint import find_socialgaze_timepoint
@@ -69,7 +71,7 @@ from ana_functions.find_socialgaze_timepoint_singlecam_wholebody import find_soc
 
 # ### function - define time point of behavioral events
 
-# In[6]:
+# In[ ]:
 
 
 from ana_functions.bhv_events_timepoint import bhv_events_timepoint
@@ -78,7 +80,7 @@ from ana_functions.bhv_events_timepoint_singlecam import bhv_events_timepoint_si
 
 # ### function - plot behavioral events
 
-# In[7]:
+# In[ ]:
 
 
 from ana_functions.plot_bhv_events import plot_bhv_events
@@ -88,17 +90,9 @@ import matplotlib.patches as mpatches
 from matplotlib.collections import PatchCollection
 
 
-# ### function - plot inter-pull interval
-
-# In[8]:
-
-
-from ana_functions.plot_interpull_interval import plot_interpull_interval
-
-
 # ### function - make demo videos with skeleton and inportant vectors
 
-# In[9]:
+# In[ ]:
 
 
 from ana_functions.tracking_video_singlecam_demo import tracking_video_singlecam_demo
@@ -107,15 +101,16 @@ from ana_functions.tracking_video_singlecam_wholebody_demo import tracking_video
 
 # ### function - interval between all behavioral events
 
-# In[10]:
+# In[ ]:
 
 
 from ana_functions.bhv_events_interval import bhv_events_interval
+from ana_functions.bhv_events_interval import bhv_events_interval_certainEdges
 
 
 # ### function - train the dynamic bayesian network - multi time lag (3 lags)
 
-# In[11]:
+# In[ ]:
 
 
 from ana_functions.train_DBN_multiLag import train_DBN_multiLag
@@ -134,7 +129,7 @@ from ana_functions.AicScore import AicScore
 
 # ### prepare the basic behavioral data (especially the time stamps for each bhv events)
 
-# In[12]:
+# In[ ]:
 
 
 # instead of using gaze angle threshold, use the target rectagon to deside gaze info
@@ -307,23 +302,23 @@ if 1:
         dates_list = [
                       "20230718","20230720","20230914","20230829","20230907","20230915",
                       "20230918","20230926","20230928","20231002","20231010","20231011",
-                      "20231013",
+                      "20231013","20231020","20231024","20231025",
                    ]
         session_start_times = [ 
                                  0, 0, 0, 0, 0, 0, 
                                  0, 0, 0, 0, 0, 0,
-                                 0,
+                                 0, 0, 0, 0, 
                               ] # in second 
     elif do_bestsession:   
         dates_list = [
                       "20230718","20230720","20230914","20230829","20230907","20230915",
                       "20230918","20230926","20230928","20231002","20231010","20231011",
-                      "20231013", 
+                      "20231013","20231020","20231024","20231025",
                    ]
         session_start_times = [ 
                                  0, 0, 0, 0, 0, 0, 
                                  0, 0, 0, 0, 0, 0,
-                                 0,
+                                 0, 0, 0, 0, 
                               ] # in second 
     
     animal1_fixedorder = ['dannon']
@@ -333,8 +328,8 @@ if 1:
     animal2_filename = "Kanga"
     
 #    
-#dates_list = ["20221128"]
-#session_start_times = [1.00] # in second
+#dates_list = ["20231010"]
+#session_start_times = [0.00] # in second
 ndates = np.shape(dates_list)[0]
 
 session_start_frames = session_start_times * fps # fps is 30Hz
@@ -389,6 +384,7 @@ pull1_num_all_dates = np.zeros((ndates,1))
 pull2_num_all_dates = np.zeros((ndates,1))
 
 bhv_intv_all_dates = dict.fromkeys(dates_list, [])
+pull_edges_intv_all_dates = dict.fromkeys(dates_list, [])
 
 
 # where to save the summarizing data
@@ -398,7 +394,7 @@ data_saved_folder = '/gpfs/gibbs/pi/jadi/VideoTracker_SocialInter/3d_recontructi
     
 
 
-# In[13]:
+# In[ ]:
 
 
 # basic behavior analysis (define time stamps for each bhv events, etc)
@@ -435,6 +431,8 @@ try:
         trialnum_all_dates = pickle.load(f)
     with open(data_saved_subfolder+'/bhv_intv_all_dates_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
         bhv_intv_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/pull_edges_intv_all_dates_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+        pull_edges_intv_all_dates = pickle.load(f)
 
     print('all data from all dates are loaded')
 
@@ -592,7 +590,7 @@ except:
                 plot_bhv_events(date_tgt,animal2, animal1, session_start_time, 600, time_point_pull2, time_point_pull1, oneway_gaze2, oneway_gaze1, mutual_gaze2, mutual_gaze1)
         #
         # save behavioral events plot
-        if 1:
+        if 0:
             current_dir = data_saved_folder+'/bhv_events_singlecam_wholebody/'+animal1_fixedorder[0]+animal2_fixedorder[0]
             add_date_dir = os.path.join(current_dir,cameraID+'/'+date_tgt)
             if not os.path.exists(add_date_dir):
@@ -607,14 +605,30 @@ except:
 
         # analyze the events interval, especially for the pull to other and other to pull interval
         # could be used for define time bin for DBN
-        if 1:
+        if np.isin(animal1,animal1_fixedorder):
             _,_,_,pullTOother_itv, otherTOpull_itv = bhv_events_interval(totalsess_time, session_start_time, time_point_pull1, time_point_pull2, 
                                                                          oneway_gaze1, oneway_gaze2, mutual_gaze1, mutual_gaze2)
             #
             pull_other_pool_itv = np.concatenate((pullTOother_itv,otherTOpull_itv))
             bhv_intv_all_dates[date_tgt] = {'pull_to_other':pullTOother_itv,'other_to_pull':otherTOpull_itv,
                             'pull_other_pooled': pull_other_pool_itv}
-        
+            
+            all_pull_edges_intervals = bhv_events_interval_certainEdges(totalsess_time, session_start_time, time_point_pull1, time_point_pull2, 
+                                                                        oneway_gaze1, oneway_gaze2, mutual_gaze1, mutual_gaze2)
+            pull_edges_intv_all_dates[date_tgt] = all_pull_edges_intervals
+        else:
+            _,_,_,pullTOother_itv, otherTOpull_itv = bhv_events_interval(totalsess_time, session_start_time, time_point_pull2, time_point_pull1, 
+                                                                         oneway_gaze2, oneway_gaze1, mutual_gaze2, mutual_gaze1)
+            #
+            pull_other_pool_itv = np.concatenate((pullTOother_itv,otherTOpull_itv))
+            bhv_intv_all_dates[date_tgt] = {'pull_to_other':pullTOother_itv,'other_to_pull':otherTOpull_itv,
+                            'pull_other_pooled': pull_other_pool_itv}
+            
+            all_pull_edges_intervals = bhv_events_interval_certainEdges(totalsess_time, session_start_time, time_point_pull2, time_point_pull1, 
+                                                                        oneway_gaze2, oneway_gaze1, mutual_gaze2, mutual_gaze1)
+            pull_edges_intv_all_dates[date_tgt] = all_pull_edges_intervals
+   
+
         # plot the tracking demo video
         if 0: 
             tracking_video_singlecam_wholebody_demo(bodyparts_locs_camI,output_look_ornot,output_allvectors,output_allangles,
@@ -659,6 +673,10 @@ except:
             pickle.dump(trialnum_all_dates, f)
         with open(data_saved_subfolder+'/bhv_intv_all_dates_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
             pickle.dump(bhv_intv_all_dates, f)
+        with open(data_saved_subfolder+'/pull_edges_intv_all_dates_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
+            pickle.dump(pull_edges_intv_all_dates, f)
+    
+    
     
 
 
@@ -677,7 +695,7 @@ coopthres_forsort[coopthres_forsort==0] = 100 # get the cooperation threshold fo
 # ### plot behavioral events interval to get a sense about time bin
 # #### only focus on pull_to_other_bhv_interval and other_bhv_to_pull_interval
 
-# In[15]:
+# In[ ]:
 
 
 fig, ax1 = plt.subplots(figsize=(10, 5))
@@ -685,6 +703,13 @@ fig, ax1 = plt.subplots(figsize=(10, 5))
 # sort the data based on task type and dates
 sorting_df = pd.DataFrame({'dates': dates_list, 'coopthres': coopthres_forsort.ravel()}, columns=['dates', 'coopthres'])
 sorting_df = sorting_df.sort_values(by=['coopthres','dates'], ascending = [False, True])
+
+#
+#tasktypes = ['self','coop(3s)','coop(2s)','coop(1.5s)','coop(1s)','no-vision']
+tasktypes = ['self','coop(1s)','no-vision']
+#
+ind=(sorting_df['coopthres']==100)|(sorting_df['coopthres']==1)|(sorting_df['coopthres']==-1)
+sorting_df = sorting_df[ind]
 dates_list_sorted = np.array(dates_list)[sorting_df.index]
 ndates_sorted = np.shape(dates_list_sorted)[0]
 
@@ -694,8 +719,8 @@ pull_other_intv_ii = []
 for ii in np.arange(0,ndates_sorted,1):
     pull_other_intv_ii = pd.Series(bhv_intv_all_dates[dates_list_sorted[ii]]['pull_other_pooled'])
     # remove the interval that is too large
-    pull_other_intv_ii[pull_other_intv_ii>(np.nanmean(pull_other_intv_ii)+2*np.nanstd(pull_other_intv_ii))]= np.nan    
-    # pull_other_intv_ii[pull_other_intv_ii>10]= np.nan
+    # pull_other_intv_ii[pull_other_intv_ii>(np.nanmean(pull_other_intv_ii)+2*np.nanstd(pull_other_intv_ii))]= np.nan    
+    pull_other_intv_ii[pull_other_intv_ii>25]= np.nan
     pull_other_intv_forplots[ii] = pull_other_intv_ii
     pull_other_intv_mean[ii] = np.nanmean(pull_other_intv_ii)
     
@@ -704,10 +729,15 @@ for ii in np.arange(0,ndates_sorted,1):
 pull_other_intv_forplots = pd.DataFrame(pull_other_intv_forplots)
 
 #
+pull_other_intv_forplots_df = pd.DataFrame(pull_other_intv_forplots)
+pull_other_intv_forplots_df.columns = list(dates_list_sorted)
+
+#
 # plot
-pull_other_intv_forplots.plot(kind = 'box',ax=ax1, positions=np.arange(0,ndates_sorted,1))
+# pull_other_intv_forplots.plot(kind = 'box',ax=ax1, positions=np.arange(0,ndates_sorted,1))
+seaborn.violinplot(ax=ax1,data=pull_other_intv_forplots_df,color='skyblue')
 # plt.boxplot(pull_other_intv_forplots)
-plt.plot(np.arange(0,ndates_sorted,1),pull_other_intv_mean,'r*',markersize=10)
+# plt.plot(np.arange(0,ndates_sorted,1),pull_other_intv_mean,'r*',markersize=10)
 #
 ax1.set_ylabel("bhv event interval(around pulls)",fontsize=13)
 ax1.set_ylim([-2,16])
@@ -715,8 +745,6 @@ ax1.set_ylim([-2,16])
 plt.xticks(np.arange(0,ndates_sorted,1),dates_list_sorted, rotation=90,fontsize=10)
 plt.yticks(fontsize=10)
 #
-tasktypes = ['self','coop(3s)','coop(2s)','coop(1.5s)','coop(1s)','no-vision']
-# tasktypes = ['self','coop(1s)','no-vision']
 taskswitches = np.where(np.array(sorting_df['coopthres'])[1:]-np.array(sorting_df['coopthres'])[:-1]!=0)[0]+0.5
 for itaskswitch in np.arange(0,np.shape(taskswitches)[0],1):
     taskswitch = taskswitches[itaskswitch]
@@ -725,7 +753,7 @@ taskswitches = np.concatenate(([0],taskswitches))
 for itaskswitch in np.arange(0,np.shape(taskswitches)[0],1):
     taskswitch = taskswitches[itaskswitch]
     ax1.text(taskswitch+0.25,-1,tasktypes[itaskswitch],fontsize=10)
-ax1.text(taskswitch-5,15,'mean Inteval = '+str(np.nanmean(pull_other_intv_forplots)),fontsize=10)
+ax1.text(taskswitch-5,15,'mean='+"{:.3f}".format(np.nanmean(pull_other_intv_forplots)),fontsize=10)
 
 print(pull_other_intv_mean)
 print(np.nanmean(pull_other_intv_forplots))
@@ -735,12 +763,314 @@ if savefigs:
     figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
     if not os.path.exists(figsavefolder):
         os.makedirs(figsavefolder)
-    plt.savefig(figsavefolder+"bhvInterval_hist_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'.jpg')
+    plt.savefig(figsavefolder+"bhvInterval_hist_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pdf')
+
+
+# #### only focus on pull_to_other_bhv_interval and other_bhv_to_pull_interval; pool sessions within a condition
+
+# In[ ]:
+
+
+fig, ax1 = plt.subplots(figsize=(5, 5))
+
+#
+# sort the data based on task type and dates
+sorting_df = pd.DataFrame({'dates': dates_list, 'coopthres': coopthres_forsort.ravel()}, columns=['dates', 'coopthres'])
+sorting_df = sorting_df.sort_values(by=['coopthres','dates'], ascending = [False, True])
+
+#
+#tasktypes = ['self','coop(3s)','coop(2s)','coop(1.5s)','coop(1s)','no-vision']
+tasktypes = ['self','coop(1s)','no-vision']
+#
+ind=(sorting_df['coopthres']==100)|(sorting_df['coopthres']==1)|(sorting_df['coopthres']==-1)
+sorting_df = sorting_df[ind]
+dates_list_sorted = np.array(dates_list)[sorting_df.index]
+ndates_sorted = np.shape(dates_list_sorted)[0]
+
+pull_other_intv_forplots = {}
+pull_other_intv_mean = np.zeros((1,ndates_sorted))[0]
+pull_other_intv_ii = []
+for ii in np.arange(0,ndates_sorted,1):
+    pull_other_intv_ii = pd.Series(bhv_intv_all_dates[dates_list_sorted[ii]]['pull_other_pooled'])
+    # remove the interval that is too large
+    # pull_other_intv_ii[pull_other_intv_ii>(np.nanmean(pull_other_intv_ii)+2*np.nanstd(pull_other_intv_ii))]= np.nan    
+    pull_other_intv_ii[pull_other_intv_ii>25]= np.nan
+    pull_other_intv_forplots[ii] = pull_other_intv_ii
+    pull_other_intv_mean[ii] = np.nanmean(pull_other_intv_ii)
+    
+#
+pull_other_intv_forplots = pd.DataFrame(pull_other_intv_forplots)
+pull_other_intv_forplots.columns = dates_list_sorted 
+
+pull_other_intv_forplots = [
+    np.array(pull_other_intv_forplots[list(sorting_df[sorting_df['coopthres']==100]['dates'])].stack().reset_index(drop=True)),
+    np.array(pull_other_intv_forplots[list(sorting_df[sorting_df['coopthres']==1]['dates'])].stack().reset_index(drop=True)),
+    np.array(pull_other_intv_forplots[list(sorting_df[sorting_df['coopthres']==-1]['dates'])].stack().reset_index(drop=True))
+]
+#
+pull_other_intv_forplots_df = pd.DataFrame(pull_other_intv_forplots).T
+pull_other_intv_forplots_df.columns = tasktypes
+
+# plt.boxplot(pull_other_intv_forplots,whis=1.5, meanline=True)
+seaborn.violinplot(ax=ax1,data=pull_other_intv_forplots_df)
+
+plt.xticks(np.arange(0, len(tasktypes), 1), tasktypes, fontsize = 14);
+ax1.set_ylim([-2,20])
+ax1.set_ylabel("bhv event interval(around pulls)",fontsize=14)
+ax1.set_title("animal pair: "+animal1_fixedorder[0]+' '+animal2_fixedorder[0],fontsize=15)
+
+savefigs = 1
+if savefigs:
+    figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
+    if not os.path.exists(figsavefolder):
+        os.makedirs(figsavefolder)
+    plt.savefig(figsavefolder+"bhvInterval_hist_combinedsessions_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pdf')
+
+
+# #### focus on different pull edges intervals
+# #### seperate individual animals
+
+# In[ ]:
+
+
+#
+# sort the data based on task type and dates
+sorting_df = pd.DataFrame({'dates': dates_list, 'coopthres': coopthres_forsort.ravel()}, columns=['dates', 'coopthres'])
+sorting_df = sorting_df.sort_values(by=['coopthres','dates'], ascending = [False, True])
+
+#
+# tasktypes = ['self','coop(3s)','coop(2s)','coop(1.5s)','coop(1s)','no-vision']
+tasktypes = ['self','coop(1s)','no-vision']
+#
+ind=(sorting_df['coopthres']==100)|(sorting_df['coopthres']==1)|(sorting_df['coopthres']==-1)
+sorting_df = sorting_df[ind]
+dates_list_sorted = np.array(dates_list)[sorting_df.index]
+ndates_sorted = np.shape(dates_list_sorted)[0]
+    
+#
+plotanimals = [animal1_fixedorder[0],animal2_fixedorder[0]]
+nanimals = np.shape(plotanimals)[0]
+#
+plottypes = [['pull_to_pull_interval','pull_to_pull_interval'],
+             ['pull2_to_pull1_interval','pull1_to_pull2_interval'],           
+             ['pull2_to_gaze1_interval','pull1_to_gaze2_interval'],
+             ['gaze2_to_pull1_interval','gaze1_to_pull2_interval'],
+             ['gaze1_to_pull1_interval','gaze2_to_pull2_interval'],
+             ['pull1_to_gaze1_interval','pull2_to_gaze2_interval'],
+           ]
+nplottypes = np.shape(plottypes)[0]
+
+#
+fig, axs = plt.subplots(nplottypes,nanimals)
+fig.set_figheight(nplottypes*5)
+fig.set_figwidth(nanimals*10)
+
+
+for ianimal in np.arange(0,nanimals,1):
+    plotanimal = plotanimals[ianimal]
+    
+    for iplottype in np.arange(0,nplottypes,1):
+        plottype = plottypes[iplottype][ianimal]
+    
+        pull_other_intv_forplots = {}
+        pull_other_intv_mean = np.zeros((1,ndates_sorted))[0]
+        pull_other_intv_ii = []
+        for ii in np.arange(0,ndates_sorted,1):
+            pull_other_intv_ii = pd.Series(pull_edges_intv_all_dates[dates_list_sorted[ii]][plottype])
+            # remove the interval that is too large
+            # pull_other_intv_ii[pull_other_intv_ii>(np.nanmean(pull_other_intv_ii)+2*np.nanstd(pull_other_intv_ii))]= np.nan    
+            pull_other_intv_ii[pull_other_intv_ii>25]= np.nan
+            pull_other_intv_forplots[ii] = pull_other_intv_ii
+            pull_other_intv_mean[ii] = np.nanmean(pull_other_intv_ii)
+
+
+        #
+        pull_other_intv_forplots = pd.DataFrame(pull_other_intv_forplots)
+        #
+        pull_other_intv_forplots_df = pd.DataFrame(pull_other_intv_forplots)
+        pull_other_intv_forplots_df.columns = list(dates_list_sorted)
+
+        #
+        # plot
+        # pull_other_intv_forplots.plot(kind = 'box',ax=axs[iplottype,ianimal], positions=np.arange(0,ndates_sorted,1))
+        seaborn.violinplot(ax=axs[iplottype,ianimal],data=pull_other_intv_forplots_df,color='skyblue')
+        # plt.boxplot(pull_other_intv_forplots)
+        #axs[iplottype,ianimal].plot(np.arange(0,ndates_sorted,1),pull_other_intv_mean,'r*',markersize=10)
+        #
+        axs[iplottype,ianimal].set_ylabel(plottype,fontsize=13)
+        axs[iplottype,ianimal].set_ylim([-2,25])
+        #
+        axs[iplottype,ianimal].set_xticks(np.arange(0,ndates_sorted,1))
+        if iplottype == nplottypes-1:
+            axs[iplottype,ianimal].set_xticklabels(dates_list_sorted, rotation=45,fontsize=10)
+        else:
+            axs[iplottype,ianimal].set_xticklabels('')
+        axs[iplottype,ianimal].set_yticks(np.arange(-2,24,2))
+        axs[iplottype,ianimal].set_title('to animal:'+plotanimal)
+        #
+        taskswitches = np.where(np.array(sorting_df['coopthres'])[1:]-np.array(sorting_df['coopthres'])[:-1]!=0)[0]+0.5
+        for itaskswitch in np.arange(0,np.shape(taskswitches)[0],1):
+            taskswitch = taskswitches[itaskswitch]
+            axs[iplottype,ianimal].plot([taskswitch,taskswitch],[-2,25],'k--')
+        taskswitches = np.concatenate(([0],taskswitches))
+        for itaskswitch in np.arange(0,np.shape(taskswitches)[0],1):
+            taskswitch = taskswitches[itaskswitch]
+            axs[iplottype,ianimal].text(taskswitch+0.25,-1,tasktypes[itaskswitch],fontsize=10)
+        axs[iplottype,ianimal].text(taskswitch-5,23,'mean='+"{:.3f}".format(np.nanmean(pull_other_intv_forplots)),fontsize=10)
+
+        #print(pull_other_intv_mean)
+        #print(np.nanmean(pull_other_intv_forplots))
+
+savefigs = 1
+if savefigs:
+    figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
+    if not os.path.exists(figsavefolder):
+        os.makedirs(figsavefolder)
+    plt.savefig(figsavefolder+"Pull_Edge_Interval_hist_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pdf')
+
+
+# #### focus on different pull edges intervals
+# #### seperate individual animals； pool sessions within a task type
+
+# In[ ]:
+
+
+#
+# sort the data based on task type and dates
+sorting_df = pd.DataFrame({'dates': dates_list, 'coopthres': coopthres_forsort.ravel()}, columns=['dates', 'coopthres'])
+sorting_df = sorting_df.sort_values(by=['coopthres','dates'], ascending = [False, True])
+
+#
+# tasktypes = ['self','coop(3s)','coop(2s)','coop(1.5s)','coop(1s)','no-vision']
+tasktypes = ['self','coop(1s)','no-vision']
+#
+ind=(sorting_df['coopthres']==100)|(sorting_df['coopthres']==1)|(sorting_df['coopthres']==-1)
+sorting_df = sorting_df[ind]
+dates_list_sorted = np.array(dates_list)[sorting_df.index]
+ndates_sorted = np.shape(dates_list_sorted)[0]
+    
+#
+plotanimals = [animal1_fixedorder[0],animal2_fixedorder[0]]
+nanimals = np.shape(plotanimals)[0]
+#
+plottypes = [['pull_to_pull_interval','pull_to_pull_interval'],
+             ['pull2_to_pull1_interval','pull1_to_pull2_interval'],           
+             ['pull2_to_gaze1_interval','pull1_to_gaze2_interval'],
+             ['gaze2_to_pull1_interval','gaze1_to_pull2_interval'],
+             ['gaze1_to_pull1_interval','gaze2_to_pull2_interval'],
+             ['pull1_to_gaze1_interval','pull2_to_gaze2_interval'],
+           ]
+nplottypes = np.shape(plottypes)[0]
+
+#
+fig, axs = plt.subplots(nplottypes,nanimals)
+fig.set_figheight(nplottypes*5)
+fig.set_figwidth(nanimals*5)
+
+
+for ianimal in np.arange(0,nanimals,1):
+    plotanimal = plotanimals[ianimal]
+    
+    for iplottype in np.arange(0,nplottypes,1):
+        plottype = plottypes[iplottype][ianimal]
+    
+        pull_other_intv_forplots = {}
+        pull_other_intv_mean = np.zeros((1,ndates_sorted))[0]
+        pull_other_intv_ii = []
+        for ii in np.arange(0,ndates_sorted,1):
+            pull_other_intv_ii = pd.Series(pull_edges_intv_all_dates[dates_list_sorted[ii]][plottype])
+            # remove the interval that is too large
+            # pull_other_intv_ii[pull_other_intv_ii>(np.nanmean(pull_other_intv_ii)+2*np.nanstd(pull_other_intv_ii))]= np.nan    
+            pull_other_intv_ii[pull_other_intv_ii>25]= np.nan
+            pull_other_intv_forplots[ii] = pull_other_intv_ii
+            pull_other_intv_mean[ii] = np.nanmean(pull_other_intv_ii)
+
+        #
+        pull_other_intv_forplots = pd.DataFrame(pull_other_intv_forplots)
+        pull_other_intv_forplots.columns = dates_list_sorted 
+
+        pull_other_intv_forplots = [
+            np.array(pull_other_intv_forplots[list(sorting_df[sorting_df['coopthres']==100]['dates'])].stack().reset_index(drop=True)),
+            np.array(pull_other_intv_forplots[list(sorting_df[sorting_df['coopthres']==1]['dates'])].stack().reset_index(drop=True)),
+            np.array(pull_other_intv_forplots[list(sorting_df[sorting_df['coopthres']==-1]['dates'])].stack().reset_index(drop=True))
+        ]
+
+        #
+        pull_other_intv_forplots_df = pd.DataFrame(pull_other_intv_forplots).T
+        pull_other_intv_forplots_df.columns = tasktypes
+
+        #
+        if plottype == 'pull_to_pull_interval':
+            pull_other_intv_base_df = pd.DataFrame.copy(pull_other_intv_forplots_df)
+            pull_other_intv_base_df['interval_type']='cross animal pulls'
+        
+        pull_other_intv_forplots_df['interval_type']='y axis dependency'
+        df_long=pd.concat([pull_other_intv_base_df,pull_other_intv_forplots_df])
+        df_long2 = df_long.melt(id_vars=['interval_type'], value_vars=['self', 'coop(1s)', 'no-vision'],var_name='condition', value_name='value')
+                        
+        # axs[iplottype,ianimal].boxplot(pull_other_intv_forplots,whis=1.5)
+        # seaborn.violinplot(ax=axs[iplottype,ianimal],data=pull_other_intv_forplots_df)
+        seaborn.violinplot(ax=axs[iplottype,ianimal],data=df_long2,x='condition',y='value',hue='interval_type',split=True,gap=5)
+
+        axs[iplottype,ianimal].set_xticks(np.arange(0, len(tasktypes), 1))
+        if iplottype == nplottypes-1:
+            axs[iplottype,ianimal].set_xticklabels(tasktypes, fontsize = 14)
+        else:
+            axs[iplottype,ianimal].set_xticklabels('')
+        ax=axs[iplottype,ianimal].set_ylim([-2,25])
+        ax=axs[iplottype,ianimal].set_ylabel(plottype,fontsize=13)
+        ax=axs[iplottype,ianimal].set_title('to animal:'+plotanimal,fontsize=15)
+
+
+savefigs = 1
+if savefigs:
+    figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
+    if not os.path.exists(figsavefolder):
+        
+        os.makedirs(figsavefolder)
+    plt.savefig(figsavefolder+"Pull_Edge_Interval_hist_combinedsessions_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pdf')
+
+
+# ### plot some other basis behavioral measures
+# #### social gaze number
+
+# In[ ]:
+
+
+gaze_numbers = (owgaze1_num_all_dates+owgaze2_num_all_dates+mtgaze1_num_all_dates+mtgaze2_num_all_dates)/30
+gaze_pull_ratios = (owgaze1_num_all_dates+owgaze2_num_all_dates+mtgaze1_num_all_dates+mtgaze2_num_all_dates)/(pull1_num_all_dates+pull2_num_all_dates)
+
+fig, ax1 = plt.subplots(figsize=(5, 5))
+
+# grouptypes = ['self reward','3s threshold','2s threshold','1.5s threshold','1s threshold','novision']
+grouptypes = ['self reward','cooperative','no-vision']
+
+gaze_numbers_groups = [np.transpose(gaze_numbers[np.transpose(coopthres_forsort==100)[0]])[0],
+                      # np.transpose(gaze_numbers[np.transpose(coopthres_forsort==3)[0]])[0],
+                      # np.transpose(gaze_numbers[np.transpose(coopthres_forsort==2)[0]])[0],
+                      # np.transpose(gaze_numbers[np.transpose(coopthres_forsort==1.5)[0]])[0],
+                       np.transpose(gaze_numbers[np.transpose(coopthres_forsort==1)[0]])[0],
+                       np.transpose(gaze_numbers[np.transpose(coopthres_forsort==-1)[0]])[0]]
+
+gaze_numbers_plot = plt.boxplot(gaze_numbers_groups,whis=1.5, meanline=True)
+# gaze_numbers_plot = seaborn.violinplot(gaze_numbers_groups)
+# seaborn.swarmplot(gaze_numbers_groups)
+
+plt.xticks(np.arange(0+1, len(grouptypes)+1, 1), grouptypes, fontsize = 14);
+ax1.set_ylim([240/30,3000/30])
+ax1.set_ylabel("average social gaze time (s)",fontsize=14)
+
+savefigs = 1
+if savefigs:
+    figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
+    if not os.path.exists(figsavefolder):
+        os.makedirs(figsavefolder)
+    plt.savefig(figsavefolder+"averaged_gazenumbers_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pdf')
 
 
 # ### prepare the input data for DBN
 
-# In[16]:
+# In[ ]:
 
 
 # define DBN related summarizing variables
@@ -749,7 +1079,7 @@ DBN_group_typeIDs  =  [1,3,3,  3,3,5]
 DBN_group_coopthres = [0,3,2,1.5,1,0]
 nDBN_groups = np.shape(DBN_group_typenames)[0]
 
-prepare_input_data = 1
+prepare_input_data = 0
 
 DBN_input_data_alltypes = dict.fromkeys(DBN_group_typenames, [])
 
@@ -909,7 +1239,7 @@ if prepare_input_data:
 
 # #### a test run
 
-# In[17]:
+# In[ ]:
 
 
 # run DBN on the large table with merged sessions
@@ -1089,7 +1419,7 @@ if 0:
 
 # #### run on the entire population
 
-# In[18]:
+# In[ ]:
 
 
 # run DBN on the large table with merged sessions
@@ -1320,7 +1650,7 @@ except:
 
 # ### plot graphs - show the edge with arrows; show the best time bin and row number; show the three time lag separately
 
-# In[19]:
+# In[ ]:
 
 
 # ONLY FOR PLOT!! 
@@ -1522,7 +1852,7 @@ if savefigs:
 
 # ### plot graphs - show the edge differences, use one condition as the base
 
-# In[21]:
+# In[ ]:
 
 
 # ONLY FOR PLOT!! 
@@ -1549,7 +1879,7 @@ else:
     samplingsizes_name = ['min_row_number']   
 nsamplings = np.shape(samplingsizes_name)[0]
 
-basecondition = 'coop(1s)'
+basecondition = 'self'
 
 # make sure these variables are consistent with the train_DBN_alec.py settings
 # eventnames = ["pull1","pull2","gaze1","gaze2"]
@@ -1633,7 +1963,7 @@ for ilag in np.arange(0,ntime_lags,1):
                 sig_edges_delta = ((sig_edges_tgt+sig_edges_base)>0)*1
             else:
                 weighted_graphs_delta,sig_edges_delta = Modulation_Index(weighted_graphs_base, weighted_graphs_tgt,
-                                                                         sig_edges_base, sig_edges_tgt, 8000)
+                                                                         sig_edges_base, sig_edges_tgt, 150)
                 weighted_graphs_delta = weighted_graphs_delta.mean(axis=0)
                 
             sig_avg_dags = weighted_graphs_delta * sig_edges_delta
@@ -1659,8 +1989,8 @@ for ilag in np.arange(0,ntime_lags,1):
                                               eventnodes_shape[ieventnode],markersize=60,markerfacecolor=eventnodes_color[ieventnode],
                                               markeredgecolor='none')              
                 
-                #axs[ilag*2+0,iDBN_group].text(eventname_locations[ieventnode][0],eventname_locations[ieventnode][1],
-                #                       eventnames[ieventnode],fontsize=10)
+                axs[ilag*2+0,iDBN_group].text(eventname_locations[ieventnode][0],eventname_locations[ieventnode][1],
+                                       eventnames[ieventnode],fontsize=10)
                 
                 clmap = mpl.cm.get_cmap('bwr')
                 
@@ -1752,6 +2082,7 @@ if savefigs:
             
 
 
+# ## Plots that include all pairs
 # ## Plots the frequency/distribution of certain edges
 
 # ### pull <-> pull; with animal gaze -> pull; across animal pull -> gaze; with animal pull -> gaze
@@ -1759,14 +2090,430 @@ if savefigs:
 # In[ ]:
 
 
+# PLOT multiple pairs in one plot, so need to load data seperately
+moreSampSize = 0
+mergetempRos = 0 # 1: merge different time bins
 
+#
+animal1_fixedorders = ['eddie','dodson','ginger','dannon']
+animal2_fixedorders = ['sparkle','scorch','kanga','kanga']
+nanimalpairs = np.shape(animal1_fixedorders)[0]
+
+temp_resolu = 1
+
+# ONLY FOR PLOT!! 
+# define DBN related summarizing variables
+DBN_group_typenames = ['self','coop(1s)','no-vision']
+DBN_group_typeIDs  =  [1,3,5]
+DBN_group_coopthres = [0,1,0]
+nDBN_groups = np.shape(DBN_group_typenames)[0]
+
+
+for ianimalpair in np.arange(0,nanimalpairs,1):
+    
+    # initiate figure
+    fig, axs = plt.subplots(nDBN_groups,2) # nDBN_groups(3) task conditions; 2 animal individual
+    fig.set_figheight(8*nDBN_groups)
+    fig.set_figwidth(15*2)
+    
+    animal1_fixedorder = animal1_fixedorders[ianimalpair]
+    animal2_fixedorder = animal2_fixedorders[ianimalpair]
+    #
+    data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'
+    if not mergetempRos:
+        with open(data_saved_subfolder+'/DBN_input_data_alltypes_'+animal1_fixedorder+animal2_fixedorder+'_'+str(temp_resolu)+'sReSo.pkl', 'rb') as f:
+            DBN_input_data_alltypes = pickle.load(f)
+    else:
+        with open(data_saved_subfolder+'//DBN_input_data_alltypes_'+animal1_fixedorder+animal2_fixedorder+'_mergeTempsReSo.pkl', 'rb') as f:
+            DBN_input_data_alltypes = pickle.load(f)
+            
+    for igroup in np.arange(0,nDBN_groups,1):
+        DBN_group_typename = DBN_group_typenames[igroup]
+        
+        DBN_input_data_igroup = DBN_input_data_alltypes[DBN_group_typename]
+              
+        # from animal 1    
+        # 1s lag; pull1->pull2
+        xxx = ((np.array(DBN_input_data_igroup['pull1_t0'])==1)&(np.array(DBN_input_data_igroup['pull2_t1'])==1))*1
+        # axs[igroup,0].plot(xxx,'k',label='pull1->pull2')
+        if np.sum(xxx)>0:
+            xxx_plot = np.linspace(0, np.shape(xxx)[0], 50000)
+            xxx = np.where(xxx==1)[0]
+            kde = KernelDensity(kernel="gaussian", bandwidth=10).fit(xxx.reshape(-1, 1))
+            log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+            axs[igroup,0].plot(xxx_plot,np.exp(log_dens),'k',label='pull1->pull2')
+        
+        # 1s lag; gaze1->pull1
+        # xxx = ((np.array(DBN_input_data_igroup['owgaze1_t0'])==1)&(np.array(DBN_input_data_igroup['pull1_t1'])==1))*1
+        # #axs[igroup,0].plot(xxx,'g',label='gaze1->pull1')
+        # if np.sum(xxx)>0:
+        #     xxx_plot = np.linspace(0, np.shape(xxx)[0], 50000)
+        #     xxx = np.where(xxx==1)[0]
+        #     kde = KernelDensity(kernel="gaussian", bandwidth=10).fit(xxx.reshape(-1, 1))
+        #     log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+        #     axs[igroup,0].plot(xxx_plot,np.exp(log_dens),'g',label='gaze1->pull1')
+        
+        # 1s lag; gaze1->pull2
+        xxx = ((np.array(DBN_input_data_igroup['owgaze1_t0'])==1)&(np.array(DBN_input_data_igroup['pull2_t1'])==1))*1
+        # axs[igroup,0].plot(xxx,'r',label='gaze1->pull2')
+        if np.sum(xxx)>0:
+            xxx_plot = np.linspace(0, np.shape(xxx)[0], 50000)
+            xxx = np.where(xxx==1)[0]
+            kde = KernelDensity(kernel="gaussian", bandwidth=10).fit(xxx.reshape(-1, 1))
+            log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+            axs[igroup,0].plot(xxx_plot,np.exp(log_dens),'r',label='gaze1->pull2')
+        
+        # 1s lag; pull1->gaze2
+        xxx = ((np.array(DBN_input_data_igroup['pull1_t0'])==1)&(np.array(DBN_input_data_igroup['owgaze2_t1'])==1))*1
+        # axs[igroup,0].plot(xxx,'b',label='pull1->gaze2')
+        if np.sum(xxx)>0:
+            xxx_plot = np.linspace(0, np.shape(xxx)[0], 50000)
+            xxx = np.where(xxx==1)[0]
+            kde = KernelDensity(kernel="gaussian", bandwidth=10).fit(xxx.reshape(-1, 1))
+            log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+            axs[igroup,0].plot(xxx_plot,np.exp(log_dens),'b',label='pull1->gaze2')
+
+        axs[igroup,0].set_xlabel('time/s',fontsize=15)
+        axs[igroup,0].set_ylabel('probability density',fontsize=15)
+        axs[igroup,0].set_title('from '+animal1_fixedorder+' in '+DBN_group_typename,fontsize = 16)
+        if igroup == nDBN_groups-1:
+            axs[igroup,0].legend()
+            
+        # from animal 2
+        # 1s lag; pull2->pull1
+        xxx = ((np.array(DBN_input_data_igroup['pull2_t0'])==1)&(np.array(DBN_input_data_igroup['pull1_t1'])==1))*1
+        #axs[igroup,1].plot(xxx,'k',label='pull2->pull1')
+        if np.sum(xxx)>0:
+            xxx_plot = np.linspace(0, np.shape(xxx)[0], 50000)
+            xxx = np.where(xxx==1)[0]
+            kde = KernelDensity(kernel="gaussian", bandwidth=10).fit(xxx.reshape(-1, 1))
+            log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+            axs[igroup,1].plot(xxx_plot,np.exp(log_dens),'k',label='pull2->pull1')
+            
+        # 1s lag; gaze2->pull2
+        # xxx = ((np.array(DBN_input_data_igroup['owgaze2_t0'])==1)&(np.array(DBN_input_data_igroup['pull2_t1'])==1))*1
+        # #axs[igroup,1].plot(xxx,'g',label='gaze2->pull2')
+        # if np.sum(xxx)>0:
+        #     xxx_plot = np.linspace(0, np.shape(xxx)[0], 50000)
+        #     xxx = np.where(xxx==1)[0]
+        #     kde = KernelDensity(kernel="gaussian", bandwidth=10).fit(xxx.reshape(-1, 1))
+        #     log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+        #     axs[igroup,1].plot(xxx_plot,np.exp(log_dens),'g',label='gaze2->pull2')
+        
+        # 1s lag; gaze2->pull1
+        xxx = ((np.array(DBN_input_data_igroup['owgaze2_t0'])==1)&(np.array(DBN_input_data_igroup['pull1_t1'])==1))*1
+        #axs[igroup,1].plot(xxx,'r',label='gaze2->pull1')
+        if np.sum(xxx)>0:
+            xxx_plot = np.linspace(0, np.shape(xxx)[0], 50000)
+            xxx = np.where(xxx==1)[0]
+            kde = KernelDensity(kernel="gaussian", bandwidth=10).fit(xxx.reshape(-1, 1))
+            log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+            axs[igroup,1].plot(xxx_plot,np.exp(log_dens),'r',label='gaze2->pull1')
+        
+        # 1s lag; pull2->gaze1
+        xxx = ((np.array(DBN_input_data_igroup['pull2_t0'])==1)&(np.array(DBN_input_data_igroup['owgaze1_t1'])==1))*1
+        #axs[igroup,1].plot(xxx,'b',label='pull2->gaze1')
+        if np.sum(xxx)>0:
+            xxx_plot = np.linspace(0, np.shape(xxx)[0], 50000)
+            xxx = np.where(xxx==1)[0]
+            kde = KernelDensity(kernel="gaussian", bandwidth=10).fit(xxx.reshape(-1, 1))
+            log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+            axs[igroup,1].plot(xxx_plot,np.exp(log_dens),'b',label='pull2->gaze1')
+            
+        axs[igroup,1].set_xlabel('time/s',fontsize=15)
+        axs[igroup,1].set_ylabel('probability density',fontsize=15)
+        axs[igroup,1].set_title('from '+animal2_fixedorder+' in '+DBN_group_typename,fontsize = 16)
+        if igroup == nDBN_groups-1:
+            axs[igroup,1].legend()
+            
+    
+    savefig = 1
+    if savefig:
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'
+        if not os.path.exists(figsavefolder):
+            os.makedirs(figsavefolder)
+        plt.savefig(figsavefolder+'eventpair_appearanceDensity_Resolu'+str(temp_resolu)+'s_1stimelag_'+animal1_fixedorder+animal2_fixedorder+'.pdf')
+           
+            
+
+
+# ### across animal pull -> gaze; across animal gaze -> pull
+
+# In[ ]:
+
+
+# PLOT multiple pairs in one plot, so need to load data seperately
+moreSampSize = 0
+mergetempRos = 0 # 1: merge different time bins
+
+#
+animal1_fixedorders = ['eddie','dodson','ginger','dannon']
+animal2_fixedorders = ['sparkle','scorch','kanga','kanga']
+nanimalpairs = np.shape(animal1_fixedorders)[0]
+
+temp_resolu = 1
+
+# ONLY FOR PLOT!! 
+# define DBN related summarizing variables
+DBN_group_typenames = ['self','coop(1s)','no-vision']
+DBN_group_typeIDs  =  [1,3,5]
+DBN_group_coopthres = [0,1,0]
+nDBN_groups = np.shape(DBN_group_typenames)[0]
+
+# type of pulls (allpulls,succpulls, failedpulls)
+pulltype = 'succpulls'
+
+for ianimalpair in np.arange(0,nanimalpairs,1):
+    
+    # initiate figure
+    fig, axs = plt.subplots(nDBN_groups,2) # nDBN_groups(3) task conditions; 2 animal individual
+    fig.set_figheight(8*nDBN_groups)
+    fig.set_figwidth(15*2)
+    
+    animal1_fixedorder = animal1_fixedorders[ianimalpair]
+    animal2_fixedorder = animal2_fixedorders[ianimalpair]
+    #
+    data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'
+    if not mergetempRos:
+        with open(data_saved_subfolder+'/DBN_input_data_alltypes_'+animal1_fixedorder+animal2_fixedorder+'_'+str(temp_resolu)+'sReSo.pkl', 'rb') as f:
+            DBN_input_data_alltypes = pickle.load(f)
+    else:
+        with open(data_saved_subfolder+'//DBN_input_data_alltypes_'+animal1_fixedorder+animal2_fixedorder+'_mergeTempsReSo.pkl', 'rb') as f:
+            DBN_input_data_alltypes = pickle.load(f)
+    # successful and failed pulls
+    data_saved_subfolder_sfpulls = data_saved_folder+'data_saved_singlecam_wholebody_SuccAndFailedPull'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'
+    if not mergetempRos:
+        with open(data_saved_subfolder_sfpulls +'/DBN_input_data_alltypes_'+animal1_fixedorder+animal2_fixedorder+'_'+str(temp_resolu)+'sReSo.pkl', 'rb') as f:
+            DBN_input_data_alltypes_sfpulls = pickle.load(f)
+    else:
+        with open(data_saved_subfolder_sfpulls+'/DBN_input_data_alltypes_'+animal1_fixedorder+animal2_fixedorder+'_mergeTempsReSo.pkl', 'rb') as f:
+            DBN_input_data_alltypes_sfpulls = pickle.load(f)
+            
+    for igroup in np.arange(0,nDBN_groups,1):
+        DBN_group_typename = DBN_group_typenames[igroup]
+        
+        DBN_input_data_igroup = DBN_input_data_alltypes[DBN_group_typename]
+              
+        # from animal 1    
+        # 1s lag; pull1->pull2
+        if pulltype == 'allpulls':
+            xxx = np.array(DBN_input_data_igroup['pull1_t0'])*0.0005
+        elif pulltype == 'succpulls':
+            xxx = np.array(DBN_input_data_alltypes_sfpulls['succpull'][DBN_group_typename]['pull1_t0'])*0.0005
+        elif pulltype == 'failedpulls':
+            xxx = np.array(DBN_input_data_alltypes_sfpulls['failedpull'][DBN_group_typename]['pull1_t0'])*0.0005
+        axs[igroup,0].plot(xxx,'k',label='pull1->pull2')
+        if 0:
+            xxx_plot = np.linspace(0, np.shape(xxx)[0], 50000)
+            xxx = np.where(xxx==1)[0]
+            kde = KernelDensity(kernel="gaussian", bandwidth=10).fit(xxx.reshape(-1, 1))
+            log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+            axs[igroup,0].plot(xxx_plot,np.exp(log_dens),'k',label='pull1->pull2')
+        
+        # 1s lag; gaze1->pull1
+        # xxx = ((np.array(DBN_input_data_igroup['owgaze1_t0'])==1)&(np.array(DBN_input_data_igroup['pull1_t1'])==1))*1
+        # #axs[igroup,0].plot(xxx,'g',label='gaze1->pull1')
+        # if np.sum(xxx)>0:
+        #     xxx_plot = np.linspace(0, np.shape(xxx)[0], 50000)
+        #     xxx = np.where(xxx==1)[0]
+        #     kde = KernelDensity(kernel="gaussian", bandwidth=10).fit(xxx.reshape(-1, 1))
+        #     log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+        #     axs[igroup,0].plot(xxx_plot,np.exp(log_dens),'g',label='gaze1->pull1')
+        
+        # 1s lag; gaze1->pull2
+        xxx = ((np.array(DBN_input_data_igroup['owgaze1_t0'])==1)&(np.array(DBN_input_data_igroup['pull2_t1'])==1))*1
+        # axs[igroup,0].plot(xxx,'r',label='gaze1->pull2')
+        if np.sum(xxx)>0:
+            xxx_plot = np.linspace(0, np.shape(xxx)[0], 50000)
+            xxx = np.where(xxx==1)[0]
+            kde = KernelDensity(kernel="gaussian", bandwidth=10).fit(xxx.reshape(-1, 1))
+            log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+            axs[igroup,0].plot(xxx_plot,np.exp(log_dens),'r',label='gaze1->pull2')
+        
+        # 1s lag; pull1->gaze2
+        xxx = ((np.array(DBN_input_data_igroup['pull1_t0'])==1)&(np.array(DBN_input_data_igroup['owgaze2_t1'])==1))*1
+        # axs[igroup,0].plot(xxx,'b',label='pull1->gaze2')
+        if np.sum(xxx)>0:
+            xxx_plot = np.linspace(0, np.shape(xxx)[0], 50000)
+            xxx = np.where(xxx==1)[0]
+            kde = KernelDensity(kernel="gaussian", bandwidth=10).fit(xxx.reshape(-1, 1))
+            log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+            axs[igroup,0].plot(xxx_plot,np.exp(log_dens),'b',label='pull1->gaze2')
+
+        axs[igroup,0].set_xlabel('time/s',fontsize=15)
+        axs[igroup,0].set_ylabel('probability density',fontsize=15)
+        axs[igroup,0].set_title('from '+animal1_fixedorder+' in '+DBN_group_typename,fontsize = 16)
+        if igroup == nDBN_groups-1:
+            axs[igroup,0].legend()
+            
+        # from animal 2
+        # 1s lag; pull2->pull1
+        if pulltype == 'allpulls':
+            xxx = np.array(DBN_input_data_igroup['pull2_t0'])*0.0005
+        elif pulltype == 'succpulls':
+            xxx = np.array(DBN_input_data_alltypes_sfpulls['succpull'][DBN_group_typename]['pull2_t0'])*0.0005
+        elif pulltype == 'failedpulls':
+            xxx = np.array(DBN_input_data_alltypes_sfpulls['failedpull'][DBN_group_typename]['pull2_t0'])*0.0005
+        axs[igroup,1].plot(xxx,'k',label='pull2->pull1')
+        if 0:
+            xxx_plot = np.linspace(0, np.shape(xxx)[0], 50000)
+            xxx = np.where(xxx==1)[0]
+            kde = KernelDensity(kernel="gaussian", bandwidth=10).fit(xxx.reshape(-1, 1))
+            log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+            axs[igroup,1].plot(xxx_plot,np.exp(log_dens),'k',label='pull2->pull1')
+            
+        # 1s lag; gaze2->pull2
+        # xxx = ((np.array(DBN_input_data_igroup['owgaze2_t0'])==1)&(np.array(DBN_input_data_igroup['pull2_t1'])==1))*1
+        # #axs[igroup,1].plot(xxx,'g',label='gaze2->pull2')
+        # if np.sum(xxx)>0:
+        #     xxx_plot = np.linspace(0, np.shape(xxx)[0], 50000)
+        #     xxx = np.where(xxx==1)[0]
+        #     kde = KernelDensity(kernel="gaussian", bandwidth=10).fit(xxx.reshape(-1, 1))
+        #     log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+        #     axs[igroup,1].plot(xxx_plot,np.exp(log_dens),'g',label='gaze2->pull2')
+        
+        # 1s lag; gaze2->pull1
+        xxx = ((np.array(DBN_input_data_igroup['owgaze2_t0'])==1)&(np.array(DBN_input_data_igroup['pull1_t1'])==1))*1
+        #axs[igroup,1].plot(xxx,'r',label='gaze2->pull1')
+        if np.sum(xxx)>0:
+            xxx_plot = np.linspace(0, np.shape(xxx)[0], 50000)
+            xxx = np.where(xxx==1)[0]
+            kde = KernelDensity(kernel="gaussian", bandwidth=10).fit(xxx.reshape(-1, 1))
+            log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+            axs[igroup,1].plot(xxx_plot,np.exp(log_dens),'r',label='gaze2->pull1')
+        
+        # 1s lag; pull2->gaze1
+        xxx = ((np.array(DBN_input_data_igroup['pull2_t0'])==1)&(np.array(DBN_input_data_igroup['owgaze1_t1'])==1))*1
+        #axs[igroup,1].plot(xxx,'b',label='pull2->gaze1')
+        if np.sum(xxx)>0:
+            xxx_plot = np.linspace(0, np.shape(xxx)[0], 50000)
+            xxx = np.where(xxx==1)[0]
+            kde = KernelDensity(kernel="gaussian", bandwidth=10).fit(xxx.reshape(-1, 1))
+            log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+            axs[igroup,1].plot(xxx_plot,np.exp(log_dens),'b',label='pull2->gaze1')
+            
+        axs[igroup,1].set_xlabel('time/s',fontsize=15)
+        axs[igroup,1].set_ylabel('probability density',fontsize=15)
+        axs[igroup,1].set_title('from '+animal2_fixedorder+' in '+DBN_group_typename,fontsize = 16)
+        if igroup == nDBN_groups-1:
+            axs[igroup,1].legend()
+            
+    
+    savefig = 1
+    if savefig:
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'
+        if not os.path.exists(figsavefolder):
+            os.makedirs(figsavefolder)
+        plt.savefig(figsavefolder+'eventpair_appearanceDensity_with'+pulltype+'_Resolu'+str(temp_resolu)+'s_1stimelag_'+animal1_fixedorder+animal2_fixedorder+'.pdf')
+           
+            
+
+
+# ### pull - pull dependency and leader/follower pattern?
+
+# In[ ]:
+
+
+# PLOT multiple pairs in one plot, so need to load data seperately
+moreSampSize = 0
+mergetempRos = 0 # 1: merge different time bins
+
+#
+animal1_fixedorders = ['eddie','dodson','ginger','dannon']
+animal2_fixedorders = ['sparkle','scorch','kanga','kanga']
+nanimalpairs = np.shape(animal1_fixedorders)[0]
+
+temp_resolu = 1
+
+# ONLY FOR PLOT!! 
+# define DBN related summarizing variables
+DBN_group_typenames = ['self','coop(1s)','no-vision']
+DBN_group_typeIDs  =  [1,3,5]
+DBN_group_coopthres = [0,1,0]
+nDBN_groups = np.shape(DBN_group_typenames)[0]
+
+# type of pulls (allpulls,succpulls, failedpulls)
+pulltype = 'allpulls'
+
+for ianimalpair in np.arange(0,nanimalpairs,1):
+    
+    # initiate figure
+    # fig, axs = plt.subplots(nDBN_groups,2) # nDBN_groups(3) task conditions; 2 animal individual
+    # fig.set_figheight(8*nDBN_groups)
+    # fig.set_figwidth(15*2)
+    
+    animal1_fixedorder = animal1_fixedorders[ianimalpair]
+    animal2_fixedorder = animal2_fixedorders[ianimalpair]
+    #
+    data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'
+    if not mergetempRos:
+        with open(data_saved_subfolder+'/DBN_input_data_alltypes_'+animal1_fixedorder+animal2_fixedorder+'_'+str(temp_resolu)+'sReSo.pkl', 'rb') as f:
+            DBN_input_data_alltypes = pickle.load(f)
+    else:
+        with open(data_saved_subfolder+'//DBN_input_data_alltypes_'+animal1_fixedorder+animal2_fixedorder+'_mergeTempsReSo.pkl', 'rb') as f:
+            DBN_input_data_alltypes = pickle.load(f)
+    # successful and failed pulls
+    data_saved_subfolder_sfpulls = data_saved_folder+'data_saved_singlecam_wholebody_SuccAndFailedPull'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'
+    if not mergetempRos:
+        with open(data_saved_subfolder_sfpulls +'/DBN_input_data_alltypes_'+animal1_fixedorder+animal2_fixedorder+'_'+str(temp_resolu)+'sReSo.pkl', 'rb') as f:
+            DBN_input_data_alltypes_sfpulls = pickle.load(f)
+    else:
+        with open(data_saved_subfolder_sfpulls+'/DBN_input_data_alltypes_'+animal1_fixedorder+animal2_fixedorder+'_mergeTempsReSo.pkl', 'rb') as f:
+            DBN_input_data_alltypes_sfpulls = pickle.load(f)
+            
+    for igroup in np.arange(0,nDBN_groups,1):
+        DBN_group_typename = DBN_group_typenames[igroup]
+        
+        DBN_input_data_igroup = DBN_input_data_alltypes[DBN_group_typename]
+              
+        # from animal 1    
+        # 1s lag; pull1->pull2
+        if pulltype == 'allpulls':
+            xxx = ((np.array(DBN_input_data_igroup['pull1_t2'])==1)&(np.array(DBN_input_data_igroup['pull2_t3'])==1))
+        elif pulltype == 'succpulls':
+            xxx = ((np.array(DBN_input_data_alltypes_sfpulls['succpull'][DBN_group_typename]['pull1_t2'])==1)&
+                   (np.array(DBN_input_data_alltypes_sfpulls['succpull'][DBN_group_typename]['pull2_t3'])==1))
+        elif pulltype == 'failedpulls':
+            xxx = ((np.array(DBN_input_data_alltypes_sfpulls['failedpull'][DBN_group_typename]['pull1_t2'])==1)&
+                   (np.array(DBN_input_data_alltypes_sfpulls['failedpull'][DBN_group_typename]['pull2_t3'])==1))        
+        print(animal1_fixedorder+' leads pull ratio:'+str(np.sum(xxx)/np.sum((np.array(DBN_input_data_igroup['pull1_t2'])==1))))
+            
+        # from animal 2
+        # 1s lag; pull2->pull1
+        if pulltype == 'allpulls':
+            xxx = ((np.array(DBN_input_data_igroup['pull2_t2'])==1)&(np.array(DBN_input_data_igroup['pull1_t3'])==1))
+        elif pulltype == 'succpulls':
+            xxx = ((np.array(DBN_input_data_alltypes_sfpulls['succpull'][DBN_group_typename]['pull2_t2'])==1)&
+                   (np.array(DBN_input_data_alltypes_sfpulls['succpull'][DBN_group_typename]['pull1_t3'])==1))
+        elif pulltype == 'failedpulls':
+            xxx = ((np.array(DBN_input_data_alltypes_sfpulls['failedpull'][DBN_group_typename]['pull2_t2'])==1)&
+                   (np.array(DBN_input_data_alltypes_sfpulls['failedpull'][DBN_group_typename]['pull1_t3'])==1))
+        print(animal2_fixedorder+' leads pull ratio:'+str(np.sum(xxx)/np.sum((np.array(DBN_input_data_igroup['pull2_t2'])==1))))
+
+        
+            
+    
+    savefig = 0
+    if savefig:
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'
+        if not os.path.exists(figsavefolder):
+            os.makedirs(figsavefolder)
+        plt.savefig(figsavefolder+'eventpair_appearanceDensity_with'+pulltype+'_Resolu'+str(temp_resolu)+'s_1stimelag_'+animal1_fixedorder+animal2_fixedorder+'.pdf')
+           
+            
+
+
+# In[ ]:
+
+
+np.sum(xxx)
 
 
 # ## Plots that include all pairs
 
 # ### VERSION 1: plot the key edges' modulation; only show the modulation among coop1s, self, no-vision; x axis show the time lag
 
-# In[22]:
+# In[ ]:
 
 
 # PLOT multiple pairs in one plot, so need to load data seperately
@@ -1844,10 +2591,10 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
         MI_nov_coop = (weighted_graphs_nov_mean-weighted_graphs_coop_mean)/(weighted_graphs_nov_mean+weighted_graphs_coop_mean)
     else:
         MI_coop_self,_ = Modulation_Index(weighted_graphs_self, weighted_graphs_coop,
-                                          sig_edges_self, sig_edges_coop, 8000)
+                                          sig_edges_self, sig_edges_coop, 150)
         MI_coop_self = MI_coop_self.mean(axis = 0)
         MI_nov_coop,_  = Modulation_Index(weighted_graphs_coop, weighted_graphs_nov,
-                                          sig_edges_coop, sig_edges_nov, 8000)
+                                          sig_edges_coop, sig_edges_nov, 150)
         MI_nov_coop = MI_nov_coop.mean(axis = 0)
         
     #
@@ -2039,10 +2786,10 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
         MI_nov_coop = (weighted_graphs_nov_mean-weighted_graphs_coop_mean)/(weighted_graphs_nov_mean+weighted_graphs_coop_mean)
     else:
         MI_coop_self,_ = Modulation_Index(weighted_graphs_self, weighted_graphs_coop,
-                                          sig_edges_self, sig_edges_coop, 8000)
+                                          sig_edges_self, sig_edges_coop, 150)
         MI_coop_self = MI_coop_self.mean(axis = 0)
         MI_nov_coop,_  = Modulation_Index(weighted_graphs_coop, weighted_graphs_nov,
-                                          sig_edges_coop, sig_edges_nov, 8000)
+                                          sig_edges_coop, sig_edges_nov, 150)
         MI_nov_coop = MI_nov_coop.mean(axis = 0)
     #
     t3MI_coop_self = MI_coop_self[[0,1,2,3],:]
@@ -2168,7 +2915,7 @@ if savefig:
 
 # ### VERSION 3: plot the key edges' modulation; only show the modulation among coop1s, self, no-vision; x axis show the time lag; combined into six edges
 
-# In[47]:
+# In[ ]:
 
 
 # PLOT multiple pairs in one plot, so need to load data seperately
@@ -2258,11 +3005,11 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
         MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
     else:
         MI_coop_self,sig_edges_coop_self = Modulation_Index(weighted_graphs_self, weighted_graphs_coop,
-                                          sig_edges_self, sig_edges_coop, 8000)
+                                          sig_edges_self, sig_edges_coop, 150)
         MI_coop_self = MI_coop_self.mean(axis = 0)
         MI_coop_self = MI_coop_self * sig_edges_coop_self
         MI_nov_coop,sig_edges_nov_coop  = Modulation_Index(weighted_graphs_coop, weighted_graphs_nov,
-                                          sig_edges_coop, sig_edges_nov, 8000)
+                                          sig_edges_coop, sig_edges_nov, 150)
         MI_nov_coop = MI_nov_coop.mean(axis = 0)
         MI_nov_coop = MI_nov_coop * sig_edges_nov_coop   
     
@@ -2420,7 +3167,7 @@ if savefig:
 
 # ### VERSION 4: plot the key edges' modulation; only show the modulation among coop1s, self, no-vision; x axis shows the pairs. y axis averaged the MI among time lag and show CI
 
-# In[43]:
+# In[ ]:
 
 
 # PLOT multiple pairs in one plot, so need to load data seperately
@@ -2512,11 +3259,11 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
         MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
     else:
         MI_coop_self_all,sig_edges_coop_self = Modulation_Index(weighted_graphs_self, weighted_graphs_coop,
-                                          sig_edges_self, sig_edges_coop, 8000)
+                                          sig_edges_self, sig_edges_coop, 150)
         MI_coop_self = MI_coop_self_all.mean(axis = 0)
         MI_coop_self = MI_coop_self * sig_edges_coop_self
         MI_nov_coop_all,sig_edges_nov_coop  = Modulation_Index(weighted_graphs_coop, weighted_graphs_nov,
-                                          sig_edges_coop, sig_edges_nov, 8000)
+                                          sig_edges_coop, sig_edges_nov, 150)
         MI_nov_coop = MI_nov_coop_all.mean(axis = 0)
         MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
     
@@ -2585,7 +3332,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
                  'within animal pull->gaze','across animal pull->gaze',
                  ]
     for iplot in np.arange(0,6,1):
-        axs[0,iplot].set_xlim([-0.1,2.1])
+        axs[0,iplot].set_xlim([-0.1,nanimalpairs-0.9])
         axs[0,iplot].set_ylim([-1.05,1.05])
         axs[0,iplot].set_xticks(np.arange(0,nanimalpairs,1))
         axs[0,iplot].set_xticklabels([])
@@ -2599,7 +3346,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
         axs[0,iplot].set_title(plottypes[iplot],fontsize = 16)
         #
         if ianimalpair == nanimalpairs-1:
-            axs[0,iplot].plot([-1,3],[0,0],'k--')
+            axs[0,iplot].plot([-1,nanimalpairs],[0,0],'k--')
 
     # plot novision coop modulation
     # pull-pull
@@ -2644,7 +3391,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
                  'within animal pull->gaze','across animal pull->gaze',
                  ]
     for iplot in np.arange(0,6,1):
-        axs[1,iplot].set_xlim([-0.1,2.1])
+        axs[1,iplot].set_xlim([-0.1,nanimalpairs-0.9])
         axs[1,iplot].set_ylim([-1.05,1.05])
         axs[1,iplot].set_xticks(np.arange(0,nanimalpairs,1))
         #axs[1,iplot].set_xticklabels(['t-3','t-2','t-1'],fontsize = 13)
@@ -2659,7 +3406,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
         axs[1,iplot].set_title(plottypes[iplot],fontsize = 16)
         #
         if ianimalpair == nanimalpairs-1:
-            axs[1,iplot].plot([-1,3],[0,0],'k--')
+            axs[1,iplot].plot([-1,nanimalpairs],[0,0],'k--')
         
     #axs[0,0].legend(['pair:'+animal1_fixedorders[0][0:2]+'/'+animal2_fixedorders[0][0:2],
     #                 'pair:'+animal1_fixedorders[1][0:2]+'/'+animal2_fixedorders[1][0:2],
@@ -2683,7 +3430,7 @@ if savefig:
 
 # ### version 5: plot the key edges' modulation; only show the modulation among coop1s, self, no-vision; x axis shows the pairs. y axis averaged the MI only for 1s
 
-# In[42]:
+# In[ ]:
 
 
 # PLOT multiple pairs in one plot, so need to load data seperately
@@ -2776,11 +3523,11 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
         MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
     else:
         MI_coop_self_all,sig_edges_coop_self = Modulation_Index(weighted_graphs_self, weighted_graphs_coop,
-                                          sig_edges_self, sig_edges_coop, 8000)
+                                          sig_edges_self, sig_edges_coop, 150)
         MI_coop_self = MI_coop_self_all.mean(axis = 0)
         MI_coop_self = MI_coop_self * sig_edges_coop_self
         MI_nov_coop_all,sig_edges_nov_coop  = Modulation_Index(weighted_graphs_coop, weighted_graphs_nov,
-                                          sig_edges_coop, sig_edges_nov, 8000)
+                                          sig_edges_coop, sig_edges_nov, 150)
         MI_nov_coop = MI_nov_coop_all.mean(axis = 0)
         MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
     
@@ -2849,7 +3596,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
                  'within animal pull->gaze','across animal pull->gaze',
                  ]
     for iplot in np.arange(0,6,1):
-        axs[0,iplot].set_xlim([-0.3,2.3])
+        axs[0,iplot].set_xlim([-0.3,nanimalpairs-0.7])
         axs[0,iplot].set_ylim([-1.05,1.05])
         axs[0,iplot].set_xticks(np.arange(0,nanimalpairs,1))
         axs[0,iplot].set_xticklabels([])
@@ -2863,7 +3610,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
         axs[0,iplot].set_title(plottypes[iplot],fontsize = 16)
         #
         if ianimalpair == nanimalpairs-1:
-            axs[0,iplot].plot([-1,3],[0,0],'k--')
+            axs[0,iplot].plot([-1,nanimalpairs],[0,0],'k--')
 
     # plot novision coop modulation
     # pull-pull
@@ -2908,7 +3655,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
                  'within animal pull->gaze','across animal pull->gaze',
                  ]
     for iplot in np.arange(0,6,1):
-        axs[1,iplot].set_xlim([-0.3,2.3])
+        axs[1,iplot].set_xlim([-0.3,nanimalpairs-0.7])
         axs[1,iplot].set_ylim([-1.05,1.05])
         axs[1,iplot].set_xticks(np.arange(0,nanimalpairs,1))
         #axs[1,iplot].set_xticklabels(['t-3','t-2','t-1'],fontsize = 13)
@@ -2923,7 +3670,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
         axs[1,iplot].set_title(plottypes[iplot],fontsize = 16)
         #
         if ianimalpair == nanimalpairs-1:
-            axs[1,iplot].plot([-1,3],[0,0],'k--')
+            axs[1,iplot].plot([-1,nanimalpairs],[0,0],'k--')
         
     #axs[0,0].legend(['pair:'+animal1_fixedorders[0][0:2]+'/'+animal2_fixedorders[0][0:2],
     #                 'pair:'+animal1_fixedorders[1][0:2]+'/'+animal2_fixedorders[1][0:2],
@@ -2947,7 +3694,7 @@ if savefig:
 
 # ### version 6: plot the key edges' modulation; only show the modulation among coop1s, self, no-vision; x axis shows the pairs. y axis showed the MI; separate animal 1 and 2; merge time lags
 
-# In[41]:
+# In[ ]:
 
 
 # PLOT multiple pairs in one plot, so need to load data seperately
@@ -3040,11 +3787,11 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
         MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
     else:
         MI_coop_self_all,sig_edges_coop_self = Modulation_Index(weighted_graphs_self, weighted_graphs_coop,
-                                          sig_edges_self, sig_edges_coop, 8000)
+                                          sig_edges_self, sig_edges_coop, 150)
         MI_coop_self = MI_coop_self_all.mean(axis = 0)
         MI_coop_self = MI_coop_self * sig_edges_coop_self
         MI_nov_coop_all,sig_edges_nov_coop  = Modulation_Index(weighted_graphs_coop, weighted_graphs_nov,
-                                          sig_edges_coop, sig_edges_nov, 8000)
+                                          sig_edges_coop, sig_edges_nov, 150)
         MI_nov_coop = MI_nov_coop_all.mean(axis = 0)
         MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
     
@@ -3121,7 +3868,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
                      'from '+anishortname+' within animal pull->gaze','from '+anishortname+' across animal pull->gaze',
                      ]
         for iplot in np.arange(0,6,1):
-            axs[2*ianimal+0,iplot].set_xlim([-0.3,2.3])
+            axs[2*ianimal+0,iplot].set_xlim([-0.3,nanimalpairs-0.7])
             axs[2*ianimal+0,iplot].set_ylim([-1.05,1.05])
             axs[2*ianimal+0,iplot].set_xticks(np.arange(0,nanimalpairs,1))
             axs[2*ianimal+0,iplot].set_xticklabels([],fontsize = 13)
@@ -3135,7 +3882,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
             axs[2*ianimal+0,iplot].set_title(plottypes[iplot],fontsize = 16)
             #
             if ianimalpair == nanimalpairs-1:
-                axs[2*ianimal+0,iplot].plot([-1,3],[0,0],'k--')
+                axs[2*ianimal+0,iplot].plot([-1,nanimalpairs],[0,0],'k--')
 
         # plot novision coop modulation
         # pull-pull
@@ -3180,7 +3927,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
                      'from '+anishortname+' within animal pull->gaze','from '+anishortname+' across animal pull->gaze',
                      ]
         for iplot in np.arange(0,6,1):
-            axs[2*ianimal+1,iplot].set_xlim([-0.3,2.3])
+            axs[2*ianimal+1,iplot].set_xlim([-0.3,nanimalpairs-0.7])
             axs[2*ianimal+1,iplot].set_ylim([-1.05,1.05])
             axs[2*ianimal+1,iplot].set_xticks(np.arange(0,nanimalpairs,1))
             axs[2*ianimal+1,iplot].set_xticklabels(['ED/SP','DO/SC','GI/KA','DA/KA'],fontsize = 13)
@@ -3194,13 +3941,13 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
             axs[2*ianimal+1,iplot].set_title(plottypes[iplot],fontsize = 16)
             #
             if ianimalpair == nanimalpairs-1:
-                axs[2*ianimal+1,iplot].plot([-1,3],[0,0],'k--')
+                axs[2*ianimal+1,iplot].plot([-1,nanimalpairs],[0,0],'k--')
 
         #axs[0,0].legend(['pair:'+animal1_fixedorders[0][0:2]+'/'+animal2_fixedorders[0][0:2],
         #                 'pair:'+animal1_fixedorders[1][0:2]+'/'+animal2_fixedorders[1][0:2],
         #                 'pair:'+animal1_fixedorders[2][0:2]+'/'+animal2_fixedorders[2][0:2]],fontsize=17)
 
-savefig = 1
+savefig = 0
 if savefig:
     if moreSampSize:
         figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'
@@ -3218,7 +3965,7 @@ if savefig:
 
 # ### version 7: plot the key edges' modulation; only show the modulation among coop1s, self, no-vision; x axis shows the pairs. y axis showed the MI; separate animal 1 and 2; only for 1s time lag
 
-# In[40]:
+# In[ ]:
 
 
 # PLOT multiple pairs in one plot, so need to load data seperately
@@ -3311,11 +4058,11 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
         MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
     else:
         MI_coop_self_all,sig_edges_coop_self = Modulation_Index(weighted_graphs_self, weighted_graphs_coop,
-                                          sig_edges_self, sig_edges_coop, 8000)
+                                          sig_edges_self, sig_edges_coop, 150)
         MI_coop_self = MI_coop_self_all.mean(axis = 0)
         MI_coop_self = MI_coop_self * sig_edges_coop_self
         MI_nov_coop_all,sig_edges_nov_coop  = Modulation_Index(weighted_graphs_coop, weighted_graphs_nov,
-                                          sig_edges_coop, sig_edges_nov, 8000)
+                                          sig_edges_coop, sig_edges_nov, 150)
         MI_nov_coop = MI_nov_coop_all.mean(axis = 0)
         MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
     
@@ -3389,7 +4136,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
                      'from '+anishortname+' within animal pull->gaze','from '+anishortname+' across animal pull->gaze',
                      ]
         for iplot in np.arange(0,6,1):
-            axs[2*ianimal+0,iplot].set_xlim([-0.3,2.3])
+            axs[2*ianimal+0,iplot].set_xlim([-0.3,nanimalpairs-0.7])
             axs[2*ianimal+0,iplot].set_ylim([-1.05,1.05])
             axs[2*ianimal+0,iplot].set_xticks(np.arange(0,nanimalpairs,1))
             axs[2*ianimal+0,iplot].set_xticklabels([],fontsize = 13)
@@ -3403,7 +4150,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
             axs[2*ianimal+0,iplot].set_title(plottypes[iplot],fontsize = 16)
             #
             if ianimalpair == nanimalpairs-1:
-                axs[2*ianimal+0,iplot].plot([-1,3],[0,0],'k--')
+                axs[2*ianimal+0,iplot].plot([-1,nanimalpairs],[0,0],'k--')
 
         # plot novision coop modulation
         # pull-pull
@@ -3448,7 +4195,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
                      'from '+anishortname+' within animal pull->gaze','from '+anishortname+' across animal pull->gaze',
                      ]
         for iplot in np.arange(0,6,1):
-            axs[2*ianimal+1,iplot].set_xlim([-0.3,2.3])
+            axs[2*ianimal+1,iplot].set_xlim([-0.3,nanimalpairs-0.7])
             axs[2*ianimal+1,iplot].set_ylim([-1.05,1.05])
             axs[2*ianimal+1,iplot].set_xticks(np.arange(0,nanimalpairs,1))
             #axs[1,iplot].set_xticklabels(['t-3','t-2','t-1'],fontsize = 13)
@@ -3463,13 +4210,13 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
             axs[2*ianimal+1,iplot].set_title(plottypes[iplot],fontsize = 16)
             #
             if ianimalpair == nanimalpairs-1:
-                axs[2*ianimal+1,iplot].plot([-1,3],[0,0],'k--')
+                axs[2*ianimal+1,iplot].plot([-1,nanimalpairs],[0,0],'k--')
 
         #axs[0,0].legend(['pair:'+animal1_fixedorders[0][0:2]+'/'+animal2_fixedorders[0][0:2],
         #                 'pair:'+animal1_fixedorders[1][0:2]+'/'+animal2_fixedorders[1][0:2],
         #                 'pair:'+animal1_fixedorders[2][0:2]+'/'+animal2_fixedorders[2][0:2]],fontsize=17)
 
-savefig = 1
+savefig = 0
 if savefig:
     if moreSampSize:
         figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'
@@ -3485,9 +4232,13 @@ if savefig:
     
 
 
-# ### version 7-2: plot the key edges' modulation; only show the modulation among coop1s, self, no-vision; x axis shows the pairs. y axis showed the MI; separate animal 1 and 2; put all animal in one plot; only for 1s time lag
+# ### version 7-2-1: 
+# #### plot the key edges' modulation; 
+# #### only show the modulation among coop1s, self, no-vision; 
+# #### separate animal 1 and 2, plot individual animal; 
+# #### put all animal in one plot - based on the "from Node"; only for 1s time lag
 
-# In[34]:
+# In[ ]:
 
 
 # PLOT multiple pairs in one plot, so need to load data seperately
@@ -3580,11 +4331,11 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
         MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
     else:
         MI_coop_self_all,sig_edges_coop_self = Modulation_Index(weighted_graphs_self, weighted_graphs_coop,
-                                          sig_edges_self, sig_edges_coop, 8000)
+                                          sig_edges_self, sig_edges_coop, 150)
         MI_coop_self = MI_coop_self_all.mean(axis = 0)
         MI_coop_self = MI_coop_self * sig_edges_coop_self
         MI_nov_coop_all,sig_edges_nov_coop  = Modulation_Index(weighted_graphs_coop, weighted_graphs_nov,
-                                          sig_edges_coop, sig_edges_nov, 8000)
+                                          sig_edges_coop, sig_edges_nov, 150)
         MI_nov_coop = MI_nov_coop_all.mean(axis = 0)
         MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
     
@@ -3655,7 +4406,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
                      'From Node; within animal pull->gaze','From Node; across animal pull->gaze',
                      ]
         for iplot in np.arange(0,6,1):
-            axs[0,iplot].set_xlim([-0.3,2.3])
+            axs[0,iplot].set_xlim([-0.3,nanimalpairs*2-0.7])
             axs[0,iplot].set_ylim([-1.05,1.05])
             axs[0,iplot].set_xticks(np.arange(0,nanimalpairs*2,1))
             axs[0,iplot].set_xticklabels([])
@@ -3669,7 +4420,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
             axs[0,iplot].set_title(plottypes[iplot],fontsize = 16)
             #
             if ianimalpair == nanimalpairs-1:
-                axs[0,iplot].plot([-1,3],[0,0],'k--')
+                axs[0,iplot].plot([-1,nanimalpairs*2],[0,0],'k--')
 
         # plot novision coop modulation
         # pull-pull
@@ -3714,7 +4465,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
                      'From Node; within animal pull->gaze','From Node; across animal pull->gaze',
                      ]
         for iplot in np.arange(0,6,1):
-            axs[1,iplot].set_xlim([-0.3,2.3])
+            axs[1,iplot].set_xlim([-0.3,nanimalpairs*2-0.7])
             axs[1,iplot].set_ylim([-1.05,1.05])
             axs[1,iplot].set_xticks(np.arange(0,nanimalpairs*2,1))
             #axs[1,iplot].set_xticklabels(['ED/SP','DO/SC','GI/KA'],fontsize = 13)
@@ -3729,7 +4480,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
             axs[1,iplot].set_title(plottypes[iplot],fontsize = 16)
             #
             if ianimalpair == nanimalpairs-1:
-                axs[1,iplot].plot([-1,3],[0,0],'k--')
+                axs[1,iplot].plot([-1,nanimalpairs*2],[0,0],'k--')
 
         #axs[0,0].legend(['pair:'+animal1_fixedorders[0][0:2]+'/'+animal2_fixedorders[0][0:2],
         #                 'pair:'+animal1_fixedorders[1][0:2]+'/'+animal2_fixedorders[1][0:2],
@@ -3751,10 +4502,1826 @@ if savefig:
     
 
 
-# In[30]:
+# ### version 7-2-2: 
+# #### plot the key edges' modulation; 
+# #### only show the modulation among coop1s, self, no-vision; 
+# #### separate animal 1 and 2, plot individual animal; 
+# #### put all animal in one plot - based on the "to Node"; for one time lag or merged all time lags
+
+# In[ ]:
 
 
-nanimalpairs
+# PLOT multiple pairs in one plot, so need to load data seperately
+moreSampSize = 0
+#
+animal1_fixedorders = ['eddie','dodson','dannon','ginger']
+animal2_fixedorders = ['sparkle','scorch','kanga','kanga']
+animalpairs_datashapes = ['o','o','o','o']
+nanimalpairs = np.shape(animal1_fixedorders)[0]
+
+timelag = 1 # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag 1 and 2)
+timelagname = '1second' # '1/2/3second' or 'merged' or '12merged'
+# timelagname = 'merged' # together with timelag = 0
+# timelagname = '12merged' # together with timelag = 12
+
+#
+fig, axs = plt.subplots(2,6)
+fig.set_figheight(8*2)
+fig.set_figwidth(8*6)
+
+for ianimalpair in np.arange(0,nanimalpairs,1):
+    animal1_fixedorder = animal1_fixedorders[ianimalpair]
+    animal2_fixedorder = animal2_fixedorders[ianimalpair]
+    #
+    data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'
+    #
+    if moreSampSize:
+        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+            weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+            weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+            sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+    else:
+        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+            weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+            weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+            sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+
+    # make sure these variables are the same as in the previous steps
+    # temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+    temp_resolus = [1] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+    ntemp_reses = np.shape(temp_resolus)[0]
+    #
+    if moreSampSize:
+        # different data (down/re)sampling numbers
+        # samplingsizes = np.arange(1100,3000,100)
+        samplingsizes = [1100]
+        # samplingsizes = [100,500,1000,1500,2000,2500,3000]        
+        # samplingsizes = [100,500]
+        # samplingsizes_name = ['100','500','1000','1500','2000','2500','3000']
+        samplingsizes_name = list(map(str, samplingsizes))
+    else:
+        samplingsizes_name = ['min_row_number']   
+    nsamplings = np.shape(samplingsizes_name)[0]
+
+    #
+    temp_resolu = temp_resolus[0]
+    j_sampsize_name = samplingsizes_name[0]    
+
+    # load edge weight data    
+    weighted_graphs_self = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['self']
+    weighted_graphs_sf_self = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['self']
+    sig_edges_self = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['self']
+    #
+    weighted_graphs_coop = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['coop(1s)']
+    weighted_graphs_sf_coop = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['coop(1s)']
+    sig_edges_coop = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['coop(1s)']
+    #
+    weighted_graphs_nov = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['no-vision']
+    weighted_graphs_sf_nov = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['no-vision']
+    sig_edges_nov = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['no-vision']
+
+    # organize the key edge data
+    weighted_graphs_self_mean = weighted_graphs_self.mean(axis=0)
+    weighted_graphs_coop_mean = weighted_graphs_coop.mean(axis=0)
+    weighted_graphs_nov_mean = weighted_graphs_nov.mean(axis=0)
+    # MI_coop_self = (weighted_graphs_coop_mean-weighted_graphs_self_mean)/(weighted_graphs_coop_mean+weighted_graphs_self_mean)
+    # MI_nov_coop = (weighted_graphs_nov_mean-weighted_graphs_coop_mean)/(weighted_graphs_nov_mean+weighted_graphs_coop_mean)
+    # MI_coop_self = ((weighted_graphs_coop-weighted_graphs_self)/(weighted_graphs_coop+weighted_graphs_self)).mean(axis=0)
+    # MI_nov_coop = ((weighted_graphs_nov-weighted_graphs_coop)/(weighted_graphs_nov+weighted_graphs_coop)).mean(axis=0)
+    #
+    if 0:
+        MI_coop_self_all = weighted_graphs_coop-weighted_graphs_self
+        MI_nov_coop_all = weighted_graphs_nov-weighted_graphs_coop  
+        MI_coop_self = (weighted_graphs_coop-weighted_graphs_self).mean(axis=0)
+        MI_nov_coop = (weighted_graphs_nov-weighted_graphs_coop).mean(axis=0)
+        #
+        sig_edges_coop_self = ((sig_edges_coop+sig_edges_self)>0)*1
+        sig_edges_nov_coop = ((sig_edges_coop+sig_edges_nov)>0)*1
+        #
+        MI_coop_self = MI_coop_self * sig_edges_coop_self
+        MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
+    else:
+        MI_coop_self_all,sig_edges_coop_self = Modulation_Index(weighted_graphs_self, weighted_graphs_coop,
+                                          sig_edges_self, sig_edges_coop, 150)
+        MI_coop_self = MI_coop_self_all.mean(axis = 0)
+        MI_coop_self = MI_coop_self * sig_edges_coop_self
+        MI_nov_coop_all,sig_edges_nov_coop  = Modulation_Index(weighted_graphs_coop, weighted_graphs_nov,
+                                          sig_edges_coop, sig_edges_nov, 150)
+        MI_nov_coop = MI_nov_coop_all.mean(axis = 0)
+        MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
+    
+    #
+    if timelag == 1:
+        pull_pull_fromNodes_all = [9,8]
+        pull_pull_toNodes_all = [0,1]
+        #
+        gaze_gaze_fromNodes_all = [11,10]
+        gaze_gaze_toNodes_all = [2,3]
+        #
+        within_pullgaze_fromNodes_all = [8,9]
+        within_pullgaze_toNodes_all = [2,3]
+        #
+        across_pullgaze_fromNodes_all = [9,8]
+        across_pullgaze_toNodes_all = [2,3]
+        #
+        within_gazepull_fromNodes_all = [10,11]
+        within_gazepull_toNodes_all = [0,1]
+        #
+        across_gazepull_fromNodes_all = [11,10]
+        across_gazepull_toNodes_all = [0,1]
+        #
+    elif timelag == 2:
+        pull_pull_fromNodes_all = [5,4]
+        pull_pull_toNodes_all = [0,1]
+        #
+        gaze_gaze_fromNodes_all = [7,6]
+        gaze_gaze_toNodes_all = [2,3]
+        #
+        within_pullgaze_fromNodes_all = [4,5]
+        within_pullgaze_toNodes_all = [2,3]
+        #
+        across_pullgaze_fromNodes_all = [5,4]
+        across_pullgaze_toNodes_all = [2,3]
+        #
+        within_gazepull_fromNodes_all = [6,7]
+        within_gazepull_toNodes_all = [0,1]
+        #
+        across_gazepull_fromNodes_all = [7,6]
+        across_gazepull_toNodes_all = [0,1]
+        #
+    elif timelag == 3:
+        pull_pull_fromNodes_all = [1,0]
+        pull_pull_toNodes_all = [0,1]
+        #
+        gaze_gaze_fromNodes_all = [3,2]
+        gaze_gaze_toNodes_all = [2,3]
+        #
+        within_pullgaze_fromNodes_all = [0,1]
+        within_pullgaze_toNodes_all = [2,3]
+        #
+        across_pullgaze_fromNodes_all = [1,0]
+        across_pullgaze_toNodes_all = [2,3]
+        #
+        within_gazepull_fromNodes_all = [2,3]
+        within_gazepull_toNodes_all = [0,1]
+        #
+        across_gazepull_fromNodes_all = [3,2]
+        across_gazepull_toNodes_all = [0,1]
+        #
+    elif timelag == 0:
+        pull_pull_fromNodes_all = [[1,5,9],[0,4,8]]
+        pull_pull_toNodes_all = [[0,0,0],[1,1,1]]
+        #
+        gaze_gaze_fromNodes_all = [[3,7,11],[2,6,10]]
+        gaze_gaze_toNodes_all = [[2,2,2],[3,3,3]]
+        #
+        within_pullgaze_fromNodes_all = [[0,4,8],[1,5,9]]
+        within_pullgaze_toNodes_all = [[2,2,2],[3,3,3]]
+        #
+        across_pullgaze_fromNodes_all = [[1,5,9],[0,4,8]]
+        across_pullgaze_toNodes_all = [[2,2,2],[3,3,3]]
+        #
+        within_gazepull_fromNodes_all = [[2,6,10],[3,7,11]]
+        within_gazepull_toNodes_all = [[0,0,0],[1,1,1]]
+        #
+        across_gazepull_fromNodes_all = [[3,7,11],[2,6,10]]
+        across_gazepull_toNodes_all = [[0,0,0],[1,1,1]]
+        #
+    elif timelag == 12:
+        pull_pull_fromNodes_all = [[5,9],[4,8]]
+        pull_pull_toNodes_all = [[0,0],[1,1]]
+        #
+        gaze_gaze_fromNodes_all = [[7,11],[6,10]]
+        gaze_gaze_toNodes_all = [[2,2],[3,3]]
+        #
+        within_pullgaze_fromNodes_all = [[4,8],[5,9]]
+        within_pullgaze_toNodes_all = [[2,2],[3,3]]
+        #
+        across_pullgaze_fromNodes_all = [[5,9],[4,8]]
+        across_pullgaze_toNodes_all = [[2,2],[3,3]]
+        #
+        within_gazepull_fromNodes_all = [[6,10],[7,11]]
+        within_gazepull_toNodes_all = [[0,0],[1,1]]
+        #
+        across_gazepull_fromNodes_all = [[7,11],[6,10]]
+        across_gazepull_toNodes_all = [[0,0],[1,1]]
+        #
+    
+    
+    
+    for ianimal in np.arange(0,2,1):
+                
+        # plot coop self modulation
+
+        # pull-pull
+        a = MI_coop_self_all[:,pull_pull_fromNodes_all[ianimal],pull_pull_toNodes_all[ianimal]].flatten()
+        xxx1 = np.mean(a)
+        err1 = (st.t.interval(0.95, len(a)-1, loc=np.mean(a), scale=st.sem(a))-a.mean())[1]
+        axs[0,0].errorbar(ianimal*nanimalpairs+ianimalpair,xxx1,err1,color='k',capsize = 15)
+        line1 = axs[0,0].plot(ianimal*nanimalpairs+ianimalpair,xxx1,animalpairs_datashapes[ianimalpair],markersize = 13,color='k')
+        # gaze-gaze
+        a = (MI_coop_self_all[:,gaze_gaze_fromNodes_all[ianimal],gaze_gaze_toNodes_all[ianimal]]).flatten()
+        xxx2 = np.mean(a)
+        err2 = (st.t.interval(0.95, len(a)-1, loc=np.mean(a), scale=st.sem(a))-a.mean())[1]
+        axs[0,1].errorbar(ianimal*nanimalpairs+ianimalpair,xxx2,err2,color='k',capsize = 15)
+        line2 = axs[0,1].plot(ianimal*nanimalpairs+ianimalpair,xxx2,animalpairs_datashapes[ianimalpair],markersize = 13,color='k')
+        # within animal gazepull
+        a = (MI_coop_self_all[:,within_gazepull_fromNodes_all[ianimal],within_gazepull_toNodes_all[ianimal]]).flatten()
+        xxx3 = np.mean(a)
+        err3 = (st.t.interval(0.95, len(a)-1, loc=np.mean(a), scale=st.sem(a))-a.mean())[1]
+        axs[0,2].errorbar(ianimal*nanimalpairs+ianimalpair,xxx3,err3,color='k',capsize = 15)
+        line3 = axs[0,2].plot(ianimal*nanimalpairs+ianimalpair,xxx3,animalpairs_datashapes[ianimalpair],markersize = 13,color='k')
+        # across animal gazepull
+        a = (MI_coop_self_all[:,across_gazepull_fromNodes_all[ianimal],across_gazepull_toNodes_all[ianimal]]).flatten()
+        xxx4 = np.mean(a)
+        err4 = (st.t.interval(0.95, len(a)-1, loc=np.mean(a), scale=st.sem(a))-a.mean())[1]
+        axs[0,3].errorbar(ianimal*nanimalpairs+ianimalpair,xxx4,err4,color='k',capsize = 15)
+        line4 = axs[0,3].plot(ianimal*nanimalpairs+ianimalpair,xxx4,animalpairs_datashapes[ianimalpair],markersize = 13,color='k')
+        # within animal pullgaze
+        a = (MI_coop_self_all[:,within_pullgaze_fromNodes_all[ianimal],within_pullgaze_toNodes_all[ianimal]]).flatten()
+        xxx5 = np.mean(a)
+        err5 = (st.t.interval(0.95, len(a)-1, loc=np.mean(a), scale=st.sem(a))-a.mean())[1]
+        axs[0,4].errorbar(ianimal*nanimalpairs+ianimalpair,xxx5,err5,color='k',capsize = 15)
+        line5 = axs[0,4].plot(ianimal*nanimalpairs+ianimalpair,xxx5,animalpairs_datashapes[ianimalpair],markersize = 13,color='k')
+        # across animal pullgaze
+        a = (MI_coop_self_all[:,across_pullgaze_fromNodes_all[ianimal],across_pullgaze_toNodes_all[ianimal]]).flatten()
+        xxx6 = np.mean(a)
+        err6 = (st.t.interval(0.95, len(a)-1, loc=np.mean(a), scale=st.sem(a))-a.mean())[1]
+        axs[0,5].errorbar(ianimal*nanimalpairs+ianimalpair,xxx6,err6,color='k',capsize = 15)
+        line6 = axs[0,5].plot(ianimal*nanimalpairs+ianimalpair,xxx6,animalpairs_datashapes[ianimalpair],markersize = 13,color='k')
+
+        #
+        plottypes = ['To Node; across animal pull<->pull','To Node; across animal gaze<->gaze',
+                     'To Node; within animal gaze->pull','To Node; across animal gaze->pull',
+                     'To Node; within animal pull->gaze','To Node; across animal pull->gaze',
+                     ]
+        for iplot in np.arange(0,6,1):
+            axs[0,iplot].set_xlim([-0.3,nanimalpairs*2-0.7])
+            axs[0,iplot].set_ylim([-1.05,1.05])
+            axs[0,iplot].set_xticks(np.arange(0,nanimalpairs*2,1))
+            axs[0,iplot].set_xticklabels(['E','Do','Da','G','Sp','Sc','K','K'],fontsize = 20)
+            axs[0,iplot].set_yticks([-1,-0.5,0,0.5,1])
+            #
+            if iplot == 0:
+                axs[0,iplot].tick_params(axis='y', labelsize=13)
+                axs[0,iplot].set_ylabel('Cooperative - Self Reward\nmodulation index',fontsize=22)
+            else:
+                axs[0,iplot].set_yticklabels([])
+            axs[0,iplot].set_title(plottypes[iplot],fontsize = 21)
+            #
+            if ianimalpair == nanimalpairs-1:
+                axs[0,iplot].plot([-1,nanimalpairs*2],[0,0],'k--')
+
+        # plot novision coop modulation
+        # pull-pull
+        a = MI_nov_coop_all[:,pull_pull_fromNodes_all[ianimal],pull_pull_toNodes_all[ianimal]].flatten()
+        xxx1 = np.mean(a)
+        err1 = (st.t.interval(0.95, len(a)-1, loc=np.mean(a), scale=st.sem(a))-a.mean())[1]
+        axs[1,0].errorbar(ianimal*nanimalpairs+ianimalpair,xxx1,err1,color='k',capsize = 15)
+        line1 = axs[1,0].plot(ianimal*nanimalpairs+ianimalpair,xxx1,animalpairs_datashapes[ianimalpair],markersize = 13,color='k')
+        # gaze-gaze
+        a = (MI_nov_coop_all[:,gaze_gaze_fromNodes_all[ianimal],gaze_gaze_toNodes_all[ianimal]]).flatten()
+        xxx2 = np.mean(a)
+        err2 = (st.t.interval(0.95, len(a)-1, loc=np.mean(a), scale=st.sem(a))-a.mean())[1]
+        axs[1,1].errorbar(ianimal*nanimalpairs+ianimalpair,xxx2,err2,color='k',capsize = 15)
+        line2 = axs[1,1].plot(ianimal*nanimalpairs+ianimalpair,xxx2,animalpairs_datashapes[ianimalpair],markersize = 13,color='k')
+        # within animal gazepull
+        a = (MI_nov_coop_all[:,within_gazepull_fromNodes_all[ianimal],within_gazepull_toNodes_all[ianimal]]).flatten()
+        xxx3 = np.mean(a)
+        err3 = (st.t.interval(0.95, len(a)-1, loc=np.mean(a), scale=st.sem(a))-a.mean())[1]
+        axs[1,2].errorbar(ianimal*nanimalpairs+ianimalpair,xxx3,err3,color='k',capsize = 15)
+        line3 = axs[1,2].plot(ianimal*nanimalpairs+ianimalpair,xxx3,animalpairs_datashapes[ianimalpair],markersize = 13,color='k')
+        # across animal gazepull
+        a = (MI_nov_coop_all[:,across_gazepull_fromNodes_all[ianimal],across_gazepull_toNodes_all[ianimal]]).flatten()
+        xxx4 = np.mean(a)
+        err4 = (st.t.interval(0.95, len(a)-1, loc=np.mean(a), scale=st.sem(a))-a.mean())[1]
+        axs[1,3].errorbar(ianimal*nanimalpairs+ianimalpair,xxx4,err4,color='k',capsize = 15)
+        line4 = axs[1,3].plot(ianimal*nanimalpairs+ianimalpair,xxx4,animalpairs_datashapes[ianimalpair],markersize = 13,color='k')
+        # within animal pullgaze
+        a = (MI_nov_coop_all[:,within_pullgaze_fromNodes_all[ianimal],within_pullgaze_toNodes_all[ianimal]]).flatten()
+        xxx5 = np.mean(a)
+        err5 = (st.t.interval(0.95, len(a)-1, loc=np.mean(a), scale=st.sem(a))-a.mean())[1]
+        axs[1,4].errorbar(ianimal*nanimalpairs+ianimalpair,xxx5,err5,color='k',capsize = 15)
+        line5 = axs[1,4].plot(ianimal*nanimalpairs+ianimalpair,xxx5,animalpairs_datashapes[ianimalpair],markersize = 13,color='k')
+        # across animal pullgaze
+        a = (MI_nov_coop_all[:,across_pullgaze_fromNodes_all[ianimal],across_pullgaze_toNodes_all[ianimal]]).flatten()
+        xxx6 = np.mean(a)
+        err6 = (st.t.interval(0.95, len(a)-1, loc=np.mean(a), scale=st.sem(a))-a.mean())[1]
+        axs[1,5].errorbar(ianimal*nanimalpairs+ianimalpair,xxx6,err6,color='k',capsize = 15)
+        line6 = axs[1,5].plot(ianimal*nanimalpairs+ianimalpair,xxx6,animalpairs_datashapes[ianimalpair],markersize = 13,color='k')
+
+        plottypes = ['To Node; across animal pull<->pull','To Node; across animal gaze<->gaze',
+                     'To Node; within animal gaze->pull','To Node; across animal gaze->pull',
+                     'To Node; within animal pull->gaze','To Node; across animal pull->gaze',
+                     ]
+        for iplot in np.arange(0,6,1):
+            axs[1,iplot].set_xlim([-0.3,nanimalpairs*2-0.7])
+            axs[1,iplot].set_ylim([-1.05,1.05])
+            axs[1,iplot].set_xticks(np.arange(0,nanimalpairs*2,1))
+            #axs[1,iplot].set_xticklabels(['ED/SP','DO/SC','GI/KA'],fontsize = 13)
+            axs[1,iplot].set_xticklabels(['E','Do','Da','G','Sp','Sc','K','K'],fontsize = 20)
+            #axs[1,iplot].set_xlabel('time lag',fontsize=15)
+            axs[1,iplot].set_yticks([-1,-0.5,0,0.5,1])
+            if iplot == 0:
+                axs[1,iplot].tick_params(axis='y', labelsize=13)
+                axs[1,iplot].set_ylabel('No Vision - Cooperative\nmodulation index',fontsize=22)
+            else:
+                axs[1,iplot].set_yticklabels([])
+            axs[1,iplot].set_title(plottypes[iplot],fontsize = 21)
+            #
+            if ianimalpair == nanimalpairs-1:
+                axs[1,iplot].plot([-1,nanimalpairs*2],[0,0],'k--')
+
+        #axs[0,0].legend(['pair:'+animal1_fixedorders[0][0:2]+'/'+animal2_fixedorders[0][0:2],
+        #                 'pair:'+animal1_fixedorders[1][0:2]+'/'+animal2_fixedorders[1][0:2],
+        #                 'pair:'+animal1_fixedorders[2][0:2]+'/'+animal2_fixedorders[2][0:2]],fontsize=17)
+
+savefig = 1
+if savefig:
+    if moreSampSize:
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'
+        if not os.path.exists(figsavefolder):
+            os.makedirs(figsavefolder)
+        plt.savefig(figsavefolder+'threeTimeLag_Edge_ModulationIndex_'+timelagname+'Lag_IndiAnimal_'+str(temp_resolu)+'_'+str(j_sampsize_name)+'_rows_mean95CI_version3.pdf')
+    else:
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'
+        if not os.path.exists(figsavefolder):
+            os.makedirs(figsavefolder)
+        plt.savefig(figsavefolder+'threeTimeLag_Edge_ModulationIndex_'+timelagname+'Lag_IndiAnimal_'+str(temp_resolu)+'_'+j_sampsize_name+'_mean95CI_version3.pdf')
+           
+    
+
+
+# ### version 7-2-3: 
+# #### plot the key edges' modulation; 
+# #### only show the modulation among coop1s, self, no-vision; 
+# #### separate animal 1 and 2, plot individual animal; 
+# #### pool 1) all the animals, 2) male and female, 3) subordinate and dominant
+
+# In[ ]:
+
+
+# PLOT multiple pairs in one plot, so need to load data seperately
+moreSampSize = 0
+#
+animal1_fixedorders = ['eddie','dodson','dannon','ginger']
+animal2_fixedorders = ['sparkle','scorch','kanga','kanga']
+animal_pooled_list = ['E','SP','DO','SC','DA','KwDA','G','KwG']
+
+nanimalpairs = np.shape(animal1_fixedorders)[0]
+nanimalpooled = np.shape(animal_pooled_list)[0]
+
+timelag = 1 # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag 1 and 2)
+timelagname = '1second' # '1/2/3second' or 'merged' or '12merged'
+# timelagname = 'merged' # together with timelag = 0
+# timelagname = '12merged' # together with timelag = 12
+
+nMIbootstraps = 150
+
+# 
+MI_coop_self_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps,6])
+MI_coop_self_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+MI_nov_coop_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps,6])
+MI_nov_coop_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+ntimelags = 1
+if timelag == 0:
+    ntimelags = 3
+    MI_coop_self_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps*3,6])
+    MI_coop_self_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+    MI_nov_coop_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps*3,6])
+    MI_nov_coop_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+if timelag == 12:
+    ntimelags = 2
+    MI_coop_self_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps*2,6])
+    MI_coop_self_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+    MI_nov_coop_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps*2,6])
+    MI_nov_coop_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+#
+
+#
+#
+fig, axs = plt.subplots(3,2)
+fig.set_figheight(10*3)
+fig.set_figwidth(10*2.5)
+
+
+for ianimalpair in np.arange(0,nanimalpairs,1):
+    animal1_fixedorder = animal1_fixedorders[ianimalpair]
+    animal2_fixedorder = animal2_fixedorders[ianimalpair]
+    #
+    data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'
+    #
+    if moreSampSize:
+        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+            weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+            weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+            sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+    else:
+        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+            weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+            weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+            sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+
+    # make sure these variables are the same as in the previous steps
+    # temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+    temp_resolus = [1] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+    ntemp_reses = np.shape(temp_resolus)[0]
+    #
+    if moreSampSize:
+        # different data (down/re)sampling numbers
+        # samplingsizes = np.arange(1100,3000,100)
+        samplingsizes = [1100]
+        # samplingsizes = [100,500,1000,1500,2000,2500,3000]        
+        # samplingsizes = [100,500]
+        # samplingsizes_name = ['100','500','1000','1500','2000','2500','3000']
+        samplingsizes_name = list(map(str, samplingsizes))
+    else:
+        samplingsizes_name = ['min_row_number']   
+    nsamplings = np.shape(samplingsizes_name)[0]
+
+    #
+    temp_resolu = temp_resolus[0]
+    j_sampsize_name = samplingsizes_name[0]    
+
+    # load edge weight data    
+    weighted_graphs_self = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['self']
+    weighted_graphs_sf_self = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['self']
+    sig_edges_self = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['self']
+    #
+    weighted_graphs_coop = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['coop(1s)']
+    weighted_graphs_sf_coop = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['coop(1s)']
+    sig_edges_coop = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['coop(1s)']
+    #
+    weighted_graphs_nov = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['no-vision']
+    weighted_graphs_sf_nov = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['no-vision']
+    sig_edges_nov = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['no-vision']
+
+    # organize the key edge data
+    weighted_graphs_self_mean = weighted_graphs_self.mean(axis=0)
+    weighted_graphs_coop_mean = weighted_graphs_coop.mean(axis=0)
+    weighted_graphs_nov_mean = weighted_graphs_nov.mean(axis=0)
+    # MI_coop_self = (weighted_graphs_coop_mean-weighted_graphs_self_mean)/(weighted_graphs_coop_mean+weighted_graphs_self_mean)
+    # MI_nov_coop = (weighted_graphs_nov_mean-weighted_graphs_coop_mean)/(weighted_graphs_nov_mean+weighted_graphs_coop_mean)
+    # MI_coop_self = ((weighted_graphs_coop-weighted_graphs_self)/(weighted_graphs_coop+weighted_graphs_self)).mean(axis=0)
+    # MI_nov_coop = ((weighted_graphs_nov-weighted_graphs_coop)/(weighted_graphs_nov+weighted_graphs_coop)).mean(axis=0)
+    #
+    if 0:
+        MI_coop_self_all = weighted_graphs_coop-weighted_graphs_self
+        MI_nov_coop_all = weighted_graphs_nov-weighted_graphs_coop  
+        MI_coop_self = (weighted_graphs_coop-weighted_graphs_self).mean(axis=0)
+        MI_nov_coop = (weighted_graphs_nov-weighted_graphs_coop).mean(axis=0)
+        #
+        sig_edges_coop_self = ((sig_edges_coop+sig_edges_self)>0)*1
+        sig_edges_nov_coop = ((sig_edges_coop+sig_edges_nov)>0)*1
+        #
+        MI_coop_self = MI_coop_self * sig_edges_coop_self
+        MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
+        #
+        nMIbootstraps = 1
+    else:
+        nMIbootstraps = 150
+        #
+        MI_coop_self_all,sig_edges_coop_self = Modulation_Index(weighted_graphs_self, weighted_graphs_coop,
+                                          sig_edges_self, sig_edges_coop, nMIbootstraps)
+        MI_coop_self = MI_coop_self_all.mean(axis = 0)
+        MI_coop_self = MI_coop_self * sig_edges_coop_self
+        MI_nov_coop_all,sig_edges_nov_coop  = Modulation_Index(weighted_graphs_coop, weighted_graphs_nov,
+                                          sig_edges_coop, sig_edges_nov, nMIbootstraps)
+        MI_nov_coop = MI_nov_coop_all.mean(axis = 0)
+        MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
+    
+    #
+    if timelag == 1:
+        pull_pull_fromNodes_all = [9,8]
+        pull_pull_toNodes_all = [0,1]
+        #
+        gaze_gaze_fromNodes_all = [11,10]
+        gaze_gaze_toNodes_all = [2,3]
+        #
+        within_pullgaze_fromNodes_all = [8,9]
+        within_pullgaze_toNodes_all = [2,3]
+        #
+        across_pullgaze_fromNodes_all = [9,8]
+        across_pullgaze_toNodes_all = [2,3]
+        #
+        within_gazepull_fromNodes_all = [10,11]
+        within_gazepull_toNodes_all = [0,1]
+        #
+        across_gazepull_fromNodes_all = [11,10]
+        across_gazepull_toNodes_all = [0,1]
+        #
+        ntimelags = 1
+        #
+    elif timelag == 2:
+        pull_pull_fromNodes_all = [5,4]
+        pull_pull_toNodes_all = [0,1]
+        #
+        gaze_gaze_fromNodes_all = [7,6]
+        gaze_gaze_toNodes_all = [2,3]
+        #
+        within_pullgaze_fromNodes_all = [4,5]
+        within_pullgaze_toNodes_all = [2,3]
+        #
+        across_pullgaze_fromNodes_all = [5,4]
+        across_pullgaze_toNodes_all = [2,3]
+        #
+        within_gazepull_fromNodes_all = [6,7]
+        within_gazepull_toNodes_all = [0,1]
+        #
+        across_gazepull_fromNodes_all = [7,6]
+        across_gazepull_toNodes_all = [0,1]
+        #
+        ntimelags = 1
+        #
+    elif timelag == 3:
+        pull_pull_fromNodes_all = [1,0]
+        pull_pull_toNodes_all = [0,1]
+        #
+        gaze_gaze_fromNodes_all = [3,2]
+        gaze_gaze_toNodes_all = [2,3]
+        #
+        within_pullgaze_fromNodes_all = [0,1]
+        within_pullgaze_toNodes_all = [2,3]
+        #
+        across_pullgaze_fromNodes_all = [1,0]
+        across_pullgaze_toNodes_all = [2,3]
+        #
+        within_gazepull_fromNodes_all = [2,3]
+        within_gazepull_toNodes_all = [0,1]
+        #
+        across_gazepull_fromNodes_all = [3,2]
+        across_gazepull_toNodes_all = [0,1]
+        #
+        ntimelags = 1
+        #
+    elif timelag == 0:
+        pull_pull_fromNodes_all = [[1,5,9],[0,4,8]]
+        pull_pull_toNodes_all = [[0,0,0],[1,1,1]]
+        #
+        gaze_gaze_fromNodes_all = [[3,7,11],[2,6,10]]
+        gaze_gaze_toNodes_all = [[2,2,2],[3,3,3]]
+        #
+        within_pullgaze_fromNodes_all = [[0,4,8],[1,5,9]]
+        within_pullgaze_toNodes_all = [[2,2,2],[3,3,3]]
+        #
+        across_pullgaze_fromNodes_all = [[1,5,9],[0,4,8]]
+        across_pullgaze_toNodes_all = [[2,2,2],[3,3,3]]
+        #
+        within_gazepull_fromNodes_all = [[2,6,10],[3,7,11]]
+        within_gazepull_toNodes_all = [[0,0,0],[1,1,1]]
+        #
+        across_gazepull_fromNodes_all = [[3,7,11],[2,6,10]]
+        across_gazepull_toNodes_all = [[0,0,0],[1,1,1]]
+        #
+        ntimelags = 3
+        #
+    elif timelag == 12:
+        pull_pull_fromNodes_all = [[5,9],[4,8]]
+        pull_pull_toNodes_all = [[0,0],[1,1]]
+        #
+        gaze_gaze_fromNodes_all = [[7,11],[6,10]]
+        gaze_gaze_toNodes_all = [[2,2],[3,3]]
+        #
+        within_pullgaze_fromNodes_all = [[4,8],[5,9]]
+        within_pullgaze_toNodes_all = [[2,2],[3,3]]
+        #
+        across_pullgaze_fromNodes_all = [[5,9],[4,8]]
+        across_pullgaze_toNodes_all = [[2,2],[3,3]]
+        #
+        within_gazepull_fromNodes_all = [[6,10],[7,11]]
+        within_gazepull_toNodes_all = [[0,0],[1,1]]
+        #
+        across_gazepull_fromNodes_all = [[7,11],[6,10]]
+        across_gazepull_toNodes_all = [[0,0],[1,1]]
+        #
+        ntimelags = 2
+        #
+    
+    
+    for ianimal in np.arange(0,2,1):
+                
+        # coop self modulation
+        # pull-pull
+        a1 = MI_coop_self_all[:,pull_pull_fromNodes_all[ianimal],pull_pull_toNodes_all[ianimal]].flatten()
+        xxx1 = np.mean(a1)
+        MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,0] = a1
+        MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,0] = xxx1
+        # gaze-gaze
+        a2 = (MI_coop_self_all[:,gaze_gaze_fromNodes_all[ianimal],gaze_gaze_toNodes_all[ianimal]]).flatten()
+        xxx2 = np.mean(a2)
+        MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,1] = a2
+        MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,1] = xxx2
+        # within animal gazepull
+        a3 = (MI_coop_self_all[:,within_gazepull_fromNodes_all[ianimal],within_gazepull_toNodes_all[ianimal]]).flatten()
+        xxx3 = np.mean(a3)
+        MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,2] = a3
+        MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,2] = xxx3
+        # across animal gazepull
+        a4 = (MI_coop_self_all[:,across_gazepull_fromNodes_all[ianimal],across_gazepull_toNodes_all[ianimal]]).flatten()
+        xxx4 = np.mean(a4)
+        MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,3] = a4
+        MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,3] = xxx4
+        # within animal pullgaze
+        a5 = (MI_coop_self_all[:,within_pullgaze_fromNodes_all[ianimal],within_pullgaze_toNodes_all[ianimal]]).flatten()
+        xxx5 = np.mean(a5)
+        MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,4] = a5
+        MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,4] = xxx5
+        # across animal pullgaze
+        a6 = (MI_coop_self_all[:,across_pullgaze_fromNodes_all[ianimal],across_pullgaze_toNodes_all[ianimal]]).flatten()
+        xxx6 = np.mean(a6)
+        MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,5] = a6
+        MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,5] = xxx6
+        
+        
+        # novision coop modulation
+        # pull-pull
+        a1 = MI_nov_coop_all[:,pull_pull_fromNodes_all[ianimal],pull_pull_toNodes_all[ianimal]].flatten()
+        xxx1 = np.mean(a1)
+        MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,0] = a1
+        MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,0] = xxx1
+        # gaze-gaze
+        a2 = (MI_nov_coop_all[:,gaze_gaze_fromNodes_all[ianimal],gaze_gaze_toNodes_all[ianimal]]).flatten()
+        xxx2 = np.mean(a2)
+        MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,1] = a2
+        MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,1] = xxx2
+        # within animal gazepull
+        a3 = (MI_nov_coop_all[:,within_gazepull_fromNodes_all[ianimal],within_gazepull_toNodes_all[ianimal]]).flatten()
+        xxx3 = np.mean(a3)
+        MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,2] = a3
+        MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,2] = xxx3
+        # across animal gazepull
+        a4 = (MI_nov_coop_all[:,across_gazepull_fromNodes_all[ianimal],across_gazepull_toNodes_all[ianimal]]).flatten()
+        xxx4 = np.mean(a4)
+        MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,3] = a4
+        MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,3] = xxx4
+        # within animal pullgaze
+        a5 = (MI_nov_coop_all[:,within_pullgaze_fromNodes_all[ianimal],within_pullgaze_toNodes_all[ianimal]]).flatten()
+        xxx5 = np.mean(a5)
+        MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,4] = a5
+        MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,4] = xxx5
+        # across animal pullgaze
+        a6 = (MI_nov_coop_all[:,across_pullgaze_fromNodes_all[ianimal],across_pullgaze_toNodes_all[ianimal]]).flatten()
+        xxx6 = np.mean(a6)
+        MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,5] = a6
+        MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,5] = xxx6
+        
+
+# prepare the data
+# average all animals for each dependency
+MI_coop_self_all_IndiAni_all = MI_coop_self_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)
+MI_nov_coop_all_IndiAni_all = MI_nov_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)
+MI_coop_self_all_IndiAni_allmean = np.nanmean(MI_coop_self_all_IndiAni_all,axis=0)
+MI_nov_coop_all_IndiAni_allmean = np.nanmean(MI_nov_coop_all_IndiAni_all,axis=0) 
+MI_coop_self_all_IndiAni_allse = np.nanstd(MI_coop_self_all_IndiAni_all,axis=0)/np.sqrt(8*nMIbootstraps*ntimelags) 
+MI_nov_coop_all_IndiAni_allse = np.nanstd(MI_nov_coop_all_IndiAni_all,axis=0)/np.sqrt(8*nMIbootstraps*ntimelags) 
+
+# average all males and females for each dependency
+MI_coop_self_all_IndiAni_male = MI_coop_self_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1))),:]
+MI_nov_coop_all_IndiAni_male = MI_nov_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1))),:]
+MI_coop_self_all_IndiAni_malemean = np.nanmean(MI_coop_self_all_IndiAni_male,axis=0)
+MI_nov_coop_all_IndiAni_malemean = np.nanmean(MI_nov_coop_all_IndiAni_male,axis=0) 
+MI_coop_self_all_IndiAni_malese = np.nanstd(MI_coop_self_all_IndiAni_male,axis=0)/np.sqrt(3*nMIbootstraps*ntimelags) 
+MI_nov_coop_all_IndiAni_malese = np.nanstd(MI_nov_coop_all_IndiAni_male,axis=0)/np.sqrt(3*nMIbootstraps*ntimelags) 
+# average all males and females for each dependency
+MI_coop_self_all_IndiAni_female = MI_coop_self_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
+MI_nov_coop_all_IndiAni_female = MI_nov_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
+MI_coop_self_all_IndiAni_femalemean = np.nanmean(MI_coop_self_all_IndiAni_female,axis=0)
+MI_nov_coop_all_IndiAni_femalemean = np.nanmean(MI_nov_coop_all_IndiAni_female,axis=0) 
+MI_coop_self_all_IndiAni_femalese = np.nanstd(MI_coop_self_all_IndiAni_female,axis=0)/np.sqrt(5*nMIbootstraps*ntimelags) 
+MI_nov_coop_all_IndiAni_femalese = np.nanstd(MI_nov_coop_all_IndiAni_female,axis=0)/np.sqrt(5*nMIbootstraps*ntimelags) 
+
+# average all subordinate and dominant for each dependency
+MI_coop_self_all_IndiAni_sub = MI_coop_self_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1),np.arange(6*nMIbootstraps*ntimelags,7*nMIbootstraps*ntimelags,1))),:]
+MI_nov_coop_all_IndiAni_sub = MI_nov_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1),np.arange(6*nMIbootstraps*ntimelags,7*nMIbootstraps*ntimelags,1))),:]
+MI_coop_self_all_IndiAni_submean = np.nanmean(MI_coop_self_all_IndiAni_sub,axis=0)
+MI_nov_coop_all_IndiAni_submean = np.nanmean(MI_nov_coop_all_IndiAni_sub,axis=0) 
+MI_coop_self_all_IndiAni_subse = np.nanstd(MI_coop_self_all_IndiAni_sub,axis=0)/np.sqrt(4*nMIbootstraps*ntimelags) 
+MI_nov_coop_all_IndiAni_subse = np.nanstd(MI_nov_coop_all_IndiAni_sub,axis=0)/np.sqrt(4*nMIbootstraps*ntimelags) 
+# average all subordinate and dominant for each dependency
+MI_coop_self_all_IndiAni_dom = MI_coop_self_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,6*nMIbootstraps*ntimelags,1),np.arange(7*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
+MI_nov_coop_all_IndiAni_dom = MI_nov_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,6*nMIbootstraps*ntimelags,1),np.arange(7*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
+MI_coop_self_all_IndiAni_dommean = np.nanmean(MI_coop_self_all_IndiAni_dom,axis=0)
+MI_nov_coop_all_IndiAni_dommean = np.nanmean(MI_nov_coop_all_IndiAni_dom,axis=0) 
+MI_coop_self_all_IndiAni_domse = np.nanstd(MI_coop_self_all_IndiAni_dom,axis=0)/np.sqrt(4*nMIbootstraps*ntimelags) 
+MI_nov_coop_all_IndiAni_domse = np.nanstd(MI_nov_coop_all_IndiAni_dom,axis=0)/np.sqrt(4*nMIbootstraps*ntimelags) 
+
+# pool everything together
+MI_coop_self_all_IndiAni_pooled = {'all':MI_coop_self_all_IndiAni_all,
+                                   'male':MI_coop_self_all_IndiAni_male,
+                                   'female':MI_coop_self_all_IndiAni_female,
+                                   'subordinate':MI_coop_self_all_IndiAni_sub,
+                                   'dominant':MI_coop_self_all_IndiAni_dom}
+MI_nov_coop_all_IndiAni_pooled =  {'all':MI_nov_coop_all_IndiAni_all,
+                                   'male':MI_nov_coop_all_IndiAni_male,
+                                   'female':MI_nov_coop_all_IndiAni_female,
+                                   'subordinate':MI_nov_coop_all_IndiAni_sub,
+                                   'dominant':MI_nov_coop_all_IndiAni_dom}
+MI_coop_self_mean_IndiAni_pooled ={'all':MI_coop_self_mean_IndiAni,
+                                   'male':MI_coop_self_mean_IndiAni[[0,2,4],:],
+                                   'female':MI_coop_self_mean_IndiAni[[1,3,5,6,7],:],
+                                   'subordinate':MI_coop_self_mean_IndiAni[[0,2,4,6],:],
+                                   'dominant':MI_coop_self_mean_IndiAni[[1,3,5,7],:]}
+MI_nov_coop_mean_IndiAni_pooled = {'all':MI_nov_coop_mean_IndiAni,
+                                   'male':MI_nov_coop_mean_IndiAni[[0,2,4],:],
+                                   'female':MI_nov_coop_mean_IndiAni[[1,3,5,6,7],:],
+                                   'subordinate':MI_nov_coop_mean_IndiAni[[0,2,4,6],:],
+                                   'dominant':MI_nov_coop_mean_IndiAni[[1,3,5,7],:]}
+
+plottypes = ['all','male','female','subordinate','dominant']
+
+# for plot
+dependencynames = ['pull-pull','gaze-gaze','within_gazepull','across_gazepull','within_pullgaze','across_pullgaze']
+dependencytargets = ['pull-pull','within_gazepull','across_pullgaze']
+# dependencytargets = dependencynames
+
+for iplot in np.arange(0,5,1):
+    
+    plottype = plottypes[iplot]
+    
+    # average all animals for each dependency
+    # barplot
+    MI_coop_self_all_IndiAni_all_df = pd.DataFrame(MI_coop_self_all_IndiAni_pooled[plottype])
+    MI_coop_self_all_IndiAni_all_df.columns = dependencynames
+    MI_coop_self_all_IndiAni_all_df['MItype'] = 'coop-self'
+    #
+    MI_nov_coop_all_IndiAni_all_df = pd.DataFrame(MI_nov_coop_all_IndiAni_pooled[plottype])
+    MI_nov_coop_all_IndiAni_all_df.columns = dependencynames
+    MI_nov_coop_all_IndiAni_all_df['MItype'] = 'nov-coop'
+    #
+    df_long=pd.concat([MI_coop_self_all_IndiAni_all_df,MI_nov_coop_all_IndiAni_all_df])
+    df_long2 = df_long.melt(id_vars=['MItype'], value_vars=dependencytargets,var_name='condition', value_name='value')
+    #
+    # barplot based on all bootstrap data point
+    # seaborn.barplot(ax=ax1,data=df_long2,x='condition',y='value',hue='MItype',errorbar='ci',alpha=.5)
+    #
+    # swarmplot
+    MI_coop_self_mean_IndiAni_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled[plottype])
+    MI_coop_self_mean_IndiAni_df.columns = dependencynames
+    MI_coop_self_mean_IndiAni_df['MItype'] = 'coop-self'
+    #
+    MI_nov_coop_mean_IndiAni_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled[plottype])
+    MI_nov_coop_mean_IndiAni_df.columns = dependencynames
+    MI_nov_coop_mean_IndiAni_df['MItype'] = 'nov-coop'
+    #
+    df_long=pd.concat([MI_coop_self_mean_IndiAni_df,MI_nov_coop_mean_IndiAni_df])
+    df_long2 = df_long.melt(id_vars=['MItype'], value_vars=dependencytargets,var_name='condition', value_name='value')
+    #
+    # barplot based on mean value for each animal
+    if iplot < 1:
+        seaborn.barplot(ax=axs.ravel()[iplot],data=df_long2,x='condition',y='value',hue='MItype',errorbar='se',alpha=.5,capsize=0.1)
+        seaborn.swarmplot(ax=axs.ravel()[iplot],data=df_long2,x='condition',y='value',hue='MItype',alpha=.9,size= 9,dodge=True,legend=False)
+        axs.ravel()[iplot].set_xlabel('')
+        axs.ravel()[iplot].set_ylabel('Modulation Index',fontsize=20)
+        axs.ravel()[iplot].set_title(plottype+' animals',fontsize=24)
+        axs.ravel()[iplot].set_ylim([-1.05,1.05])
+    else:
+        seaborn.barplot(ax=axs.ravel()[iplot+1],data=df_long2,x='condition',y='value',hue='MItype',errorbar='se',alpha=.5,capsize=0.1)
+        seaborn.swarmplot(ax=axs.ravel()[iplot+1],data=df_long2,x='condition',y='value',hue='MItype',alpha=.9,size= 9,dodge=True,legend=False)
+        axs.ravel()[iplot+1].set_xlabel('')
+        axs.ravel()[iplot+1].set_ylabel('Modulation Index',fontsize=20)
+        axs.ravel()[iplot+1].set_title(plottype+' animals',fontsize=24)
+        axs.ravel()[iplot+1].set_ylim([-1.05,1.05])
+
+
+savefig = 1
+if savefig:
+    if moreSampSize:
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'
+        if not os.path.exists(figsavefolder):
+            os.makedirs(figsavefolder)
+        plt.savefig(figsavefolder+'threeTimeLag_Edge_ModulationIndex_'+timelagname+'Lag_IndiAnimal_summarized_'+str(temp_resolu)+'_'+str(j_sampsize_name)+'_rows_subset.pdf')
+    else:
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'
+        if not os.path.exists(figsavefolder):
+            os.makedirs(figsavefolder)
+        plt.savefig(figsavefolder+'threeTimeLag_Edge_ModulationIndex_'+timelagname+'Lag_IndiAnimal_summarized_'+str(temp_resolu)+'_'+j_sampsize_name+'_subset.pdf')
+           
+    
+
+
+# ### version 7-2-3-2:
+# #### same as version 7-2-3, but group differently
+
+# In[ ]:
+
+
+# PLOT multiple pairs in one plot, so need to load data seperately
+moreSampSize = 0
+#
+animal1_fixedorders = ['eddie','dodson','dannon','ginger']
+animal2_fixedorders = ['sparkle','scorch','kanga','kanga']
+animal_pooled_list = ['E','SP','DO','SC','DA','KwDA','G','KwG']
+
+nanimalpairs = np.shape(animal1_fixedorders)[0]
+nanimalpooled = np.shape(animal_pooled_list)[0]
+
+timelag = 1 # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag 1 and 2)
+timelagname = '1second' # '1/2/3second' or 'merged' or '12merged'
+# timelagname = 'merged' # together with timelag = 0
+# timelagname = '12merged' # together with timelag = 12
+
+nMIbootstraps = 150
+
+# 
+MI_coop_self_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps,6])
+MI_coop_self_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+MI_nov_coop_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps,6])
+MI_nov_coop_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+ntimelags = 1
+if timelag == 0:
+    ntimelags = 3
+    MI_coop_self_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps*3,6])
+    MI_coop_self_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+    MI_nov_coop_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps*3,6])
+    MI_nov_coop_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+if timelag == 12:
+    ntimelags = 2
+    MI_coop_self_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps*2,6])
+    MI_coop_self_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+    MI_nov_coop_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps*2,6])
+    MI_nov_coop_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+#
+
+#
+#
+fig, axs = plt.subplots(1,3)
+fig.set_figheight(10)
+fig.set_figwidth(10*3)
+
+
+for ianimalpair in np.arange(0,nanimalpairs,1):
+    animal1_fixedorder = animal1_fixedorders[ianimalpair]
+    animal2_fixedorder = animal2_fixedorders[ianimalpair]
+    #
+    data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'
+    #
+    if moreSampSize:
+        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+            weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+            weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+            sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+    else:
+        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+            weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+            weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+            sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+
+    # make sure these variables are the same as in the previous steps
+    # temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+    temp_resolus = [1] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+    ntemp_reses = np.shape(temp_resolus)[0]
+    #
+    if moreSampSize:
+        # different data (down/re)sampling numbers
+        # samplingsizes = np.arange(1100,3000,100)
+        samplingsizes = [1100]
+        # samplingsizes = [100,500,1000,1500,2000,2500,3000]        
+        # samplingsizes = [100,500]
+        # samplingsizes_name = ['100','500','1000','1500','2000','2500','3000']
+        samplingsizes_name = list(map(str, samplingsizes))
+    else:
+        samplingsizes_name = ['min_row_number']   
+    nsamplings = np.shape(samplingsizes_name)[0]
+
+    #
+    temp_resolu = temp_resolus[0]
+    j_sampsize_name = samplingsizes_name[0]    
+
+    # load edge weight data    
+    weighted_graphs_self = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['self']
+    weighted_graphs_sf_self = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['self']
+    sig_edges_self = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['self']
+    #
+    weighted_graphs_coop = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['coop(1s)']
+    weighted_graphs_sf_coop = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['coop(1s)']
+    sig_edges_coop = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['coop(1s)']
+    #
+    weighted_graphs_nov = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['no-vision']
+    weighted_graphs_sf_nov = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['no-vision']
+    sig_edges_nov = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['no-vision']
+
+    # organize the key edge data
+    weighted_graphs_self_mean = weighted_graphs_self.mean(axis=0)
+    weighted_graphs_coop_mean = weighted_graphs_coop.mean(axis=0)
+    weighted_graphs_nov_mean = weighted_graphs_nov.mean(axis=0)
+    # MI_coop_self = (weighted_graphs_coop_mean-weighted_graphs_self_mean)/(weighted_graphs_coop_mean+weighted_graphs_self_mean)
+    # MI_nov_coop = (weighted_graphs_nov_mean-weighted_graphs_coop_mean)/(weighted_graphs_nov_mean+weighted_graphs_coop_mean)
+    # MI_coop_self = ((weighted_graphs_coop-weighted_graphs_self)/(weighted_graphs_coop+weighted_graphs_self)).mean(axis=0)
+    # MI_nov_coop = ((weighted_graphs_nov-weighted_graphs_coop)/(weighted_graphs_nov+weighted_graphs_coop)).mean(axis=0)
+    #
+    if 0:
+        MI_coop_self_all = weighted_graphs_coop-weighted_graphs_self
+        MI_nov_coop_all = weighted_graphs_nov-weighted_graphs_coop  
+        MI_coop_self = (weighted_graphs_coop-weighted_graphs_self).mean(axis=0)
+        MI_nov_coop = (weighted_graphs_nov-weighted_graphs_coop).mean(axis=0)
+        #
+        sig_edges_coop_self = ((sig_edges_coop+sig_edges_self)>0)*1
+        sig_edges_nov_coop = ((sig_edges_coop+sig_edges_nov)>0)*1
+        #
+        MI_coop_self = MI_coop_self * sig_edges_coop_self
+        MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
+        #
+        nMIbootstraps = 1
+    else:
+        nMIbootstraps = 150
+        #
+        MI_coop_self_all,sig_edges_coop_self = Modulation_Index(weighted_graphs_self, weighted_graphs_coop,
+                                          sig_edges_self, sig_edges_coop, nMIbootstraps)
+        MI_coop_self = MI_coop_self_all.mean(axis = 0)
+        MI_coop_self = MI_coop_self * sig_edges_coop_self
+        MI_nov_coop_all,sig_edges_nov_coop  = Modulation_Index(weighted_graphs_coop, weighted_graphs_nov,
+                                          sig_edges_coop, sig_edges_nov, nMIbootstraps)
+        MI_nov_coop = MI_nov_coop_all.mean(axis = 0)
+        MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
+    
+    #
+    if timelag == 1:
+        pull_pull_fromNodes_all = [9,8]
+        pull_pull_toNodes_all = [0,1]
+        #
+        gaze_gaze_fromNodes_all = [11,10]
+        gaze_gaze_toNodes_all = [2,3]
+        #
+        within_pullgaze_fromNodes_all = [8,9]
+        within_pullgaze_toNodes_all = [2,3]
+        #
+        across_pullgaze_fromNodes_all = [9,8]
+        across_pullgaze_toNodes_all = [2,3]
+        #
+        within_gazepull_fromNodes_all = [10,11]
+        within_gazepull_toNodes_all = [0,1]
+        #
+        across_gazepull_fromNodes_all = [11,10]
+        across_gazepull_toNodes_all = [0,1]
+        #
+        ntimelags = 1
+        #
+    elif timelag == 2:
+        pull_pull_fromNodes_all = [5,4]
+        pull_pull_toNodes_all = [0,1]
+        #
+        gaze_gaze_fromNodes_all = [7,6]
+        gaze_gaze_toNodes_all = [2,3]
+        #
+        within_pullgaze_fromNodes_all = [4,5]
+        within_pullgaze_toNodes_all = [2,3]
+        #
+        across_pullgaze_fromNodes_all = [5,4]
+        across_pullgaze_toNodes_all = [2,3]
+        #
+        within_gazepull_fromNodes_all = [6,7]
+        within_gazepull_toNodes_all = [0,1]
+        #
+        across_gazepull_fromNodes_all = [7,6]
+        across_gazepull_toNodes_all = [0,1]
+        #
+        ntimelags = 1
+        #
+    elif timelag == 3:
+        pull_pull_fromNodes_all = [1,0]
+        pull_pull_toNodes_all = [0,1]
+        #
+        gaze_gaze_fromNodes_all = [3,2]
+        gaze_gaze_toNodes_all = [2,3]
+        #
+        within_pullgaze_fromNodes_all = [0,1]
+        within_pullgaze_toNodes_all = [2,3]
+        #
+        across_pullgaze_fromNodes_all = [1,0]
+        across_pullgaze_toNodes_all = [2,3]
+        #
+        within_gazepull_fromNodes_all = [2,3]
+        within_gazepull_toNodes_all = [0,1]
+        #
+        across_gazepull_fromNodes_all = [3,2]
+        across_gazepull_toNodes_all = [0,1]
+        #
+        ntimelags = 1
+        #
+    elif timelag == 0:
+        pull_pull_fromNodes_all = [[1,5,9],[0,4,8]]
+        pull_pull_toNodes_all = [[0,0,0],[1,1,1]]
+        #
+        gaze_gaze_fromNodes_all = [[3,7,11],[2,6,10]]
+        gaze_gaze_toNodes_all = [[2,2,2],[3,3,3]]
+        #
+        within_pullgaze_fromNodes_all = [[0,4,8],[1,5,9]]
+        within_pullgaze_toNodes_all = [[2,2,2],[3,3,3]]
+        #
+        across_pullgaze_fromNodes_all = [[1,5,9],[0,4,8]]
+        across_pullgaze_toNodes_all = [[2,2,2],[3,3,3]]
+        #
+        within_gazepull_fromNodes_all = [[2,6,10],[3,7,11]]
+        within_gazepull_toNodes_all = [[0,0,0],[1,1,1]]
+        #
+        across_gazepull_fromNodes_all = [[3,7,11],[2,6,10]]
+        across_gazepull_toNodes_all = [[0,0,0],[1,1,1]]
+        #
+        ntimelags = 3
+        #
+    elif timelag == 12:
+        pull_pull_fromNodes_all = [[5,9],[4,8]]
+        pull_pull_toNodes_all = [[0,0],[1,1]]
+        #
+        gaze_gaze_fromNodes_all = [[7,11],[6,10]]
+        gaze_gaze_toNodes_all = [[2,2],[3,3]]
+        #
+        within_pullgaze_fromNodes_all = [[4,8],[5,9]]
+        within_pullgaze_toNodes_all = [[2,2],[3,3]]
+        #
+        across_pullgaze_fromNodes_all = [[5,9],[4,8]]
+        across_pullgaze_toNodes_all = [[2,2],[3,3]]
+        #
+        within_gazepull_fromNodes_all = [[6,10],[7,11]]
+        within_gazepull_toNodes_all = [[0,0],[1,1]]
+        #
+        across_gazepull_fromNodes_all = [[7,11],[6,10]]
+        across_gazepull_toNodes_all = [[0,0],[1,1]]
+        #
+        ntimelags = 2
+        #
+    
+    
+    for ianimal in np.arange(0,2,1):
+                
+        # coop self modulation
+        # pull-pull
+        a1 = MI_coop_self_all[:,pull_pull_fromNodes_all[ianimal],pull_pull_toNodes_all[ianimal]].flatten()
+        xxx1 = np.mean(a1)
+        MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,0] = a1
+        MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,0] = xxx1
+        # gaze-gaze
+        a2 = (MI_coop_self_all[:,gaze_gaze_fromNodes_all[ianimal],gaze_gaze_toNodes_all[ianimal]]).flatten()
+        xxx2 = np.mean(a2)
+        MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,1] = a2
+        MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,1] = xxx2
+        # within animal gazepull
+        a3 = (MI_coop_self_all[:,within_gazepull_fromNodes_all[ianimal],within_gazepull_toNodes_all[ianimal]]).flatten()
+        xxx3 = np.mean(a3)
+        MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,2] = a3
+        MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,2] = xxx3
+        # across animal gazepull
+        a4 = (MI_coop_self_all[:,across_gazepull_fromNodes_all[ianimal],across_gazepull_toNodes_all[ianimal]]).flatten()
+        xxx4 = np.mean(a4)
+        MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,3] = a4
+        MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,3] = xxx4
+        # within animal pullgaze
+        a5 = (MI_coop_self_all[:,within_pullgaze_fromNodes_all[ianimal],within_pullgaze_toNodes_all[ianimal]]).flatten()
+        xxx5 = np.mean(a5)
+        MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,4] = a5
+        MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,4] = xxx5
+        # across animal pullgaze
+        a6 = (MI_coop_self_all[:,across_pullgaze_fromNodes_all[ianimal],across_pullgaze_toNodes_all[ianimal]]).flatten()
+        xxx6 = np.mean(a6)
+        MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,5] = a6
+        MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,5] = xxx6
+        
+        
+        # novision coop modulation
+        # pull-pull
+        a1 = MI_nov_coop_all[:,pull_pull_fromNodes_all[ianimal],pull_pull_toNodes_all[ianimal]].flatten()
+        xxx1 = np.mean(a1)
+        MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,0] = a1
+        MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,0] = xxx1
+        # gaze-gaze
+        a2 = (MI_nov_coop_all[:,gaze_gaze_fromNodes_all[ianimal],gaze_gaze_toNodes_all[ianimal]]).flatten()
+        xxx2 = np.mean(a2)
+        MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,1] = a2
+        MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,1] = xxx2
+        # within animal gazepull
+        a3 = (MI_nov_coop_all[:,within_gazepull_fromNodes_all[ianimal],within_gazepull_toNodes_all[ianimal]]).flatten()
+        xxx3 = np.mean(a3)
+        MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,2] = a3
+        MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,2] = xxx3
+        # across animal gazepull
+        a4 = (MI_nov_coop_all[:,across_gazepull_fromNodes_all[ianimal],across_gazepull_toNodes_all[ianimal]]).flatten()
+        xxx4 = np.mean(a4)
+        MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,3] = a4
+        MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,3] = xxx4
+        # within animal pullgaze
+        a5 = (MI_nov_coop_all[:,within_pullgaze_fromNodes_all[ianimal],within_pullgaze_toNodes_all[ianimal]]).flatten()
+        xxx5 = np.mean(a5)
+        MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,4] = a5
+        MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,4] = xxx5
+        # across animal pullgaze
+        a6 = (MI_nov_coop_all[:,across_pullgaze_fromNodes_all[ianimal],across_pullgaze_toNodes_all[ianimal]]).flatten()
+        xxx6 = np.mean(a6)
+        MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,5] = a6
+        MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,5] = xxx6
+        
+
+# prepare the data
+# average all animals for each dependency
+MI_coop_self_all_IndiAni_all = MI_coop_self_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)
+MI_nov_coop_all_IndiAni_all = MI_nov_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)
+MI_coop_self_all_IndiAni_allmean = np.nanmean(MI_coop_self_all_IndiAni_all,axis=0)
+MI_nov_coop_all_IndiAni_allmean = np.nanmean(MI_nov_coop_all_IndiAni_all,axis=0) 
+MI_coop_self_all_IndiAni_allse = np.nanstd(MI_coop_self_all_IndiAni_all,axis=0)/np.sqrt(8*nMIbootstraps*ntimelags) 
+MI_nov_coop_all_IndiAni_allse = np.nanstd(MI_nov_coop_all_IndiAni_all,axis=0)/np.sqrt(8*nMIbootstraps*ntimelags) 
+
+# average all males and females for each dependency
+MI_coop_self_all_IndiAni_male = MI_coop_self_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1))),:]
+MI_nov_coop_all_IndiAni_male = MI_nov_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1))),:]
+MI_coop_self_all_IndiAni_malemean = np.nanmean(MI_coop_self_all_IndiAni_male,axis=0)
+MI_nov_coop_all_IndiAni_malemean = np.nanmean(MI_nov_coop_all_IndiAni_male,axis=0) 
+MI_coop_self_all_IndiAni_malese = np.nanstd(MI_coop_self_all_IndiAni_male,axis=0)/np.sqrt(3*nMIbootstraps*ntimelags) 
+MI_nov_coop_all_IndiAni_malese = np.nanstd(MI_nov_coop_all_IndiAni_male,axis=0)/np.sqrt(3*nMIbootstraps*ntimelags) 
+# average all males and females for each dependency
+MI_coop_self_all_IndiAni_female = MI_coop_self_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
+MI_nov_coop_all_IndiAni_female = MI_nov_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
+MI_coop_self_all_IndiAni_femalemean = np.nanmean(MI_coop_self_all_IndiAni_female,axis=0)
+MI_nov_coop_all_IndiAni_femalemean = np.nanmean(MI_nov_coop_all_IndiAni_female,axis=0) 
+MI_coop_self_all_IndiAni_femalese = np.nanstd(MI_coop_self_all_IndiAni_female,axis=0)/np.sqrt(5*nMIbootstraps*ntimelags) 
+MI_nov_coop_all_IndiAni_femalese = np.nanstd(MI_nov_coop_all_IndiAni_female,axis=0)/np.sqrt(5*nMIbootstraps*ntimelags) 
+
+# average all subordinate and dominant for each dependency
+MI_coop_self_all_IndiAni_sub = MI_coop_self_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1),np.arange(6*nMIbootstraps*ntimelags,7*nMIbootstraps*ntimelags,1))),:]
+MI_nov_coop_all_IndiAni_sub = MI_nov_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1),np.arange(6*nMIbootstraps*ntimelags,7*nMIbootstraps*ntimelags,1))),:]
+MI_coop_self_all_IndiAni_submean = np.nanmean(MI_coop_self_all_IndiAni_sub,axis=0)
+MI_nov_coop_all_IndiAni_submean = np.nanmean(MI_nov_coop_all_IndiAni_sub,axis=0) 
+MI_coop_self_all_IndiAni_subse = np.nanstd(MI_coop_self_all_IndiAni_sub,axis=0)/np.sqrt(4*nMIbootstraps*ntimelags) 
+MI_nov_coop_all_IndiAni_subse = np.nanstd(MI_nov_coop_all_IndiAni_sub,axis=0)/np.sqrt(4*nMIbootstraps*ntimelags) 
+# average all subordinate and dominant for each dependency
+MI_coop_self_all_IndiAni_dom = MI_coop_self_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,6*nMIbootstraps*ntimelags,1),np.arange(7*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
+MI_nov_coop_all_IndiAni_dom = MI_nov_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,6*nMIbootstraps*ntimelags,1),np.arange(7*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
+MI_coop_self_all_IndiAni_dommean = np.nanmean(MI_coop_self_all_IndiAni_dom,axis=0)
+MI_nov_coop_all_IndiAni_dommean = np.nanmean(MI_nov_coop_all_IndiAni_dom,axis=0) 
+MI_coop_self_all_IndiAni_domse = np.nanstd(MI_coop_self_all_IndiAni_dom,axis=0)/np.sqrt(4*nMIbootstraps*ntimelags) 
+MI_nov_coop_all_IndiAni_domse = np.nanstd(MI_nov_coop_all_IndiAni_dom,axis=0)/np.sqrt(4*nMIbootstraps*ntimelags) 
+
+# pool everything together
+MI_coop_self_all_IndiAni_pooled = {'all':MI_coop_self_all_IndiAni_all,
+                                   'male':MI_coop_self_all_IndiAni_male,
+                                   'female':MI_coop_self_all_IndiAni_female,
+                                   'subordinate':MI_coop_self_all_IndiAni_sub,
+                                   'dominant':MI_coop_self_all_IndiAni_dom}
+MI_nov_coop_all_IndiAni_pooled =  {'all':MI_nov_coop_all_IndiAni_all,
+                                   'male':MI_nov_coop_all_IndiAni_male,
+                                   'female':MI_nov_coop_all_IndiAni_female,
+                                   'subordinate':MI_nov_coop_all_IndiAni_sub,
+                                   'dominant':MI_nov_coop_all_IndiAni_dom}
+MI_coop_self_mean_IndiAni_pooled ={'all':MI_coop_self_mean_IndiAni,
+                                   'male':MI_coop_self_mean_IndiAni[[0,2,4],:],
+                                   'female':MI_coop_self_mean_IndiAni[[1,3,5,6,7],:],
+                                   'subordinate':MI_coop_self_mean_IndiAni[[0,2,4,6],:],
+                                   'dominant':MI_coop_self_mean_IndiAni[[1,3,5,7],:]}
+MI_nov_coop_mean_IndiAni_pooled = {'all':MI_nov_coop_mean_IndiAni,
+                                   'male':MI_nov_coop_mean_IndiAni[[0,2,4],:],
+                                   'female':MI_nov_coop_mean_IndiAni[[1,3,5,6,7],:],
+                                   'subordinate':MI_nov_coop_mean_IndiAni[[0,2,4,6],:],
+                                   'dominant':MI_nov_coop_mean_IndiAni[[1,3,5,7],:]}
+
+# for plot
+dependencynames = ['pull-pull','gaze-gaze','within_gazepull','across_gazepull','within_pullgaze','across_pullgaze']
+dependencytargets = ['pull-pull','within_gazepull','across_pullgaze']
+# dependencytargets = dependencynames
+
+# plot 1
+# average all animals for each dependency
+# barplot
+MI_coop_self_all_IndiAni_all_df = pd.DataFrame(MI_coop_self_all_IndiAni_pooled['all'])
+MI_coop_self_all_IndiAni_all_df.columns = dependencynames
+MI_coop_self_all_IndiAni_all_df['MItype'] = 'coop-self'
+#
+MI_nov_coop_all_IndiAni_all_df = pd.DataFrame(MI_nov_coop_all_IndiAni_pooled['all'])
+MI_nov_coop_all_IndiAni_all_df.columns = dependencynames
+MI_nov_coop_all_IndiAni_all_df['MItype'] = 'nov-coop'
+#
+df_long=pd.concat([MI_coop_self_all_IndiAni_all_df,MI_nov_coop_all_IndiAni_all_df])
+df_long2 = df_long.melt(id_vars=['MItype'], value_vars=dependencytargets,var_name='condition', value_name='value')
+#
+# barplot based on all bootstrap data point
+# seaborn.barplot(ax=ax1,data=df_long2,x='condition',y='value',hue='MItype',errorbar='ci',alpha=.5)
+#
+# swarmplot
+MI_coop_self_mean_IndiAni_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled['all'])
+MI_coop_self_mean_IndiAni_df.columns = dependencynames
+MI_coop_self_mean_IndiAni_df['MItype'] = 'coop-self'
+#
+MI_nov_coop_mean_IndiAni_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled['all'])
+MI_nov_coop_mean_IndiAni_df.columns = dependencynames
+MI_nov_coop_mean_IndiAni_df['MItype'] = 'nov-coop'
+#
+df_long=pd.concat([MI_coop_self_mean_IndiAni_df,MI_nov_coop_mean_IndiAni_df])
+df_long2 = df_long.melt(id_vars=['MItype'], value_vars=dependencytargets,var_name='condition', value_name='value')
+#
+# barplot based on mean value for each animal
+seaborn.barplot(ax=axs.ravel()[0],data=df_long2,x='condition',y='value',hue='MItype',errorbar='se',alpha=.5,capsize=0.1)
+seaborn.swarmplot(ax=axs.ravel()[0],data=df_long2,x='condition',y='value',hue='MItype',alpha=.9,size= 9,dodge=True,legend=False)
+axs.ravel()[0].set_xlabel('')
+axs.ravel()[0].set_ylabel('Modulation Index',fontsize=20)
+axs.ravel()[0].set_title('all animals',fontsize=24)
+axs.ravel()[0].set_ylim([-1.35,1.35])
+
+# plot 2
+# average male and female animals for each dependency
+# barplot
+MI_coop_self_all_IndiAni_male_df = pd.DataFrame(MI_coop_self_all_IndiAni_pooled['male'])
+MI_coop_self_all_IndiAni_male_df.columns = dependencynames
+MI_coop_self_all_IndiAni_male_df['MItype'] = 'male coop-self'
+#
+MI_nov_coop_all_IndiAni_male_df = pd.DataFrame(MI_nov_coop_all_IndiAni_pooled['male'])
+MI_nov_coop_all_IndiAni_male_df.columns = dependencynames
+MI_nov_coop_all_IndiAni_male_df['MItype'] = 'male nov-coop'
+#
+MI_coop_self_all_IndiAni_female_df = pd.DataFrame(MI_coop_self_all_IndiAni_pooled['female'])
+MI_coop_self_all_IndiAni_female_df.columns = dependencynames
+MI_coop_self_all_IndiAni_female_df['MItype'] = 'female coop-self'
+#
+MI_nov_coop_all_IndiAni_female_df = pd.DataFrame(MI_nov_coop_all_IndiAni_pooled['female'])
+MI_nov_coop_all_IndiAni_female_df.columns = dependencynames
+MI_nov_coop_all_IndiAni_female_df['MItype'] = 'female nov-coop'
+#
+df_long=pd.concat([MI_coop_self_all_IndiAni_male_df,MI_nov_coop_all_IndiAni_male_df,
+                   MI_coop_self_all_IndiAni_female_df,MI_nov_coop_all_IndiAni_female_df])
+df_long2 = df_long.melt(id_vars=['MItype'], value_vars=dependencytargets,var_name='condition', value_name='value')
+#
+# barplot based on all bootstrap data point
+# seaborn.barplot(ax=ax1,data=df_long2,x='condition',y='value',hue='MItype',errorbar='ci',alpha=.5)
+#
+# swarmplot
+MI_coop_self_mean_IndiAni_male_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled['male'])
+MI_coop_self_mean_IndiAni_male_df.columns = dependencynames
+MI_coop_self_mean_IndiAni_male_df['MItype'] = 'male coop-self'
+#
+MI_nov_coop_mean_IndiAni_male_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled['male'])
+MI_nov_coop_mean_IndiAni_male_df.columns = dependencynames
+MI_nov_coop_mean_IndiAni_male_df['MItype'] = 'male nov-coop'
+#
+MI_coop_self_mean_IndiAni_female_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled['female'])
+MI_coop_self_mean_IndiAni_female_df.columns = dependencynames
+MI_coop_self_mean_IndiAni_female_df['MItype'] = 'female coop-self'
+#
+MI_nov_coop_mean_IndiAni_female_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled['female'])
+MI_nov_coop_mean_IndiAni_female_df.columns = dependencynames
+MI_nov_coop_mean_IndiAni_female_df['MItype'] = 'female nov-coop'
+#
+df_long=pd.concat([MI_coop_self_mean_IndiAni_male_df,MI_nov_coop_mean_IndiAni_male_df,
+                   MI_coop_self_mean_IndiAni_female_df,MI_nov_coop_mean_IndiAni_female_df])
+df_long2 = df_long.melt(id_vars=['MItype'], value_vars=dependencytargets,var_name='condition', value_name='value')
+#
+# barplot based on mean value for each animal
+seaborn.barplot(ax=axs.ravel()[1],data=df_long2,x='condition',y='value',hue='MItype',errorbar='se',alpha=.5,capsize=0.1)
+seaborn.swarmplot(ax=axs.ravel()[1],data=df_long2,x='condition',y='value',hue='MItype',alpha=.9,size= 9,dodge=True,legend=False)
+axs.ravel()[1].set_xlabel('')
+axs.ravel()[1].set_ylabel('Modulation Index',fontsize=20)
+axs.ravel()[1].set_title('male vs female',fontsize=24)
+axs.ravel()[1].set_ylim([-1.35,1.35])
+
+# plot 3
+# average sub and dom animals for each dependency
+# barplot
+MI_coop_self_all_IndiAni_sub_df = pd.DataFrame(MI_coop_self_all_IndiAni_pooled['subordinate'])
+MI_coop_self_all_IndiAni_sub_df.columns = dependencynames
+MI_coop_self_all_IndiAni_sub_df['MItype'] = 'sub coop-self'
+#
+MI_nov_coop_all_IndiAni_sub_df = pd.DataFrame(MI_nov_coop_all_IndiAni_pooled['subordinate'])
+MI_nov_coop_all_IndiAni_sub_df.columns = dependencynames
+MI_nov_coop_all_IndiAni_sub_df['MItype'] = 'sub nov-coop'
+#
+MI_coop_self_all_IndiAni_dom_df = pd.DataFrame(MI_coop_self_all_IndiAni_pooled['dominant'])
+MI_coop_self_all_IndiAni_dom_df.columns = dependencynames
+MI_coop_self_all_IndiAni_dom_df['MItype'] = 'dom coop-self'
+#
+MI_nov_coop_all_IndiAni_dom_df = pd.DataFrame(MI_nov_coop_all_IndiAni_pooled['dominant'])
+MI_nov_coop_all_IndiAni_dom_df.columns = dependencynames
+MI_nov_coop_all_IndiAni_dom_df['MItype'] = 'dom nov-coop'
+#
+df_long=pd.concat([MI_coop_self_all_IndiAni_sub_df,MI_nov_coop_all_IndiAni_sub_df,
+                   MI_coop_self_all_IndiAni_dom_df,MI_nov_coop_all_IndiAni_dom_df])
+df_long2 = df_long.melt(id_vars=['MItype'], value_vars=dependencytargets,var_name='condition', value_name='value')
+#
+# barplot based on all bootstrap data point
+# seaborn.barplot(ax=ax1,data=df_long2,x='condition',y='value',hue='MItype',errorbar='ci',alpha=.5)
+#
+# swarmplot
+MI_coop_self_mean_IndiAni_sub_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled['subordinate'])
+MI_coop_self_mean_IndiAni_sub_df.columns = dependencynames
+MI_coop_self_mean_IndiAni_sub_df['MItype'] = 'sub coop-self'
+#
+MI_nov_coop_mean_IndiAni_sub_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled['subordinate'])
+MI_nov_coop_mean_IndiAni_sub_df.columns = dependencynames
+MI_nov_coop_mean_IndiAni_sub_df['MItype'] = 'sub nov-coop'
+#
+MI_coop_self_mean_IndiAni_dom_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled['dominant'])
+MI_coop_self_mean_IndiAni_dom_df.columns = dependencynames
+MI_coop_self_mean_IndiAni_dom_df['MItype'] = 'dom coop-self'
+#
+MI_nov_coop_mean_IndiAni_dom_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled['dominant'])
+MI_nov_coop_mean_IndiAni_dom_df.columns = dependencynames
+MI_nov_coop_mean_IndiAni_dom_df['MItype'] = 'dom nov-coop'
+#
+df_long=pd.concat([MI_coop_self_mean_IndiAni_sub_df,MI_nov_coop_mean_IndiAni_sub_df,
+                   MI_coop_self_mean_IndiAni_dom_df,MI_nov_coop_mean_IndiAni_dom_df])
+df_long2 = df_long.melt(id_vars=['MItype'], value_vars=dependencytargets,var_name='condition', value_name='value')
+#
+# barplot based on mean value for each animal
+seaborn.barplot(ax=axs.ravel()[2],data=df_long2,x='condition',y='value',hue='MItype',errorbar='se',alpha=.5,capsize=0.1)
+seaborn.swarmplot(ax=axs.ravel()[2],data=df_long2,x='condition',y='value',hue='MItype',alpha=.9,size= 9,dodge=True,legend=False)
+axs.ravel()[2].set_xlabel('')
+axs.ravel()[2].set_ylabel('Modulation Index',fontsize=20)
+axs.ravel()[2].set_title('sub vs dom',fontsize=24)
+axs.ravel()[2].set_ylim([-1.35,1.35])
+
+savefig = 1
+if savefig:
+    if moreSampSize:
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'
+        if not os.path.exists(figsavefolder):
+            os.makedirs(figsavefolder)
+        plt.savefig(figsavefolder+'threeTimeLag_Edge_ModulationIndex_'+timelagname+'Lag_IndiAnimal_summarized_'+str(temp_resolu)+'_'+str(j_sampsize_name)+'_rows_subset_version2.pdf')
+    else:
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'
+        if not os.path.exists(figsavefolder):
+            os.makedirs(figsavefolder)
+        plt.savefig(figsavefolder+'threeTimeLag_Edge_ModulationIndex_'+timelagname+'Lag_IndiAnimal_summarized_'+str(temp_resolu)+'_'+j_sampsize_name+'_subset_version2.pdf')
+           
+    
+
+
+# ### version 7-2-4: 
+# #### plot the key edges' modulation; 
+# #### only show the modulation among coop1s, self, no-vision; 
+# #### separate animal 1 and 2, plot individual animal; 
+# #### pool all the edges together for each individual animal and run the clustering analysis
+
+# In[ ]:
+
+
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+
+# PLOT multiple pairs in one plot, so need to load data seperately
+moreSampSize = 0
+#
+animal1_fixedorders = ['eddie','dodson','dannon','ginger']
+animal2_fixedorders = ['sparkle','scorch','kanga','kanga']
+animal_pooled_list = ['E','SP','DO','SC','DA','KwDA','G','KwG']
+
+nanimalpairs = np.shape(animal1_fixedorders)[0]
+nanimalpooled = np.shape(animal_pooled_list)[0]
+
+timelag = 12 # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag 1 and 2)
+# timelagname = '3second' # '1/2/3second' or 'merged' or '12merged'
+# timelagname = 'merged' # together with timelag = 0
+timelagname = '12merged' # together with timelag = 12
+
+# 
+MI_coop_self_all_IndiAni = np.zeros([nanimalpairs*2,150,6])
+MI_coop_self_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+MI_nov_coop_all_IndiAni = np.zeros([nanimalpairs*2,150,6])
+MI_nov_coop_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+if timelag == 0:
+    MI_coop_self_all_IndiAni = np.zeros([nanimalpairs*2,150*3,6])
+    MI_coop_self_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+    MI_nov_coop_all_IndiAni = np.zeros([nanimalpairs*2,150*3,6])
+    MI_nov_coop_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+if timelag == 12:
+    MI_coop_self_all_IndiAni = np.zeros([nanimalpairs*2,150*2,6])
+    MI_coop_self_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+    MI_nov_coop_all_IndiAni = np.zeros([nanimalpairs*2,150*2,6])
+    MI_nov_coop_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+#
+
+#
+fig = plt.figure(figsize = (15*2, 15*2))
+ax1 = fig.add_subplot(2,2,1,projection='3d')
+ax2 = fig.add_subplot(2,2,2,projection='3d')
+ax3 = fig.add_subplot(2,2,3)
+ax4 = fig.add_subplot(2,2,4)
+
+
+
+for ianimalpair in np.arange(0,nanimalpairs,1):
+    animal1_fixedorder = animal1_fixedorders[ianimalpair]
+    animal2_fixedorder = animal2_fixedorders[ianimalpair]
+    #
+    data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'
+    #
+    if moreSampSize:
+        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+            weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+            weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+            sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+    else:
+        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+            weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+            weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+            sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+
+    # make sure these variables are the same as in the previous steps
+    # temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+    temp_resolus = [1] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+    ntemp_reses = np.shape(temp_resolus)[0]
+    #
+    if moreSampSize:
+        # different data (down/re)sampling numbers
+        # samplingsizes = np.arange(1100,3000,100)
+        samplingsizes = [1100]
+        # samplingsizes = [100,500,1000,1500,2000,2500,3000]        
+        # samplingsizes = [100,500]
+        # samplingsizes_name = ['100','500','1000','1500','2000','2500','3000']
+        samplingsizes_name = list(map(str, samplingsizes))
+    else:
+        samplingsizes_name = ['min_row_number']   
+    nsamplings = np.shape(samplingsizes_name)[0]
+
+    #
+    temp_resolu = temp_resolus[0]
+    j_sampsize_name = samplingsizes_name[0]    
+
+    # load edge weight data    
+    weighted_graphs_self = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['self']
+    weighted_graphs_sf_self = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['self']
+    sig_edges_self = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['self']
+    #
+    weighted_graphs_coop = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['coop(1s)']
+    weighted_graphs_sf_coop = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['coop(1s)']
+    sig_edges_coop = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['coop(1s)']
+    #
+    weighted_graphs_nov = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['no-vision']
+    weighted_graphs_sf_nov = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['no-vision']
+    sig_edges_nov = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)]['no-vision']
+
+    # organize the key edge data
+    weighted_graphs_self_mean = weighted_graphs_self.mean(axis=0)
+    weighted_graphs_coop_mean = weighted_graphs_coop.mean(axis=0)
+    weighted_graphs_nov_mean = weighted_graphs_nov.mean(axis=0)
+    # MI_coop_self = (weighted_graphs_coop_mean-weighted_graphs_self_mean)/(weighted_graphs_coop_mean+weighted_graphs_self_mean)
+    # MI_nov_coop = (weighted_graphs_nov_mean-weighted_graphs_coop_mean)/(weighted_graphs_nov_mean+weighted_graphs_coop_mean)
+    # MI_coop_self = ((weighted_graphs_coop-weighted_graphs_self)/(weighted_graphs_coop+weighted_graphs_self)).mean(axis=0)
+    # MI_nov_coop = ((weighted_graphs_nov-weighted_graphs_coop)/(weighted_graphs_nov+weighted_graphs_coop)).mean(axis=0)
+    #
+    if 0:
+        MI_coop_self_all = weighted_graphs_coop-weighted_graphs_self
+        MI_nov_coop_all = weighted_graphs_nov-weighted_graphs_coop  
+        MI_coop_self = (weighted_graphs_coop-weighted_graphs_self).mean(axis=0)
+        MI_nov_coop = (weighted_graphs_nov-weighted_graphs_coop).mean(axis=0)
+        #
+        sig_edges_coop_self = ((sig_edges_coop+sig_edges_self)>0)*1
+        sig_edges_nov_coop = ((sig_edges_coop+sig_edges_nov)>0)*1
+        #
+        MI_coop_self = MI_coop_self * sig_edges_coop_self
+        MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
+    else:
+        MI_coop_self_all,sig_edges_coop_self = Modulation_Index(weighted_graphs_self, weighted_graphs_coop,
+                                          sig_edges_self, sig_edges_coop, 150)
+        MI_coop_self = MI_coop_self_all.mean(axis = 0)
+        MI_coop_self = MI_coop_self * sig_edges_coop_self
+        MI_nov_coop_all,sig_edges_nov_coop  = Modulation_Index(weighted_graphs_coop, weighted_graphs_nov,
+                                          sig_edges_coop, sig_edges_nov, 150)
+        MI_nov_coop = MI_nov_coop_all.mean(axis = 0)
+        MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
+    
+    #
+    if timelag == 1:
+        pull_pull_fromNodes_all = [9,8]
+        pull_pull_toNodes_all = [0,1]
+        #
+        gaze_gaze_fromNodes_all = [11,10]
+        gaze_gaze_toNodes_all = [2,3]
+        #
+        within_pullgaze_fromNodes_all = [8,9]
+        within_pullgaze_toNodes_all = [2,3]
+        #
+        across_pullgaze_fromNodes_all = [9,8]
+        across_pullgaze_toNodes_all = [2,3]
+        #
+        within_gazepull_fromNodes_all = [10,11]
+        within_gazepull_toNodes_all = [0,1]
+        #
+        across_gazepull_fromNodes_all = [11,10]
+        across_gazepull_toNodes_all = [0,1]
+        #
+    elif timelag == 2:
+        pull_pull_fromNodes_all = [5,4]
+        pull_pull_toNodes_all = [0,1]
+        #
+        gaze_gaze_fromNodes_all = [7,6]
+        gaze_gaze_toNodes_all = [2,3]
+        #
+        within_pullgaze_fromNodes_all = [4,5]
+        within_pullgaze_toNodes_all = [2,3]
+        #
+        across_pullgaze_fromNodes_all = [5,4]
+        across_pullgaze_toNodes_all = [2,3]
+        #
+        within_gazepull_fromNodes_all = [6,7]
+        within_gazepull_toNodes_all = [0,1]
+        #
+        across_gazepull_fromNodes_all = [7,6]
+        across_gazepull_toNodes_all = [0,1]
+        #
+    elif timelag == 3:
+        pull_pull_fromNodes_all = [1,0]
+        pull_pull_toNodes_all = [0,1]
+        #
+        gaze_gaze_fromNodes_all = [3,2]
+        gaze_gaze_toNodes_all = [2,3]
+        #
+        within_pullgaze_fromNodes_all = [0,1]
+        within_pullgaze_toNodes_all = [2,3]
+        #
+        across_pullgaze_fromNodes_all = [1,0]
+        across_pullgaze_toNodes_all = [2,3]
+        #
+        within_gazepull_fromNodes_all = [2,3]
+        within_gazepull_toNodes_all = [0,1]
+        #
+        across_gazepull_fromNodes_all = [3,2]
+        across_gazepull_toNodes_all = [0,1]
+        #
+    elif timelag == 0:
+        pull_pull_fromNodes_all = [[1,5,9],[0,4,8]]
+        pull_pull_toNodes_all = [[0,0,0],[1,1,1]]
+        #
+        gaze_gaze_fromNodes_all = [[3,7,11],[2,6,10]]
+        gaze_gaze_toNodes_all = [[2,2,2],[3,3,3]]
+        #
+        within_pullgaze_fromNodes_all = [[0,4,8],[1,5,9]]
+        within_pullgaze_toNodes_all = [[2,2,2],[3,3,3]]
+        #
+        across_pullgaze_fromNodes_all = [[1,5,9],[0,4,8]]
+        across_pullgaze_toNodes_all = [[2,2,2],[3,3,3]]
+        #
+        within_gazepull_fromNodes_all = [[2,6,10],[3,7,11]]
+        within_gazepull_toNodes_all = [[0,0,0],[1,1,1]]
+        #
+        across_gazepull_fromNodes_all = [[3,7,11],[2,6,10]]
+        across_gazepull_toNodes_all = [[0,0,0],[1,1,1]]
+        #
+    elif timelag == 12:
+        pull_pull_fromNodes_all = [[5,9],[4,8]]
+        pull_pull_toNodes_all = [[0,0],[1,1]]
+        #
+        gaze_gaze_fromNodes_all = [[7,11],[6,10]]
+        gaze_gaze_toNodes_all = [[2,2],[3,3]]
+        #
+        within_pullgaze_fromNodes_all = [[4,8],[5,9]]
+        within_pullgaze_toNodes_all = [[2,2],[3,3]]
+        #
+        across_pullgaze_fromNodes_all = [[5,9],[4,8]]
+        across_pullgaze_toNodes_all = [[2,2],[3,3]]
+        #
+        within_gazepull_fromNodes_all = [[6,10],[7,11]]
+        within_gazepull_toNodes_all = [[0,0],[1,1]]
+        #
+        across_gazepull_fromNodes_all = [[7,11],[6,10]]
+        across_gazepull_toNodes_all = [[0,0],[1,1]]
+        #
+    
+    
+    for ianimal in np.arange(0,2,1):
+                
+        # coop self modulation
+        # pull-pull
+        a1 = MI_coop_self_all[:,pull_pull_fromNodes_all[ianimal],pull_pull_toNodes_all[ianimal]].flatten()
+        xxx1 = np.mean(a1)
+        MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,0] = a1
+        MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,0] = xxx1
+        # gaze-gaze
+        a2 = (MI_coop_self_all[:,gaze_gaze_fromNodes_all[ianimal],gaze_gaze_toNodes_all[ianimal]]).flatten()
+        xxx2 = np.mean(a2)
+        MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,1] = a2
+        MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,1] = xxx2
+        # within animal gazepull
+        a3 = (MI_coop_self_all[:,within_gazepull_fromNodes_all[ianimal],within_gazepull_toNodes_all[ianimal]]).flatten()
+        xxx3 = np.mean(a3)
+        MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,2] = a3
+        MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,2] = xxx3
+        # across animal gazepull
+        a4 = (MI_coop_self_all[:,across_gazepull_fromNodes_all[ianimal],across_gazepull_toNodes_all[ianimal]]).flatten()
+        xxx4 = np.mean(a4)
+        MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,3] = a4
+        MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,3] = xxx4
+        # within animal pullgaze
+        a5 = (MI_coop_self_all[:,within_pullgaze_fromNodes_all[ianimal],within_pullgaze_toNodes_all[ianimal]]).flatten()
+        xxx5 = np.mean(a5)
+        MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,4] = a5
+        MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,4] = xxx5
+        # across animal pullgaze
+        a6 = (MI_coop_self_all[:,across_pullgaze_fromNodes_all[ianimal],across_pullgaze_toNodes_all[ianimal]]).flatten()
+        xxx6 = np.mean(a6)
+        MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,5] = a6
+        MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,5] = xxx6
+        
+        
+        # novision coop modulation
+        # pull-pull
+        a1 = MI_nov_coop_all[:,pull_pull_fromNodes_all[ianimal],pull_pull_toNodes_all[ianimal]].flatten()
+        xxx1 = np.mean(a1)
+        MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,0] = a1
+        MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,0] = xxx1
+        # gaze-gaze
+        a2 = (MI_nov_coop_all[:,gaze_gaze_fromNodes_all[ianimal],gaze_gaze_toNodes_all[ianimal]]).flatten()
+        xxx2 = np.mean(a2)
+        MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,1] = a2
+        MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,1] = xxx2
+        # within animal gazepull
+        a3 = (MI_nov_coop_all[:,within_gazepull_fromNodes_all[ianimal],within_gazepull_toNodes_all[ianimal]]).flatten()
+        xxx3 = np.mean(a3)
+        MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,2] = a3
+        MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,2] = xxx3
+        # across animal gazepull
+        a4 = (MI_nov_coop_all[:,across_gazepull_fromNodes_all[ianimal],across_gazepull_toNodes_all[ianimal]]).flatten()
+        xxx4 = np.mean(a4)
+        MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,3] = a4
+        MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,3] = xxx4
+        # within animal pullgaze
+        a5 = (MI_nov_coop_all[:,within_pullgaze_fromNodes_all[ianimal],within_pullgaze_toNodes_all[ianimal]]).flatten()
+        xxx5 = np.mean(a5)
+        MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,4] = a5
+        MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,4] = xxx5
+        # across animal pullgaze
+        a6 = (MI_nov_coop_all[:,across_pullgaze_fromNodes_all[ianimal],across_pullgaze_toNodes_all[ianimal]]).flatten()
+        xxx6 = np.mean(a6)
+        MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,5] = a6
+        MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,5] = xxx6
+        
+        
+# calculate the population level clustering
+#             
+# coop self modulation
+pca = PCA(n_components=3)
+tsne = TSNE(n_components=2, random_state=0)
+MI_coop_self_mean_IndiAni_PCA = pca.fit_transform(MI_coop_self_mean_IndiAni)
+if timelag == 0:
+    MI_coop_self_all_IndiAni_PCA = pca.fit_transform((MI_coop_self_all_IndiAni.reshape(8*150*3,6)))
+    MI_coop_self_all_IndiAni_PCA2 = pca.fit_transform((MI_coop_self_all_IndiAni.reshape(8,150*3*6)))
+    MI_coop_self_all_IndiAni_tsne = tsne.fit_transform(MI_coop_self_all_IndiAni.reshape(8*3*150,6))
+elif timelag == 12:
+    MI_coop_self_all_IndiAni_PCA = pca.fit_transform((MI_coop_self_all_IndiAni.reshape(8*150*2,6)))
+    MI_coop_self_all_IndiAni_PCA2 = pca.fit_transform((MI_coop_self_all_IndiAni.reshape(8,150*2*6)))
+    MI_coop_self_all_IndiAni_tsne = tsne.fit_transform(MI_coop_self_all_IndiAni.reshape(8*2*150,6))
+else:
+    MI_coop_self_all_IndiAni_PCA = pca.fit_transform((MI_coop_self_all_IndiAni.reshape(8*150,6)))
+    MI_coop_self_all_IndiAni_PCA2 = pca.fit_transform((MI_coop_self_all_IndiAni.reshape(8,150*6)))
+    MI_coop_self_all_IndiAni_tsne = tsne.fit_transform(MI_coop_self_all_IndiAni.reshape(8*150,6))
+
+# novision coop modulation
+pca = PCA(n_components=3)
+tsne = TSNE(n_components=2, random_state=0)
+if timelag == 0:
+    MI_nov_coop_mean_IndiAni_PCA = pca.fit_transform(MI_nov_coop_mean_IndiAni)
+    MI_nov_coop_all_IndiAni_PCA = pca.fit_transform((MI_nov_coop_all_IndiAni.reshape(8*3*150,6)))
+    MI_nov_coop_all_IndiAni_PCA2 = pca.fit_transform((MI_nov_coop_all_IndiAni.reshape(8,3*150*6)))
+    MI_nov_coop_all_IndiAni_tsne = tsne.fit_transform(MI_nov_coop_all_IndiAni.reshape(8*3*150,6))
+elif timelag == 12:
+    MI_nov_coop_mean_IndiAni_PCA = pca.fit_transform(MI_nov_coop_mean_IndiAni)
+    MI_nov_coop_all_IndiAni_PCA = pca.fit_transform((MI_nov_coop_all_IndiAni.reshape(8*2*150,6)))
+    MI_nov_coop_all_IndiAni_PCA2 = pca.fit_transform((MI_nov_coop_all_IndiAni.reshape(8,2*150*6)))
+    MI_nov_coop_all_IndiAni_tsne = tsne.fit_transform(MI_nov_coop_all_IndiAni.reshape(8*2*150,6))
+else:
+    MI_nov_coop_mean_IndiAni_PCA = pca.fit_transform(MI_nov_coop_mean_IndiAni)
+    MI_nov_coop_all_IndiAni_PCA = pca.fit_transform((MI_nov_coop_all_IndiAni.reshape(8*150,6)))
+    MI_nov_coop_all_IndiAni_PCA2 = pca.fit_transform((MI_nov_coop_all_IndiAni.reshape(8,150*6)))
+    MI_nov_coop_all_IndiAni_tsne = tsne.fit_transform(MI_nov_coop_all_IndiAni.reshape(8*150,6))
+
+    
+# plot
+for ianimalpooled in np.arange(0,nanimalpooled,1):
+    # plot the PCA clustering results
+    if 0:
+        ax1.scatter(MI_coop_self_mean_IndiAni_PCA[ianimalpooled,0],
+                    MI_coop_self_mean_IndiAni_PCA[ianimalpooled,1],
+                    MI_coop_self_mean_IndiAni_PCA[ianimalpooled,2],'o',s=60)
+        ax2.scatter(MI_nov_coop_mean_IndiAni_PCA[ianimalpooled,0],
+                    MI_nov_coop_mean_IndiAni_PCA[ianimalpooled,1],
+                    MI_nov_coop_mean_IndiAni_PCA[ianimalpooled,2],'o',s=60)
+    if 1:
+        if timelag == 0:
+            ax1.scatter(MI_coop_self_all_IndiAni_PCA[np.arange(0+ianimalpooled*450,450+ianimalpooled*450,1),0],
+                        MI_coop_self_all_IndiAni_PCA[np.arange(0+ianimalpooled*450,450+ianimalpooled*450,1),1],
+                        MI_coop_self_all_IndiAni_PCA[np.arange(0+ianimalpooled*450,450+ianimalpooled*450,1),2],'o',s=20)
+            ax2.scatter(MI_nov_coop_all_IndiAni_PCA[np.arange(0+ianimalpooled*450,450+ianimalpooled*450,1),0],
+                        MI_nov_coop_all_IndiAni_PCA[np.arange(0+ianimalpooled*450,450+ianimalpooled*450,1),1],
+                        MI_nov_coop_all_IndiAni_PCA[np.arange(0+ianimalpooled*450,450+ianimalpooled*450,1),2],'o',s=20)
+        elif timelag == 12:
+            ax1.scatter(MI_coop_self_all_IndiAni_PCA[np.arange(0+ianimalpooled*300,300+ianimalpooled*300,1),0],
+                        MI_coop_self_all_IndiAni_PCA[np.arange(0+ianimalpooled*300,300+ianimalpooled*300,1),1],
+                        MI_coop_self_all_IndiAni_PCA[np.arange(0+ianimalpooled*300,300+ianimalpooled*300,1),2],'o',s=20)
+            ax2.scatter(MI_nov_coop_all_IndiAni_PCA[np.arange(0+ianimalpooled*300,300+ianimalpooled*300,1),0],
+                        MI_nov_coop_all_IndiAni_PCA[np.arange(0+ianimalpooled*300,300+ianimalpooled*300,1),1],
+                        MI_nov_coop_all_IndiAni_PCA[np.arange(0+ianimalpooled*300,300+ianimalpooled*300,1),2],'o',s=20)      
+        else:
+            ax1.scatter(MI_coop_self_all_IndiAni_PCA[np.arange(0+ianimalpooled*150,150+ianimalpooled*150,1),0],
+                        MI_coop_self_all_IndiAni_PCA[np.arange(0+ianimalpooled*150,150+ianimalpooled*150,1),1],
+                        MI_coop_self_all_IndiAni_PCA[np.arange(0+ianimalpooled*150,150+ianimalpooled*150,1),2],'o',s=20)
+            ax2.scatter(MI_nov_coop_all_IndiAni_PCA[np.arange(0+ianimalpooled*150,150+ianimalpooled*150,1),0],
+                        MI_nov_coop_all_IndiAni_PCA[np.arange(0+ianimalpooled*150,150+ianimalpooled*150,1),1],
+                        MI_nov_coop_all_IndiAni_PCA[np.arange(0+ianimalpooled*150,150+ianimalpooled*150,1),2],'o',s=20)
+        
+    if 0:   
+        ax1.scatter(MI_coop_self_all_IndiAni_PCA2[ianimalpooled,0],
+                    MI_coop_self_all_IndiAni_PCA2[ianimalpooled,1],
+                    MI_coop_self_all_IndiAni_PCA2[ianimalpooled,2],'o',s=60)
+        ax2.scatter(MI_nov_coop_all_IndiAni_PCA2[ianimalpooled,0],
+                    MI_nov_coop_all_IndiAni_PCA2[ianimalpooled,1],
+                    MI_nov_coop_all_IndiAni_PCA2[ianimalpooled,2],'o',s=60)
+        
+    # plot the tsne clustering results
+    if timelag ==0:
+        ax3.scatter(MI_coop_self_all_IndiAni_tsne[np.arange(0+ianimalpooled*450,450+ianimalpooled*450,1),0],
+                    MI_coop_self_all_IndiAni_tsne[np.arange(0+ianimalpooled*450,450+ianimalpooled*450,1),1],s=20)
+        ax4.scatter(MI_nov_coop_all_IndiAni_tsne[np.arange(0+ianimalpooled*450,450+ianimalpooled*450,1),0],
+                    MI_nov_coop_all_IndiAni_tsne[np.arange(0+ianimalpooled*450,450+ianimalpooled*450,1),1],s=20)
+    elif timelag ==12:
+        ax3.scatter(MI_coop_self_all_IndiAni_tsne[np.arange(0+ianimalpooled*300,300+ianimalpooled*300,1),0],
+                    MI_coop_self_all_IndiAni_tsne[np.arange(0+ianimalpooled*300,300+ianimalpooled*300,1),1],s=20)
+        ax4.scatter(MI_nov_coop_all_IndiAni_tsne[np.arange(0+ianimalpooled*300,300+ianimalpooled*300,1),0],
+                    MI_nov_coop_all_IndiAni_tsne[np.arange(0+ianimalpooled*300,300+ianimalpooled*300,1),1],s=20)
+    else:
+        ax3.scatter(MI_coop_self_all_IndiAni_tsne[np.arange(0+ianimalpooled*150,150+ianimalpooled*150,1),0],
+                    MI_coop_self_all_IndiAni_tsne[np.arange(0+ianimalpooled*150,150+ianimalpooled*150,1),1],s=20)
+        ax4.scatter(MI_nov_coop_all_IndiAni_tsne[np.arange(0+ianimalpooled*150,150+ianimalpooled*150,1),0],
+                    MI_nov_coop_all_IndiAni_tsne[np.arange(0+ianimalpooled*150,150+ianimalpooled*150,1),1],s=20)
+        
+    
+    
+ax1.set_title('MI coop-self',fontsize=25)
+ax1.set_xlabel('PC1',fontsize=20)
+ax1.set_ylabel('PC2',fontsize=20)
+ax1.set_zlabel('PC3',fontsize=20)
+ax2.set_title('MI novision-coop',fontsize=25)
+ax2.set_xlabel('PC1',fontsize=20)
+ax2.set_ylabel('PC2',fontsize=20)
+ax2.set_zlabel('PC3',fontsize=20)
+ax3.set_title('MI coop-self',fontsize=25)
+ax4.set_title('MI novision-coop',fontsize=25)
+
+ax1.legend(animal_pooled_list,fontsize=20)
+ax2.legend(animal_pooled_list,fontsize=20)
+ax3.legend(animal_pooled_list,fontsize=20)
+ax4.legend(animal_pooled_list,fontsize=20)
+    
+    
+    
+savefig = 0
+if savefig:
+    if moreSampSize:
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'
+        if not os.path.exists(figsavefolder):
+            os.makedirs(figsavefolder)
+        plt.savefig(figsavefolder+'threeTimeLag_Edge_ModulationIndex_'+timelagname+'Lag_IndiAnimal_'+str(temp_resolu)+'_'+str(j_sampsize_name)+'_rows_clustering.pdf')
+    else:
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'
+        if not os.path.exists(figsavefolder):
+            os.makedirs(figsavefolder)
+        plt.savefig(figsavefolder+'threeTimeLag_Edge_ModulationIndex_'+timelagname+'Lag_IndiAnimal_'+str(temp_resolu)+'_'+j_sampsize_name+'_clustering.pdf')
+           
+    
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
 
 # In[ ]:

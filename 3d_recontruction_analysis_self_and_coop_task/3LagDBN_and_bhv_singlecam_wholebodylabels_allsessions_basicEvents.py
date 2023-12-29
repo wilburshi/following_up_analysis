@@ -168,7 +168,7 @@ else:
 # currently the session_start_time will be manually typed in. It can be updated after a better method is used
 
 # dodson scorch
-if 0:
+if 1:
     if not do_bestsession:
         dates_list = [
                       "20220909","20220912","20220915","20220920","20220922","20220923","20221010",
@@ -192,20 +192,24 @@ if 0:
     elif do_bestsession:
         # pick only five sessions for each conditions
         dates_list = [
-                      "20220912","20220915","20220920","20221010","20230208",
+                      # "20220912",
+                      "20220915","20220920","20221010","20230208",
                       "20221011","20221013","20221015","20221017",
                       "20221022","20221026","20221028","20221030","20230209",
                       "20221125","20221128","20221129","20230214","20230215",                  
                       "20221205","20221206","20221209","20221214","20230112",
-                      "20230117","20230118","20230124","20230126",
+                      "20230117","20230118","20230124",
+                      # "20230126",
                      ]
         session_start_times = [ 
-                                18.10,  0.00, 33.03,  6.50,  0.00, 
+                                # 18.10, 
+                                 0.00, 33.03,  6.50,  0.00, 
                                  2.80, 27.80, 27.90, 27.00,  
                                 51.90, 21.00, 30.80, 17.50,  0.00,                    
                                 26.40, 22.50, 28.50,  0.00, 33.00,                     
                                  0.00,  0.00, 21.70, 17.00, 14.20, 
-                                 0.00,  0.00,  0.00,  0.00,  
+                                 0.00,  0.00,  0.00, 
+                                 # 0.00,  
                               ] # in second
     
     animal1_fixedorder = ['dodson']
@@ -215,7 +219,7 @@ if 0:
     animal2_filename = "Scorch"
     
 # eddie sparkle
-if 1:
+if 0:
     if not do_bestsession:
         dates_list = [
                       "20221122","20221125","20221128","20221129","20221130","20221202","20221206",
@@ -272,7 +276,8 @@ if 0:
                               ] # in second 
     elif do_bestsession:   
         dates_list = [
-                      "20230213","20230214","20230216",
+                      #"20230213",
+                      "20230214","20230216",
                       "20230228","20230302","20230303","20230307",          
                       "20230314","20230315","20230316","20230317",
                       "20230301","20230320","20230321","20230322",
@@ -280,7 +285,8 @@ if 0:
                       "20230522_ws","20230524","20230605_1","20230606","20230607"
                    ]
         session_start_times = [ 
-                                 0.00,  0.00, 48.00, 
+                                # 0.00, 
+                                 0.00, 48.00, 
                                 23.00, 28.50, 34.00, 25.50, 
                                 25.50, 31.50, 28.00, 30.50,
                                 33.50, 22.20, 50.00,  0.00, 
@@ -292,6 +298,38 @@ if 0:
     animal2_fixedorder = ['kanga']
 
     animal1_filename = "Ginger"
+    animal2_filename = "Kanga"
+
+    
+# dannon kanga
+if 0:
+    if not do_bestsession:
+        dates_list = [
+                      "20230718","20230720","20230914","20230829","20230907","20230915",
+                      "20230918","20230926","20230928","20231002","20231010","20231011",
+                      "20231013",
+                   ]
+        session_start_times = [ 
+                                 0, 0, 0, 0, 0, 0, 
+                                 0, 0, 0, 0, 0, 0,
+                                 0,
+                              ] # in second 
+    elif do_bestsession:   
+        dates_list = [
+                      "20230718","20230720","20230914","20230829","20230907","20230915",
+                      "20230918","20230926","20230928","20231002","20231010","20231011",
+                      "20231013", 
+                   ]
+        session_start_times = [ 
+                                 0, 0, 0, 0, 0, 0, 
+                                 0, 0, 0, 0, 0, 0,
+                                 0,
+                              ] # in second 
+    
+    animal1_fixedorder = ['dannon']
+    animal2_fixedorder = ['kanga']
+
+    animal1_filename = "Dannon"
     animal2_filename = "Kanga"
 
     
@@ -889,7 +927,7 @@ DBN_input_data_alltypes = dict.fromkeys(dates_list, [])
 
 doBhvitv_timebin = 0 # 1: if use the mean bhv event interval for time bin
 
-prepare_input_data = 0
+prepare_input_data = 1
 
 # DBN resolutions (make sure they are the same as in the later part of the code)
 totalsess_time = 600 # total session time in s
@@ -1297,13 +1335,13 @@ except:
         if not mergetempRos:
             if doBhvitv_timebin:
                 with open(data_saved_subfolder+'/DBN_input_data_alltypes_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'bhvItvTempReSo.pkl', 'rb') as f:
-                    DBN_input_data_alltypes = pickle.load(f)
+                    DBN_input_data_allsessions = pickle.load(f)
             else:
                 with open(data_saved_subfolder+'/DBN_input_data_alltypes_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'sReSo.pkl', 'rb') as f:
-                    DBN_input_data_alltypes = pickle.load(f)
+                    DBN_input_data_allsessions = pickle.load(f)
         else:
             with open(data_saved_subfolder+'//DBN_input_data_alltypes_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_mergeTempsReSo.pkl', 'rb') as f:
-                DBN_input_data_alltypes = pickle.load(f)
+                DBN_input_data_alls = pickle.load(f)
 
                 
         # only try three sample sizes
@@ -1344,7 +1382,7 @@ except:
                 date_tgt = dates_list[idate]
                 
                 if samplingsizes_name[jj]=='full_row_number':
-                    isamplingsize = np.shape(DBN_input_data_alltypes[date_tgt])[0]
+                    isamplingsize = np.shape(DBN_input_data_allsessions[date_tgt])[0]
 
                 try:
                     bhv_df_all = DBN_input_data_alltypes[date_tgt]
@@ -1448,7 +1486,17 @@ except:
             pickle.dump(weighted_graphs_shuffled_diffTempRo_diffSampSize, f)
         with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
             pickle.dump(sig_edges_diffTempRo_diffSampSize, f)
-
+    elif minmaxfullSampSize:
+        with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'wb') as f:
+            pickle.dump(DAGscores_diffTempRo_diffSampSize, f)
+        with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'wb') as f:
+            pickle.dump(DAGscores_shuffled_diffTempRo_diffSampSize, f)
+        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'wb') as f:
+            pickle.dump(weighted_graphs_diffTempRo_diffSampSize, f)
+        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'wb') as f:
+            pickle.dump(weighted_graphs_shuffled_diffTempRo_diffSampSize, f)
+        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'wb') as f:
+            pickle.dump(sig_edges_diffTempRo_diffSampSize, f)        
     else:
         with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
             pickle.dump(DAGscores_diffTempRo_diffSampSize, f)
@@ -1462,16 +1510,251 @@ except:
             pickle.dump(sig_edges_diffTempRo_diffSampSize, f)
 
 
-# In[ ]:
-
-
-
-
+# ### plot the edges over time (session)
+# #### mean edge weights of selected edges
 
 # In[ ]:
 
 
+# 100: self; 3: 3s coop; 2: 2s coop; 1.5: 1.5s coop; 1: 1s coop; -1: no-vision
+tasktypes_all_dates[tasktypes_all_dates==5] = -1 # change the task type code for no-vision
+coopthres_forsort = (tasktypes_all_dates-1)*coopthres_all_dates/2
+coopthres_forsort[coopthres_forsort==0] = 100 # get the cooperation threshold for sorting
+#
+# sort the data based on task type and dates
+sorting_df = pd.DataFrame({'dates': dates_list, 'coopthres': coopthres_forsort.ravel()}, columns=['dates', 'coopthres'])
+sorting_df = sorting_df.sort_values(by=['coopthres','dates'], ascending = [False, True])
+dates_list_sorted = np.array(dates_list)[sorting_df.index]
+ndates_sorted = np.shape(dates_list_sorted)[0]
 
+
+# In[ ]:
+
+
+# make sure these variables are the same as in the previous steps
+# temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+temp_resolus = [1] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+ntemp_reses = np.shape(temp_resolus)[0]
+#
+if moreSampSize:
+    # different data (down/re)sampling numbers
+    # samplingsizes = np.arange(1100,3000,100)
+    samplingsizes = [1100]
+    # samplingsizes = [100,500,1000,1500,2000,2500,3000]        
+    # samplingsizes = [100,500]
+    # samplingsizes_name = ['100','500','1000','1500','2000','2500','3000']
+    samplingsizes_name = list(map(str, samplingsizes))
+elif minmaxfullSampSize:
+    samplingsizes_name = ['full_row_number']   
+nsamplings = np.shape(samplingsizes_name)[0]
+
+temp_resolu = temp_resolus[0]
+j_sampsize_name = samplingsizes_name[0]   
+
+# 1s time lag
+edges_target_names = [['1slag_pull2_pull1','1slag_pull1_pull2'],
+                      ['1slag_gaze1_pull1','1slag_gaze2_pull2'],
+                      ['1slag_pull2_gaze1','1slag_pull1_gaze2'],]
+fromNodesIDs = [[ 9, 8],
+                [10,11],
+                [ 9, 8],]
+toNodesIDs = [[0,1],
+              [0,1],
+              [2,3]]
+
+n_edges = np.shape(np.array(edges_target_names).flatten())[0]
+
+# figure initiate
+fig, axs = plt.subplots(int(np.ceil(n_edges/2)),2)
+fig.set_figheight(5*np.ceil(n_edges/2))
+fig.set_figwidth(10*2)
+
+#
+for i_edge in np.arange(0,n_edges,1):
+    #
+    edgeweight_mean_forplot_all_dates = np.zeros((ndates_sorted,1))
+    edgeweight_shuffled_mean_forplot_all_dates = np.zeros((ndates_sorted,1))
+    edgeweight_std_forplot_all_dates = np.zeros((ndates_sorted,1))
+    edgeweight_shuffled_std_forplot_all_dates = np.zeros((ndates_sorted,1))
+    
+    edge_tgt_name = np.array(edges_target_names).flatten()[i_edge]
+    fromNodesID = np.array(fromNodesIDs).flatten()[i_edge]
+    toNodesID = np.array(toNodesIDs).flatten()[i_edge]
+    
+    for idate in np.arange(0,ndates_sorted,1):
+        idate_name = dates_list_sorted[idate]
+        
+        weighted_graphs_tgt = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][idate_name]
+        weighted_graphs_shuffled_tgt = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][idate_name]
+    
+        edgeweight_mean_forplot_all_dates[idate] = np.nanmean(weighted_graphs_tgt[:,fromNodesID,toNodesID])
+        edgeweight_shuffled_mean_forplot_all_dates[idate] = np.nanmean(weighted_graphs_shuffled_tgt[:,fromNodesID,toNodesID])
+        edgeweight_std_forplot_all_dates[idate] = np.nanstd(weighted_graphs_tgt[:,fromNodesID,toNodesID])
+        edgeweight_shuffled_std_forplot_all_dates[idate] = np.nanstd(weighted_graphs_shuffled_tgt[:,fromNodesID,toNodesID])
+        
+      
+    # plot 
+    axs.flatten()[i_edge].plot(np.arange(0,ndates_sorted,1),edgeweight_mean_forplot_all_dates,'ko',markersize=10)
+    #axs.flatten()[i_edge].plot(np.arange(0,ndates_sorted,1),edgeweight_shuffled_mean_forplot_all_dates,'bo',markersize=10)
+    #
+    axs.flatten()[i_edge].set_title(edge_tgt_name,fontsize=16)
+    axs.flatten()[i_edge].set_ylabel('mean edge weight',fontsize=13)
+    axs.flatten()[i_edge].set_ylim([-0.1,1.1])
+    axs.flatten()[i_edge].set_xlim([-0.5,ndates_sorted-0.5])
+    #
+    if i_edge > int(n_edges-1):
+        axs.flatten()[i_edge].set_xticks(np.arange(0,ndates_sorted,1))
+        axs.flatten()[i_edge].set_xticklabels(dates_list_sorted, rotation=90,fontsize=10)
+    else:
+        axs.flatten()[i_edge].set_xticklabels('')
+    #
+    tasktypes = ['self','coop(3s)','coop(2s)','coop(1.5s)','coop(1s)','no-vision']
+    taskswitches = np.where(np.array(sorting_df['coopthres'])[1:]-np.array(sorting_df['coopthres'])[:-1]!=0)[0]+0.5
+    for itaskswitch in np.arange(0,np.shape(taskswitches)[0],1):
+        taskswitch = taskswitches[itaskswitch]
+        axs.flatten()[i_edge].plot([taskswitch,taskswitch],[-0.1,1.1],'k--')
+    taskswitches = np.concatenate(([0],taskswitches))
+    for itaskswitch in np.arange(0,np.shape(taskswitches)[0],1):
+        taskswitch = taskswitches[itaskswitch]
+        axs.flatten()[i_edge].text(taskswitch+0.25,-0.05,tasktypes[itaskswitch],fontsize=10)
+
+
+        
+savefigs = 1
+if savefigs:
+    figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_allsessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
+    if not os.path.exists(figsavefolder):
+        os.makedirs(figsavefolder)
+    plt.savefig(figsavefolder+"edgeweight_acrossAllSessions_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pdf')
+    
+    
+
+
+# #### mean edge weights of selected edges v.s. other behavioral measures
+# ##### only the cooperation days
+
+# In[ ]:
+
+
+# only select the targeted dates
+sorting_tgt_df = sorting_df[(sorting_df['coopthres']==1)|(sorting_df['coopthres']==2)|(sorting_df['coopthres']==3)]
+# sorting_tgt_df = sorting_df[(sorting_df['coopthres']==1)]
+dates_list_tgt = sorting_tgt_df['dates']
+dates_list_tgt = np.array(dates_list_tgt)
+#
+ndates_tgt = np.shape(dates_list_tgt)[0]
+
+
+# In[ ]:
+
+
+# make sure these variables are the same as in the previous steps
+# temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+temp_resolus = [1] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+ntemp_reses = np.shape(temp_resolus)[0]
+#
+if moreSampSize:
+    # different data (down/re)sampling numbers
+    # samplingsizes = np.arange(1100,3000,100)
+    samplingsizes = [1100]
+    # samplingsizes = [100,500,1000,1500,2000,2500,3000]        
+    # samplingsizes = [100,500]
+    # samplingsizes_name = ['100','500','1000','1500','2000','2500','3000']
+    samplingsizes_name = list(map(str, samplingsizes))
+elif minmaxfullSampSize:
+    samplingsizes_name = ['full_row_number']   
+nsamplings = np.shape(samplingsizes_name)[0]
+
+temp_resolu = temp_resolus[0]
+j_sampsize_name = samplingsizes_name[0]   
+
+# 1s time lag
+edges_target_names = [['1slag_pull2_pull1','1slag_pull1_pull2'],
+                      ['1slag_gaze1_pull1','1slag_gaze2_pull2'],
+                      ['1slag_pull2_gaze1','1slag_pull1_gaze2'],]
+fromNodesIDs = [[ 9, 8],
+                [10,11],
+                [ 9, 8],]
+toNodesIDs = [[0,1],
+              [0,1],
+              [2,3]]
+
+#
+xplottype = 'succrate' # 'succrate', 'meangazenum'
+xplotlabel = 'successful rate' # 'successful rate', 'mean gaze number'
+# xplottype = 'meangazenum' # 'succrate', 'meangazenum'
+# xplotlabel = 'mean gaze number' # 'successful rate', 'mean gaze number'
+
+n_edges = np.shape(np.array(edges_target_names).flatten())[0]
+
+# figure initiate
+fig, axs = plt.subplots(int(np.ceil(n_edges/2)),2)
+fig.set_figheight(5*np.ceil(n_edges/2))
+fig.set_figwidth(5*2)
+
+#
+for i_edge in np.arange(0,n_edges,1):
+    #
+    edgeweight_mean_forplot_all_dates = np.zeros((ndates_tgt,1))
+    edgeweight_shuffled_mean_forplot_all_dates = np.zeros((ndates_tgt,1))
+    edgeweight_std_forplot_all_dates = np.zeros((ndates_tgt,1))
+    edgeweight_shuffled_std_forplot_all_dates = np.zeros((ndates_tgt,1))
+    
+    edge_tgt_name = np.array(edges_target_names).flatten()[i_edge]
+    fromNodesID = np.array(fromNodesIDs).flatten()[i_edge]
+    toNodesID = np.array(toNodesIDs).flatten()[i_edge]
+    
+    for idate in np.arange(0,ndates_tgt,1):
+        idate_name = dates_list_tgt[idate]
+        
+        weighted_graphs_tgt = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][idate_name]
+        weighted_graphs_shuffled_tgt = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][idate_name]
+    
+        edgeweight_mean_forplot_all_dates[idate] = np.nanmean(weighted_graphs_tgt[:,fromNodesID,toNodesID])
+        edgeweight_shuffled_mean_forplot_all_dates[idate] = np.nanmean(weighted_graphs_shuffled_tgt[:,fromNodesID,toNodesID])
+        edgeweight_std_forplot_all_dates[idate] = np.nanstd(weighted_graphs_tgt[:,fromNodesID,toNodesID])
+        edgeweight_shuffled_std_forplot_all_dates[idate] = np.nanstd(weighted_graphs_shuffled_tgt[:,fromNodesID,toNodesID])
+        
+      
+    # plot 
+    if xplottype == 'succrate':
+        xxx = succ_rate_all_dates[sorting_tgt_df.index]
+    elif xplottype == 'meangazenum':   
+        xxx = gazemean_num_all_dates[sorting_tgt_df.index]
+    #     
+    yyy = edgeweight_mean_forplot_all_dates
+    #
+    rr_spe,pp_spe = scipy.stats.spearmanr(xxx, yyy)
+    slope, intercept, rr_reg, pp_reg, std_err = st.linregress(xxx.astype(float).T[0], yyy.astype(float).T[0])
+    #
+    axs.flatten()[i_edge].plot(xxx,yyy,'bo',markersize=8)
+    axs.flatten()[i_edge].plot(np.array([xxx.min(),xxx.max()]),np.array([xxx.min(),xxx.max()])*slope+intercept,'k-')
+    #
+    axs.flatten()[i_edge].set_title(edge_tgt_name,fontsize=16)
+    axs.flatten()[i_edge].set_ylabel('mean edge weight',fontsize=13)
+    axs.flatten()[i_edge].set_ylim([-0.1,1.1])
+    #
+    if i_edge > int(n_edges-3):
+        axs.flatten()[i_edge].set_xlabel(xplotlabel,fontsize=13)
+    else:
+        axs.flatten()[i_edge].set_xticklabels('')
+    #
+    # axs.flatten()[i_edge].text(xxx.min(),1.0,'spearman r='+"{:.2f}".format(rr_spe),fontsize=10)
+    # axs.flatten()[i_edge].text(xxx.min(),0.9,'spearman p='+"{:.2f}".format(pp_spe),fontsize=10)
+    axs.flatten()[i_edge].text(xxx.min(),1.0,'regression r='+"{:.2f}".format(rr_reg),fontsize=10)
+    axs.flatten()[i_edge].text(xxx.min(),0.9,'regression p='+"{:.2f}".format(pp_reg),fontsize=10)
+    
+
+
+        
+savefigs = 1
+if savefigs:
+    figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_allsessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
+    if not os.path.exists(figsavefolder):
+        os.makedirs(figsavefolder)
+    plt.savefig(figsavefolder+"edgeweights_vs_"+xplottype+"_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pdf')
+    
+    
 
 
 # In[ ]:
