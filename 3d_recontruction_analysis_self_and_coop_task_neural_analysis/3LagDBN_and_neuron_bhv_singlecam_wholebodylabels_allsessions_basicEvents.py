@@ -6,7 +6,7 @@
 # ### In this script, the animal tracking is done with only one camera - camera 2 (middle)
 # ### In this script, DBN is run together with neural data and basic bhv variables
 
-# In[1]:
+# In[ ]:
 
 
 import pandas as pd
@@ -37,7 +37,7 @@ import networkx as nx
 
 # ### function - get body part location for each pair of cameras
 
-# In[2]:
+# In[ ]:
 
 
 from ana_functions.body_part_locs_eachpair import body_part_locs_eachpair
@@ -46,7 +46,7 @@ from ana_functions.body_part_locs_singlecam import body_part_locs_singlecam
 
 # ### function - align the two cameras
 
-# In[3]:
+# In[ ]:
 
 
 from ana_functions.camera_align import camera_align       
@@ -54,7 +54,7 @@ from ana_functions.camera_align import camera_align
 
 # ### function - merge the two pairs of cameras
 
-# In[4]:
+# In[ ]:
 
 
 from ana_functions.camera_merge import camera_merge
@@ -62,7 +62,7 @@ from ana_functions.camera_merge import camera_merge
 
 # ### function - find social gaze time point
 
-# In[5]:
+# In[ ]:
 
 
 from ana_functions.find_socialgaze_timepoint import find_socialgaze_timepoint
@@ -72,7 +72,7 @@ from ana_functions.find_socialgaze_timepoint_singlecam_wholebody import find_soc
 
 # ### function - define time point of behavioral events
 
-# In[6]:
+# In[ ]:
 
 
 from ana_functions.bhv_events_timepoint import bhv_events_timepoint
@@ -81,7 +81,7 @@ from ana_functions.bhv_events_timepoint_singlecam import bhv_events_timepoint_si
 
 # ### function - plot behavioral events
 
-# In[7]:
+# In[ ]:
 
 
 from ana_functions.plot_bhv_events import plot_bhv_events
@@ -93,7 +93,7 @@ from matplotlib.collections import PatchCollection
 
 # ### function - plot inter-pull interval
 
-# In[8]:
+# In[ ]:
 
 
 from ana_functions.plot_interpull_interval import plot_interpull_interval
@@ -101,7 +101,7 @@ from ana_functions.plot_interpull_interval import plot_interpull_interval
 
 # ### function - make demo videos with skeleton and inportant vectors
 
-# In[9]:
+# In[ ]:
 
 
 from ana_functions.tracking_video_singlecam_demo import tracking_video_singlecam_demo
@@ -110,7 +110,7 @@ from ana_functions.tracking_video_singlecam_wholebody_demo import tracking_video
 
 # ### function - interval between all behavioral events
 
-# In[10]:
+# In[ ]:
 
 
 from ana_functions.bhv_events_interval import bhv_events_interval
@@ -118,7 +118,7 @@ from ana_functions.bhv_events_interval import bhv_events_interval
 
 # ### function - spike analysis
 
-# In[11]:
+# In[ ]:
 
 
 from ana_functions.spike_analysis_FR_calculation import spike_analysis_FR_calculation
@@ -126,7 +126,7 @@ from ana_functions.spike_analysis_FR_calculation import spike_analysis_FR_calcul
 
 # ### function - train the dynamic bayesian network - multi time lag (3 lags)
 
-# In[12]:
+# In[ ]:
 
 
 from ana_functions.train_DBN_multiLag_withNeuron import train_DBN_multiLag
@@ -145,7 +145,7 @@ from ana_functions.AicScore import AicScore
 
 # ### prepare the basic behavioral data (especially the time stamps for each bhv events)
 
-# In[13]:
+# In[ ]:
 
 
 # instead of using gaze angle threshold, use the target rectagon to deside gaze info
@@ -203,16 +203,24 @@ if 1:
         neural_record_conditions = [
                                      '20231101_Dodson_withGinger_SR', 
                                      '20231101_Dodson_withGinger_MC',
-                                     '20231107_Dodson_withGinger_SR', 
-                                     '20231107_Dodson_withGinger_MC',
-                                     '20231129_Dodson_withGinger_SR', 
-                                     '20231129_Dodson_withGinger_MC',
+                                     # '20231107_Dodson_withGinger_SR', 
+                                     # '20231107_Dodson_withGinger_MC',
+                                     # '20231129_Dodson_withGinger_SR', 
+                                     # '20231129_Dodson_withGinger_MC',
+                                     # '20231102_Dodson_withGinger_SR', 
+                                     # '20231102_Dodson_withGinger_MC',
+                                     # '20231122_Dodson_withGinger_SR', 
+                                     # '20231122_Dodson_withGinger_MC',
                                    ]
         dates_list = [
-                      "20231101_SR","20231101_MC","20231107_SR","20231107_MC","20231129_SR","20231129_MC",
+                      "20231101_SR", "20231101_MC",
+                      # "20231107_SR","20231107_MC","20231129_SR","20231129_MC",
+                      # "20231102_SR","20231102_MC","20231122_SR","20231122_MC",
                      ]
         session_start_times = [ 
-                                0.00,  0.00,  0.00,  0.00,  0.00,  0.00, 
+                                 0.00,   0.00,  
+                                 # 0.00,  0.00,  0.00,  0.00,
+                                # 131.8,  0.00,  0.00,  0.00,
                               ] # in second
     
     animal1_fixedorder = ['dodson']
@@ -291,7 +299,7 @@ neural_data_folder = '/gpfs/gibbs/pi/jadi/Marmoset_neural_recording/'
     
 
 
-# In[14]:
+# In[ ]:
 
 
 # basic behavior analysis (define time stamps for each bhv events, etc)
@@ -555,9 +563,15 @@ except:
     
 
 
+# In[ ]:
+
+
+pull2_num_all_dates
+
+
 # #### redefine the tasktype and cooperation threshold to merge them together
 
-# In[15]:
+# In[ ]:
 
 
 # 100: self; 3: 3s coop; 2: 2s coop; 1.5: 1.5s coop; 1: 1s coop; -1: no-vision
@@ -570,7 +584,7 @@ coopthres_forsort[coopthres_forsort==0] = 100 # get the cooperation threshold fo
 # ### plot behavioral events interval to get a sense about time bin
 # #### only focus on pull_to_other_bhv_interval and other_bhv_to_pull_interval
 
-# In[16]:
+# In[ ]:
 
 
 fig, ax1 = plt.subplots(figsize=(10, 5))
@@ -622,7 +636,7 @@ ax1.text(taskswitch-0.5,15,'mean Inteval = '+str(np.nanmean(pull_other_intv_forp
 print(pull_other_intv_mean)
 print(np.nanmean(pull_other_intv_forplots))
 
-savefigs = 1
+savefigs = 0
 if savefigs:
     figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_neuron_bhv_singlecam_wholebodylabels_allsessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
     if not os.path.exists(figsavefolder):
@@ -633,7 +647,7 @@ if savefigs:
 # ### plot some other basis behavioral measures
 # #### successful rate
 
-# In[17]:
+# In[ ]:
 
 
 fig, ax1 = plt.subplots(figsize=(10, 5))
@@ -664,7 +678,7 @@ for itaskswitch in np.arange(0,np.shape(taskswitches)[0],1):
     taskswitch = taskswitches[itaskswitch]
     ax1.text(taskswitch+0.25,-0.05,tasktypes[itaskswitch],fontsize=10)
     
-savefigs = 1
+savefigs = 0
 if savefigs:
     figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_neuron_bhv_singlecam_wholebodylabels_allsessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
     if not os.path.exists(figsavefolder):
@@ -674,7 +688,7 @@ if savefigs:
 
 # #### animal pull numbers
 
-# In[18]:
+# In[ ]:
 
 
 fig, ax1 = plt.subplots(figsize=(10, 5))
@@ -711,7 +725,7 @@ for itaskswitch in np.arange(0,np.shape(taskswitches)[0],1):
     taskswitch = taskswitches[itaskswitch]
     ax1.text(taskswitch+0.25,-10,tasktypes[itaskswitch],fontsize=10)
     
-savefigs = 1
+savefigs = 0
 if savefigs:
     figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_neuron_bhv_singlecam_wholebodylabels_allsessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
     if not os.path.exists(figsavefolder):
@@ -721,7 +735,7 @@ if savefigs:
 
 # #### gaze number
 
-# In[19]:
+# In[ ]:
 
 
 # temporily: for dannon/kanga, because some days were not analyzed for DBN
@@ -741,7 +755,7 @@ print(np.nanmax(gaze1_num_all_dates))
 print(np.nanmax(gaze2_num_all_dates))
 
 
-# In[20]:
+# In[ ]:
 
 
 fig, ax1 = plt.subplots(figsize=(10, 5))
@@ -787,7 +801,7 @@ if savefigs:
     plt.savefig(figsavefolder+"gazenumbers_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'.jpg')
 
 
-# In[21]:
+# In[ ]:
 
 
 gaze_numbers = (owgaze1_num_all_dates+owgaze2_num_all_dates+mtgaze1_num_all_dates+mtgaze2_num_all_dates)
@@ -810,7 +824,7 @@ plt.xticks(np.arange(1, len(grouptypes)+1, 1), grouptypes, fontsize = 12);
 ax1.set_ylim([-20,3000])
 ax1.set_ylabel("average social gaze numbers",fontsize=13)
 
-savefigs = 1
+savefigs = 0
 if savefigs:
     figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_neuron_bhv_singlecam_wholebodylabels_allsessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
     if not os.path.exists(figsavefolder):
@@ -821,7 +835,7 @@ if savefigs:
 # ### prepare the input data for DBN
 # #### for both neural and behavioral events data
 
-# In[39]:
+# In[ ]:
 
 
 # define DBN related summarizing variables
@@ -834,7 +848,8 @@ prepare_input_data = 1
 # DBN resolutions (make sure they are the same as in the later part of the code)
 totalsess_time = 600 # total session time in s
 # temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
-temp_resolus = [0.2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+temp_resolus = [0.5] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+# temp_resolus = [0.2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
 ntemp_reses = np.shape(temp_resolus)[0]
 
 mergetempRos = 0
@@ -859,6 +874,14 @@ if prepare_input_data:
         #
         spike_clusters_file = neural_data_folder+neural_record_condition+'/Kilosort/spike_clusters.npy'
         spike_clusters_data = np.load(spike_clusters_file)
+        spike_clusters_file = neural_data_folder+neural_record_condition+'/Kilosort/cluster_KSLabel.tsv'
+        spike_clusters_data_withLabel = pd.read_csv(spike_clusters_file,sep='\t')
+        spike_clusters_file = neural_data_folder+neural_record_condition+'/Kilosort/cluster_group.tsv'
+        spike_clusters_data_clean = pd.read_csv(spike_clusters_file,sep='\t')
+        # 
+        good_cluster_id=spike_clusters_data_clean[spike_clusters_data_clean['group']=='good']['cluster_id'].reset_index(drop=True)
+        # 
+        spike_time_data = spike_time_data[np.isin(spike_clusters_data,good_cluster_id)]
     
         # load the behavioral data
         try:
@@ -1009,13 +1032,19 @@ if prepare_input_data:
                 pickle.dump(DBN_input_data_alltypes, f)     
 
 
-# In[44]:
+# In[ ]:
 
 
-# np.sum(DBN_input_data_alltypes['20231129_MC']['spikes_t0'])
+neural_start_time_session_start_offset
 
 
-# In[43]:
+# In[ ]:
+
+
+np.sum(DBN_input_data_alltypes['20231101_MC']['spikes_t0'])
+
+
+# In[ ]:
 
 
 # np.sum(DBN_input_data_alltypes['20231129_SR']['spikes_t0'])
@@ -1024,62 +1053,14 @@ if prepare_input_data:
 # In[ ]:
 
 
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
+# plt.plot(DBN_input_data_alltypes['20231122_SR']['spikes_t0'])
 
 
 # ### run the DBN model on the combined session data set
 
 # #### a test run
 
-# In[45]:
+# In[ ]:
 
 
 # run DBN on the large table with merged sessions
@@ -1112,8 +1093,8 @@ if 0:
 
     totalsess_time = 600 # total session time in s
     # temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
-    # temp_resolus = [0.5] # temporal resolution in the DBN model, eg: 0.5 means 500ms
-    temp_resolus = [0.2]
+    temp_resolus = [0.5] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+    # temp_resolus = [0.2]
     ntemp_reses = np.shape(temp_resolus)[0]
 
     # try different temporal resolutions, remember to use the same settings as in the previous ones
@@ -1291,76 +1272,83 @@ moreSampSize = 0 # 1: use more sample size (more than just minimal row number an
 num_starting_points = 100 # number of random starting points/graphs
 nbootstraps = 95
 
+totalsess_time = 600 # total session time in s
+# temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+temp_resolus = [0.5] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+# temp_resolus = [0.2]
+ntemp_reses = np.shape(temp_resolus)[0]
+        
 # different individual sessions
 ndates = np.shape(dates_list)[0]
 for idate in np.arange(0,ndates,1):
     date_tgt = dates_list[idate]
-                
-    try:
-        # dumpy
+     
+    # try different temporal resolutions, remember to use the same settings as in the previous ones
+    for temp_resolu in temp_resolus:
+
         data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody_withNeuron_allsessions'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
-        if not os.path.exists(data_saved_subfolder):
-            os.makedirs(data_saved_subfolder)
-        if moreSampSize:
-            with open(data_saved_subfolder+'/'+date_tgt+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
-                DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
-            with open(data_saved_subfolder+'/'+date_tgt+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
-                DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
-            with open(data_saved_subfolder+'/'+date_tgt+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
-                weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
-            with open(data_saved_subfolder+'/'+date_tgt+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
-                weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
-            with open(data_saved_subfolder+'/'+date_tgt+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
-                sig_edges_diffTempRo_diffSampSize = pickle.load(f)
-
-        if minmaxfullSampSize:
-            with open(data_saved_subfolder+'/'+date_tgt+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
-                DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
-            with open(data_saved_subfolder+'/'+date_tgt+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
-                DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
-            with open(data_saved_subfolder+'/'+date_tgt+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
-                weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
-            with open(data_saved_subfolder+'/'+date_tgt+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
-                weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
-            with open(data_saved_subfolder+'/'+date_tgt+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
-                sig_edges_diffTempRo_diffSampSize = pickle.load(f)
-
-    except:
-        if moreSampSize:
-            # different data (down/re)sampling numbers
-            samplingsizes = np.arange(1100,3000,100)
-            # samplingsizes = [100,500,1000,1500,2000,2500,3000]        
-            # samplingsizes = [100,500]
-            # samplingsizes_name = ['100','500','1000','1500','2000','2500','3000']
-            samplingsizes_name = list(map(str, samplingsizes))
-            nsamplings = np.shape(samplingsizes)[0]
-
-        weighted_graphs_diffTempRo_diffSampSize = {}
-        weighted_graphs_shuffled_diffTempRo_diffSampSize = {}
-        sig_edges_diffTempRo_diffSampSize = {}
-        DAGscores_diffTempRo_diffSampSize = {}
-        DAGscores_shuffled_diffTempRo_diffSampSize = {}
-
-        totalsess_time = 600 # total session time in s
-        # temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
-        # temp_resolus = [0.5] # temporal resolution in the DBN model, eg: 0.5 means 500ms
-        temp_resolus = [0.2]
-        ntemp_reses = np.shape(temp_resolus)[0]
-
-        # try different temporal resolutions, remember to use the same settings as in the previous ones
-        for temp_resolu in temp_resolus:
-
-            data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody_withNeuron_allsessions'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
-            if not mergetempRos:
-                if doBhvitv_timebin:
-                    with open(data_saved_subfolder+'/DBN_input_data_alltypes_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'bhvItvTempReSo.pkl', 'rb') as f:
-                        DBN_input_data_alltypes = pickle.load(f)
-                else:
-                    with open(data_saved_subfolder+'/DBN_input_data_alltypes_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'sReSo.pkl', 'rb') as f:
-                        DBN_input_data_alltypes = pickle.load(f)
-            else:
-                with open(data_saved_subfolder+'//DBN_input_data_alltypes_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_mergeTempsReSo.pkl', 'rb') as f:
+        if not mergetempRos:
+            if doBhvitv_timebin:
+                with open(data_saved_subfolder+'/DBN_input_data_alltypes_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'bhvItvTempReSo.pkl', 'rb') as f:
                     DBN_input_data_alltypes = pickle.load(f)
+            else:
+                with open(data_saved_subfolder+'/DBN_input_data_alltypes_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'sReSo.pkl', 'rb') as f:
+                    DBN_input_data_alltypes = pickle.load(f)
+        else:
+            with open(data_saved_subfolder+'//DBN_input_data_alltypes_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_mergeTempsReSo.pkl', 'rb') as f:
+                DBN_input_data_alltypes = pickle.load(f)
+    
+    
+        try:
+            dumpy
+            print('load DBN result for '+date_tgt+'_'+str(temp_resolu))
+            savedata = 0
+            
+            data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody_withNeuron_allsessions'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'+date_tgt+'/'
+            if not os.path.exists(data_saved_subfolder):
+                os.makedirs(data_saved_subfolder)
+            if moreSampSize:
+                with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
+                    DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
+                with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
+                    DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
+                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
+                    weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
+                    weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
+                    sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+
+            if minmaxfullSampSize:
+                with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
+                    DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
+                with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
+                    DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
+                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
+                    weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
+                    weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
+                    sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+
+        except:
+            print('analyze DBN result for '+date_tgt+'_'+str(temp_resolu))
+            savedata = 1
+            
+            if moreSampSize:
+                # different data (down/re)sampling numbers
+                samplingsizes = np.arange(1100,3000,100)
+                # samplingsizes = [100,500,1000,1500,2000,2500,3000]        
+                # samplingsizes = [100,500]
+                # samplingsizes_name = ['100','500','1000','1500','2000','2500','3000']
+                samplingsizes_name = list(map(str, samplingsizes))
+                nsamplings = np.shape(samplingsizes)[0]
+
+            weighted_graphs_diffTempRo_diffSampSize = {}
+            weighted_graphs_shuffled_diffTempRo_diffSampSize = {}
+            sig_edges_diffTempRo_diffSampSize = {}
+            DAGscores_diffTempRo_diffSampSize = {}
+            DAGscores_shuffled_diffTempRo_diffSampSize = {}
 
 
             # only try three sample sizes
@@ -1487,61 +1475,77 @@ for idate in np.arange(0,ndates,1):
             sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),samplingsizes_name[jj])] = sig_edges_alltypes
 
             
-    # save data
-    data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody_withNeuron_allsessions'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'+date_tgt+'/'
-    if not os.path.exists(data_saved_subfolder):
-        os.makedirs(data_saved_subfolder)
-    if moreSampSize:  
-        with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'wb') as f:
-            pickle.dump(DAGscores_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'wb') as f:
-            pickle.dump(DAGscores_shuffled_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'wb') as f:
-            pickle.dump(weighted_graphs_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'wb') as f:
-            pickle.dump(weighted_graphs_shuffled_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'wb') as f:
-            pickle.dump(sig_edges_diffTempRo_diffSampSize, f)
-    elif minmaxfullSampSize:
-        with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'wb') as f:
-            pickle.dump(DAGscores_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'wb') as f:
-            pickle.dump(DAGscores_shuffled_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'wb') as f:
-            pickle.dump(weighted_graphs_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'wb') as f:
-            pickle.dump(weighted_graphs_shuffled_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'wb') as f:
-            pickle.dump(sig_edges_diffTempRo_diffSampSize, f)        
-    else:
-        with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'wb') as f:
-            pickle.dump(DAGscores_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'wb') as f:
-            pickle.dump(DAGscores_shuffled_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'wb') as f:
-            pickle.dump(weighted_graphs_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'wb') as f:
-            pickle.dump(weighted_graphs_shuffled_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'wb') as f:
-            pickle.dump(sig_edges_diffTempRo_diffSampSize, f)
+        # save data
+        if savedata:
+            print('save DBN result for '+date_tgt+'_'+str(temp_resolu))
+
+            data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody_withNeuron_allsessions'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'+date_tgt+'/'
+            if not os.path.exists(data_saved_subfolder):
+                os.makedirs(data_saved_subfolder)
+            if moreSampSize:  
+                with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'wb') as f:
+                    pickle.dump(DAGscores_diffTempRo_diffSampSize, f)
+                with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'wb') as f:
+                    pickle.dump(DAGscores_shuffled_diffTempRo_diffSampSize, f)
+                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'wb') as f:
+                    pickle.dump(weighted_graphs_diffTempRo_diffSampSize, f)
+                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'wb') as f:
+                    pickle.dump(weighted_graphs_shuffled_diffTempRo_diffSampSize, f)
+                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'wb') as f:
+                    pickle.dump(sig_edges_diffTempRo_diffSampSize, f)
+            elif minmaxfullSampSize:
+                with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'wb') as f:
+                    pickle.dump(DAGscores_diffTempRo_diffSampSize, f)
+                with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'wb') as f:
+                    pickle.dump(DAGscores_shuffled_diffTempRo_diffSampSize, f)
+                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'wb') as f:
+                    pickle.dump(weighted_graphs_diffTempRo_diffSampSize, f)
+                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'wb') as f:
+                    pickle.dump(weighted_graphs_shuffled_diffTempRo_diffSampSize, f)
+                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'wb') as f:
+                    pickle.dump(sig_edges_diffTempRo_diffSampSize, f)        
+            else:
+                with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'wb') as f:
+                    pickle.dump(DAGscores_diffTempRo_diffSampSize, f)
+                with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'wb') as f:
+                    pickle.dump(DAGscores_shuffled_diffTempRo_diffSampSize, f)
+                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'wb') as f:
+                    pickle.dump(weighted_graphs_diffTempRo_diffSampSize, f)
+                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'wb') as f:
+                    pickle.dump(weighted_graphs_shuffled_diffTempRo_diffSampSize, f)
+                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'wb') as f:
+                    pickle.dump(sig_edges_diffTempRo_diffSampSize, f)
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
 
 # ### plot graphs - show the edge with arrows; show the best time bin and row number; show the three time lag separately
 
-# In[35]:
+# In[ ]:
 
 
-dates_list_plot = ["20231129_SR","20231129_MC",]
+dates_list_plot = ["20231101_SR","20231101_MC",]
 ndates_plot = np.shape(dates_list_plot)[0]
 
 
-# In[36]:
+# In[ ]:
 
 
 
 # make sure these variables are the same as in the previous steps
 # temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
 temp_resolus = [0.5] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+# temp_resolus = [0.2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
 ntemp_reses = np.shape(temp_resolus)[0]
 #
 if moreSampSize:
@@ -1588,7 +1592,8 @@ fig, axs = plt.subplots(6,ndates_plot)
 fig.set_figheight(48)
 fig.set_figwidth(8*ndates_plot)
 
-time_lags = ['t_-1.5','t_-1','t_-0.5']
+# time_lags = ['t_-1.5','t_-1','t_-0.5']
+time_lags = ['t_-0.6','t_-0.4','t_-0.2']
 # fromRowIDs =[[0,1,2,3],[6,7,8,9],[12,13,14,15]]
 # toColID = [0,1,2,3]
 fromRowIDs =[[0,1,2,3,4,],[5,6,7,8,9,],[10,11,12,13,14,]]
@@ -1613,37 +1618,37 @@ for ilag in np.arange(0,ntime_lags,1):
             data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody_withNeuron_allsessions'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'+idate_typename+'/'
             #
             if moreSampSize:
-                with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                     DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
-                with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                     DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
-                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                     weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
-                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                     weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
-                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                     sig_edges_diffTempRo_diffSampSize = pickle.load(f)
             elif minmaxfullSampSize:
-                with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                     DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
-                with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                     DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
-                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                     weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
-                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                     weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
-                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                     sig_edges_diffTempRo_diffSampSize = pickle.load(f)
             else:
-                with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                     DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
-                with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                     DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
-                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                     weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
-                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                     weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
-                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                     sig_edges_diffTempRo_diffSampSize = pickle.load(f)
 
 
@@ -1660,8 +1665,8 @@ for ilag in np.arange(0,ntime_lags,1):
 
             # plot
             axs[ilag*2+0,idate].set_title(idate_typename,fontsize=14)
-            axs[ilag*2+0,idate].set_xlim([-1,2])
-            axs[ilag*2+0,idate].set_ylim([-1,2])
+            axs[ilag*2+0,idate].set_xlim([-0.5,1.5])
+            axs[ilag*2+0,idate].set_ylim([-0.5,1.5])
             axs[ilag*2+0,idate].set_xticks([])
             axs[ilag*2+0,idate].set_xticklabels([])
             axs[ilag*2+0,idate].set_yticks([])
@@ -1773,18 +1778,24 @@ if savefigs:
             
 
 
+# In[ ]:
+
+
+
+
+
 # ### plot graphs - show the edge differences, use one condition as the base
 
-# In[37]:
+# In[ ]:
 
 
-dates_list_plot = ["20231129_SR","20231129_MC",]
+dates_list_plot = ["20231101_SR","20231101_MC",]
 ndates_plot = np.shape(dates_list_plot)[0]
 
-basecondition = '20231129_SR'
+basecondition = '20231101_SR'
 
 
-# In[38]:
+# In[ ]:
 
 
 # make sure these variables are the same as in the previous steps
@@ -1838,6 +1849,7 @@ fig.set_figheight(48)
 fig.set_figwidth(8*ndates_plot)
 
 time_lags = ['t_-1.5','t_-1','t_-0.5']
+# time_lags = ['t_-0.6','t_-0.4','t_-0.2']
 # fromRowIDs =[[0,1,2,3],[6,7,8,9],[12,13,14,15]]
 # toColID = [0,1,2,3]
 fromRowIDs =[[0,1,2,3,4,],[5,6,7,8,9,],[10,11,12,13,14,]]
@@ -1852,37 +1864,37 @@ j_sampsize_name = samplingsizes_name[0]
 data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody_withNeuron_allsessions'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'+basecondition+'/'
 #
 if moreSampSize:
-    with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+    with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
         DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
-    with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+    with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
         DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
-    with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+    with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
         weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
-    with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+    with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
         weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
-    with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+    with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
         sig_edges_diffTempRo_diffSampSize = pickle.load(f)
 elif minmaxfullSampSize:
-    with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+    with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
         DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
-    with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+    with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
         DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
-    with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+    with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
         weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
-    with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+    with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
         weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
-    with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+    with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
         sig_edges_diffTempRo_diffSampSize = pickle.load(f)
 else:
-    with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+    with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
         DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
-    with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+    with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
         DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
-    with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+    with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
         weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
-    with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+    with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
         weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
-    with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+    with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
         sig_edges_diffTempRo_diffSampSize = pickle.load(f)
 
 weighted_graphs_tgt = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][basecondition]
@@ -1915,37 +1927,37 @@ for ilag in np.arange(0,ntime_lags,1):
             data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody_withNeuron_allsessions'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'+idate_typename+'/'
             #
             if moreSampSize:
-                with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                     DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
-                with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                     DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
-                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                     weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
-                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                     weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
-                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                     sig_edges_diffTempRo_diffSampSize = pickle.load(f)
             elif minmaxfullSampSize:
-                with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                     DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
-                with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                     DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
-                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                     weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
-                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                     weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
-                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                     sig_edges_diffTempRo_diffSampSize = pickle.load(f)
             else:
-                with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                     DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
-                with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                     DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
-                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                     weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
-                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                     weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
-                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                     sig_edges_diffTempRo_diffSampSize = pickle.load(f)
 
             weighted_graphs_tgt = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][idate_typename]
@@ -1960,12 +1972,20 @@ for ilag in np.arange(0,ntime_lags,1):
                 weighted_graphs_delta = weighted_graphs_delta.mean(axis=0)
                 #
                 sig_edges_delta = ((sig_edges_tgt+sig_edges_base)>0)*1
+                #
+                sig_avg_dags = weighted_graphs_delta * sig_edges_delta
+            elif 1:
+                weighted_graphs_tgt_mean = weighted_graphs_tgt.mean(axis=0)*sig_edges_tgt
+                weighted_graphs_base_mean = weighted_graphs_base.mean(axis=0)*sig_edges_base
+                sig_avg_dags = weighted_graphs_tgt_mean - weighted_graphs_base_mean
             else:
                 weighted_graphs_delta,sig_edges_delta = Modulation_Index(weighted_graphs_base, weighted_graphs_tgt,
                                                                          sig_edges_base, sig_edges_tgt, 8000)
                 weighted_graphs_delta = weighted_graphs_delta.mean(axis=0)
+                #
+                sig_avg_dags = weighted_graphs_delta * sig_edges_delta
                 
-            sig_avg_dags = weighted_graphs_delta * sig_edges_delta
+            
             sig_avg_dags = sig_avg_dags[fromRowID,:]
             sig_avg_dags = sig_avg_dags[:,toColID]
 
@@ -2083,6 +2103,18 @@ if savefigs:
             
 
 
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
 # ### plot the edges over time (session)
 # #### mean edge weights of selected edges
 
@@ -2108,6 +2140,7 @@ ndates_sorted = np.shape(dates_list_sorted)[0]
 # make sure these variables are the same as in the previous steps
 # temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
 temp_resolus = [0.5] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+# temp_resolus = [0.2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
 ntemp_reses = np.shape(temp_resolus)[0]
 #
 if moreSampSize:
@@ -2125,16 +2158,34 @@ nsamplings = np.shape(samplingsizes_name)[0]
 temp_resolu = temp_resolus[0]
 j_sampsize_name = samplingsizes_name[0]   
 
+singletimelag = 0
+mergedtimelag = 1
+
 # 0.5s time lag
-edges_target_names = [['0.5slag_pull2_pull1','0.5slag_pull1_pull2'],
-                      ['0.5slag_gaze1_pull1','0.5slag_gaze2_pull2'],
-                      ['0.5slag_pull2_gaze1','0.5slag_pull1_gaze2'],]
-fromNodesIDs = [[11,10],
-                [12,13],
-                [ 9, 8],]
+if temp_resolu == 0.5:
+    edges_target_names = [['0.5slag_pull2_pull1','0.5slag_pull1_pull2'],
+                          ['0.5slag_gaze1_pull1','0.5slag_gaze2_pull2'],
+                          ['0.5slag_pull2_gaze1','0.5slag_pull1_gaze2'],]
+# 0.2s time lag
+elif temp_resolu == 0.2:
+    edges_target_names = [['0.2slag_pull2_pull1','0.2slag_pull1_pull2'],
+                          ['0.2slag_gaze1_pull1','0.2slag_gaze2_pull2'],
+                          ['0.2slag_pull2_gaze1','0.2slag_pull1_gaze2'],]
+if singletimelag:
+    fromNodesIDs = [[11,10],
+                    [12,13],
+                    [11,10],]
+elif mergedtimelag:
+    fromNodesIDs = [[1,6,11],[0,5,10],
+                    [2,7,12],[3,8,13],
+                    [1,6,11],[0,5,10],]
 toNodesIDs = [[0,1],
               [0,1],
               [2,3]]
+
+
+
+
 
 n_edges = np.shape(np.array(edges_target_names).flatten())[0]
 
@@ -2162,41 +2213,45 @@ for i_edge in np.arange(0,n_edges,1):
         data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody_withNeuron_allsessions'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'+idate_name+'/'
         #
         if moreSampSize:
-            with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                 DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
-            with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                 DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
-            with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                 weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
-            with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                 weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
-            with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                 sig_edges_diffTempRo_diffSampSize = pickle.load(f)
         elif minmaxfullSampSize:
-            with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                 DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
-            with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                 DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
-            with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                 weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
-            with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                 weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
-            with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                 sig_edges_diffTempRo_diffSampSize = pickle.load(f)
         else:
-            with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                 DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
-            with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                 DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
-            with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                 weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
-            with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                 weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
-            with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                 sig_edges_diffTempRo_diffSampSize = pickle.load(f)
         
         weighted_graphs_tgt = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][idate_name]
         weighted_graphs_shuffled_tgt = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][idate_name]
+        sig_edges_tgt = get_significant_edges(weighted_graphs_tgt,weighted_graphs_shuffled_tgt)
+     
+        weighted_graphs_tgt = weighted_graphs_tgt*sig_edges_tgt
+        weighted_graphs_shuffled_tgt = weighted_graphs_shuffled_tgt * sig_edges_tgt
     
         edgeweight_mean_forplot_all_dates[idate] = np.nanmean(weighted_graphs_tgt[:,fromNodesID,toNodesID])
         edgeweight_shuffled_mean_forplot_all_dates[idate] = np.nanmean(weighted_graphs_shuffled_tgt[:,fromNodesID,toNodesID])
@@ -2236,7 +2291,194 @@ if savefigs:
     figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_neuron_bhv_singlecam_wholebodylabels_allsessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
     if not os.path.exists(figsavefolder):
         os.makedirs(figsavefolder)
-    plt.savefig(figsavefolder+"edgeweight_acrossAllSessions_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pdf')
+    plt.savefig(figsavefolder+"edgeweight_acrossAllSessions_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pdf')
+    
+    
+
+
+# ### plot the edges over time (session)
+# #### mean edge weights of selected edges - neural related edges
+
+# In[ ]:
+
+
+# 100: self; 3: 3s coop; 2: 2s coop; 1.5: 1.5s coop; 1: 1s coop; -1: no-vision
+tasktypes_all_dates[tasktypes_all_dates==5] = -1 # change the task type code for no-vision
+coopthres_forsort = (tasktypes_all_dates-1)*coopthres_all_dates/2
+coopthres_forsort[coopthres_forsort==0] = 100 # get the cooperation threshold for sorting
+
+#
+# sort the data based on task type and dates
+sorting_df = pd.DataFrame({'dates': dates_list, 'coopthres': coopthres_forsort.ravel()}, columns=['dates', 'coopthres'])
+sorting_df = sorting_df.sort_values(by=['coopthres','dates'], ascending = [False, True])
+dates_list_sorted = np.array(dates_list)[sorting_df.index]
+ndates_sorted = np.shape(dates_list_sorted)[0]
+
+
+# In[ ]:
+
+
+# make sure these variables are the same as in the previous steps
+# temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+temp_resolus = [0.5] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+# temp_resolus = [0.2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+ntemp_reses = np.shape(temp_resolus)[0]
+temp_resolu = temp_resolus[0]
+
+#
+if moreSampSize:
+    # different data (down/re)sampling numbers
+    # samplingsizes = np.arange(1100,3000,100)
+    samplingsizes = [1100]
+    # samplingsizes = [100,500,1000,1500,2000,2500,3000]        
+    # samplingsizes = [100,500]
+    # samplingsizes_name = ['100','500','1000','1500','2000','2500','3000']
+    samplingsizes_name = list(map(str, samplingsizes))
+elif minmaxfullSampSize:
+    samplingsizes_name = ['full_row_number']   
+nsamplings = np.shape(samplingsizes_name)[0]
+
+j_sampsize_name = samplingsizes_name[0]   
+
+singletimelag = 0
+mergedtimelag = 1
+
+# 0.5s time lag
+if temp_resolu == 0.5:
+    edges_target_names = [['0.5slag_pull1_neural','0.5slag_pull2_neural'],
+                          ['0.5slag_gaze1_neural','0.5slag_gaze2_neural'],
+                          ['0.5slag_neural_pull1','0.5slag_neural_pull2'],
+                          ['0.5slag_neural_gaze1','0.5slag_neural_gaze2'],]
+# 0.2s time lag
+elif temp_resolu == 0.2:
+    edges_target_names = [['0.2slag_pull1_neural','0.2slag_pull2_neural'],
+                          ['0.2slag_gaze1_neural','0.2slag_gaze2_neural'],
+                          ['0.2slag_neural_pull1','0.2slag_neural_pull2'],
+                          ['0.2slag_neural_gaze1','0.2slag_neural_gaze2'],]
+if singletimelag:
+    fromNodesIDs = [[10,11],
+                    [12,13],
+                    [14,14],
+                    [14,14],]
+elif mergedtimelag:
+    fromNodesIDs = [[0,5,10],[1,6,11],
+                    [2,7,12],[3,8,13],
+                    [4,9,14],[4,9,14],
+                    [4,9,14],[4,9,14],]
+toNodesIDs = [[4,4],
+              [4,4],
+              [0,1],
+              [2,3],]
+
+n_edges = np.shape(np.array(edges_target_names).flatten())[0]
+
+# figure initiate
+fig, axs = plt.subplots(int(np.ceil(n_edges/2)),2)
+fig.set_figheight(5*np.ceil(n_edges/2))
+fig.set_figwidth(10*2)
+
+#
+for i_edge in np.arange(0,n_edges,1):
+    #
+    edgeweight_mean_forplot_all_dates = np.zeros((ndates_sorted,1))
+    edgeweight_shuffled_mean_forplot_all_dates = np.zeros((ndates_sorted,1))
+    edgeweight_std_forplot_all_dates = np.zeros((ndates_sorted,1))
+    edgeweight_shuffled_std_forplot_all_dates = np.zeros((ndates_sorted,1))
+    
+    edge_tgt_name = np.array(edges_target_names).flatten()[i_edge]
+    toNodesID = np.array(toNodesIDs).flatten()[i_edge]
+    
+    if singletimelag:
+        fromNodesID = np.array(fromNodesIDs).flatten()[i_edge]
+    elif mergedtimelag:
+        fromNodesID = fromNodesIDs[i_edge]
+    
+    for idate in np.arange(0,ndates_sorted,1):
+        idate_name = dates_list_sorted[idate]
+        
+        # load data accordingly
+        data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody_withNeuron_allsessions'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'+idate_name+'/'
+        #
+        if moreSampSize:
+            with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
+                DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
+            with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
+                DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
+            with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
+                weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+            with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
+                weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+            with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
+                sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+        elif minmaxfullSampSize:
+            with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
+                DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
+            with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
+                DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
+            with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
+                weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+            with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
+                weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+            with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
+                sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+        else:
+            with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
+                DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
+            with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
+                DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
+            with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
+                weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+            with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
+                weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+            with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
+                sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+        
+        weighted_graphs_tgt = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][idate_name]
+        weighted_graphs_shuffled_tgt = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][idate_name]
+        sig_edges_tgt = get_significant_edges(weighted_graphs_tgt,weighted_graphs_shuffled_tgt)
+     
+        weighted_graphs_tgt = weighted_graphs_tgt*sig_edges_tgt
+        weighted_graphs_shuffled_tgt = weighted_graphs_shuffled_tgt * sig_edges_tgt
+    
+        edgeweight_mean_forplot_all_dates[idate] = np.nanmean(weighted_graphs_tgt[:,fromNodesID,toNodesID])
+        edgeweight_shuffled_mean_forplot_all_dates[idate] = np.nanmean(weighted_graphs_shuffled_tgt[:,fromNodesID,toNodesID])
+        edgeweight_std_forplot_all_dates[idate] = np.nanstd(weighted_graphs_tgt[:,fromNodesID,toNodesID])
+        edgeweight_shuffled_std_forplot_all_dates[idate] = np.nanstd(weighted_graphs_shuffled_tgt[:,fromNodesID,toNodesID])
+        
+      
+    # plot 
+    axs.flatten()[i_edge].plot(np.arange(0,ndates_sorted,1),edgeweight_mean_forplot_all_dates,'ko',markersize=10)
+    #axs.flatten()[i_edge].plot(np.arange(0,ndates_sorted,1),edgeweight_shuffled_mean_forplot_all_dates,'bo',markersize=10)
+    #
+    axs.flatten()[i_edge].set_title(edge_tgt_name,fontsize=16)
+    axs.flatten()[i_edge].set_ylabel('mean edge weight',fontsize=13)
+    axs.flatten()[i_edge].set_ylim([-0.1,1.1])
+    axs.flatten()[i_edge].set_xlim([-0.5,ndates_sorted-0.5])
+    #
+    if i_edge > int(n_edges-1):
+        axs.flatten()[i_edge].set_xticks(np.arange(0,ndates_sorted,1))
+        axs.flatten()[i_edge].set_xticklabels(dates_list_sorted, rotation=90,fontsize=10)
+    else:
+        axs.flatten()[i_edge].set_xticklabels('')
+    #
+    tasktypes = ['self','coop(3s)','coop(2s)','coop(1.5s)','coop(1s)','no-vision']
+    taskswitches = np.where(np.array(sorting_df['coopthres'])[1:]-np.array(sorting_df['coopthres'])[:-1]!=0)[0]+0.5
+    for itaskswitch in np.arange(0,np.shape(taskswitches)[0],1):
+        taskswitch = taskswitches[itaskswitch]
+        axs.flatten()[i_edge].plot([taskswitch,taskswitch],[-0.1,1.1],'k--')
+    taskswitches = np.concatenate(([0],taskswitches))
+    for itaskswitch in np.arange(0,np.shape(taskswitches)[0],1):
+        taskswitch = taskswitches[itaskswitch]
+        axs.flatten()[i_edge].text(taskswitch+0.25,-0.05,tasktypes[itaskswitch],fontsize=10)
+
+
+        
+savefigs = 1
+if savefigs:
+    figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_neuron_bhv_singlecam_wholebodylabels_allsessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
+    if not os.path.exists(figsavefolder):
+        os.makedirs(figsavefolder)
+    plt.savefig(figsavefolder+"edgeweight_neuralRelated_acrossAllSessions_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pdf')
     
     
 
@@ -2261,7 +2503,7 @@ ndates_tgt = np.shape(dates_list_tgt)[0]
 
 # make sure these variables are the same as in the previous steps
 # temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
-temp_resolus = [0.5] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+temp_resolus = [0.2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
 ntemp_reses = np.shape(temp_resolus)[0]
 #
 if moreSampSize:
@@ -2280,9 +2522,13 @@ temp_resolu = temp_resolus[0]
 j_sampsize_name = samplingsizes_name[0]   
 
 # 0.5s time lag
-edges_target_names = [['0.5slag_pull2_pull1','0.5slag_pull1_pull2'],
-                      ['0.5slag_gaze1_pull1','0.5slag_gaze2_pull2'],
-                      ['0.5slag_pull2_gaze1','0.5slag_pull1_gaze2'],]
+# edges_target_names = [['0.5slag_pull2_pull1','0.5slag_pull1_pull2'],
+#                       ['0.5slag_gaze1_pull1','0.5slag_gaze2_pull2'],
+#                       ['0.5slag_pull2_gaze1','0.5slag_pull1_gaze2'],]
+# 0.2s time lag
+edges_target_names = [['0.2slag_pull2_pull1','0.2slag_pull1_pull2'],
+                      ['0.2slag_gaze1_pull1','0.2slag_gaze2_pull2'],
+                      ['0.2slag_pull2_gaze1','0.2slag_pull1_gaze2'],]
 fromNodesIDs = [[11,10],
                 [12,13],
                 [11,10],]
@@ -2322,37 +2568,37 @@ for i_edge in np.arange(0,n_edges,1):
         data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody_withNeuron_allsessions'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'+idate_name+'/'
         #
         if moreSampSize:
-            with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                 DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
-            with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                 DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
-            with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                 weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
-            with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                 weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
-            with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_moreSampSize.pkl', 'rb') as f:
                 sig_edges_diffTempRo_diffSampSize = pickle.load(f)
         elif minmaxfullSampSize:
-            with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                 DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
-            with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                 DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
-            with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                 weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
-            with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                 weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
-            with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_minmaxfullSampSize.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'_minmaxfullSampSize.pkl', 'rb') as f:
                 sig_edges_diffTempRo_diffSampSize = pickle.load(f)
         else:
-            with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                 DAGscores_diffTempRo_diffSampSize = pickle.load(f) 
-            with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                 DAGscores_shuffled_diffTempRo_diffSampSize = pickle.load(f) 
-            with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                 weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
-            with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                 weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
-            with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pkl', 'rb') as f:
                 sig_edges_diffTempRo_diffSampSize = pickle.load(f)
         
         weighted_graphs_tgt = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][idate_name]
@@ -2400,7 +2646,7 @@ if savefigs:
     figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_neuron_bhv_singlecam_wholebodylabels_allsessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
     if not os.path.exists(figsavefolder):
         os.makedirs(figsavefolder)
-    plt.savefig(figsavefolder+"edgeweights_vs_"+xplottype+"_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pdf')
+    plt.savefig(figsavefolder+"edgeweights_vs_"+xplottype+"_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'.pdf')
     
     
 

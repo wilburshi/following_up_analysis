@@ -15,6 +15,7 @@ import matplotlib as mpl
 import seaborn
 import scipy
 import scipy.stats as st
+from sklearn.neighbors import KernelDensity
 import string
 import warnings
 import pickle
@@ -168,7 +169,7 @@ else:
 # currently the session_start_time will be manually typed in. It can be updated after a better method is used
 
 # dodson scorch
-if 1:
+if 0:
     if not do_bestsession:
         dates_list = [
                       "20220909","20220912","20220915","20220920","20220922","20220923","20221010",
@@ -308,22 +309,25 @@ if 0:
                       "20230718","20230720","20230914","20230829","20230907","20230915",
                       "20230918","20230926","20230928","20231002","20231010","20231011",
                       "20231013",
+                      # these days haven't analyzed in the allsession condition
                    ]
         session_start_times = [ 
                                  0, 0, 0, 0, 0, 0, 
                                  0, 0, 0, 0, 0, 0,
-                                 0,
+                                 0, # 0, 0, 0, 
                               ] # in second 
     elif do_bestsession:   
         dates_list = [
-                      "20230718","20230720","20230914","20230829","20230907","20230915",
+                      "20230718","20230720","20230914","20230726","20230727","20230809",
+                      "20230810","20230811","20230814","20230816","20230829","20230907","20230915",
                       "20230918","20230926","20230928","20231002","20231010","20231011",
-                      "20231013", 
+                      "20231013","20231020","20231024","20231025",
                    ]
         session_start_times = [ 
-                                 0, 0, 0, 0, 0, 0, 
-                                 0, 0, 0, 0, 0, 0,
-                                 0,
+                                    0,    0,    0, 32.2, 27.2, 37.5,
+                                 21.0, 21.5, 19.8, 32.0,    0,    0,   0, 
+                                    0,    0,    0,    0,    0,    0,
+                                    0,    0,    0,    0, 
                               ] # in second 
     
     animal1_fixedorder = ['dannon']
@@ -332,6 +336,45 @@ if 0:
     animal1_filename = "Dannon"
     animal2_filename = "Kanga"
 
+# Koala Vermelho
+if 1:
+    if not do_bestsession:
+        dates_list = [
+                      "20231221","20231222","20231226","20231227",  "20231229","20231230",
+                      "20231231","20240102","20240104","20240104-2","20240105","20240108",
+                      "20240109","20240115","20240116","20240117",  "20240118","20240119",
+                      "20240122","20240123","20240124","20240125",  "20240126","20240129",
+                      "20240130","20240131","20240201","20240202",
+                     ]
+        session_start_times = [ 
+                                0.00,  0.00,  0.00,  0.00,  0.00,  0.00, 
+                                0.00,  0.00,  0.00,  0.00,  0.00,  0.00, 
+                                0.00,  0.00,  0.00,  0.00,  0.00,  0.00,
+                                0.00,  0.00,  0.00,  0.00,  0.00,  0.00,
+                                0.00,  0.00,  0.00,  0.00,
+                              ] # in second
+    elif do_bestsession:
+        # pick only five sessions for each conditions
+        dates_list = [
+                      "20231222","20231226","20231227",  "20231229","20231230",
+                      "20231231","20240102","20240104-2","20240105","20240108",
+                      "20240109","20240115","20240116",  "20240117","20240118","20240119",
+                      "20240207","20240208","20240209",  "20240212","20240213",
+                      "20240214","20240215","20240216",  "20240220","20240222","20240223",
+                     ]
+        session_start_times = [ 
+                                21.5,  0.00,  0.00,  0.00,  0.00, 
+                                0.00,  12.2,  0.00,  18.8,  31.2,  
+                                32.5,  0.00,  50.0,  0.00,  37.5,  29.5,
+                                58.5,  72.0,  0.00,  71.5,  70.5,
+                                86.8,  94.0,  65.0,  68.8,  43.8,  13.2,
+                              ] # in second
+    
+    animal1_fixedorder = ['koala']
+    animal2_fixedorder = ['vermelho']
+
+    animal1_filename = "Koala"
+    animal2_filename = "Vermelho"
     
 #    
 # dates_list = ["20221128"]
@@ -466,23 +509,43 @@ except:
         
         # load behavioral results
         try:
-            bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
-            trial_record_json = glob.glob(bhv_data_path +date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_TrialRecord_" + "*.json")
-            bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_bhv_data_" + "*.json")
-            session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_session_info_" + "*.json")
-            #
-            trial_record = pd.read_json(trial_record_json[0])
-            bhv_data = pd.read_json(bhv_data_json[0])
-            session_info = pd.read_json(session_info_json[0])
+            try:
+                bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                trial_record_json = glob.glob(bhv_data_path +date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_TrialRecord_" + "*.json")
+                bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_bhv_data_" + "*.json")
+                session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_session_info_" + "*.json")
+                #
+                trial_record = pd.read_json(trial_record_json[0])
+                bhv_data = pd.read_json(bhv_data_json[0])
+                session_info = pd.read_json(session_info_json[0])
+            except:
+                bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                trial_record_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_TrialRecord_" + "*.json")
+                bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_bhv_data_" + "*.json")
+                session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_session_info_" + "*.json")
+                #
+                trial_record = pd.read_json(trial_record_json[0])
+                bhv_data = pd.read_json(bhv_data_json[0])
+                session_info = pd.read_json(session_info_json[0])
         except:
-            bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
-            trial_record_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_TrialRecord_" + "*.json")
-            bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_bhv_data_" + "*.json")
-            session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_session_info_" + "*.json")
-            #
-            trial_record = pd.read_json(trial_record_json[0])
-            bhv_data = pd.read_json(bhv_data_json[0])
-            session_info = pd.read_json(session_info_json[0])
+            try:
+                bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_forceManipulation_task/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                trial_record_json = glob.glob(bhv_data_path +date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_TrialRecord_" + "*.json")
+                bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_bhv_data_" + "*.json")
+                session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_session_info_" + "*.json")
+                #
+                trial_record = pd.read_json(trial_record_json[0])
+                bhv_data = pd.read_json(bhv_data_json[0])
+                session_info = pd.read_json(session_info_json[0])
+            except:
+                bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_forceManipulation_task/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                trial_record_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_TrialRecord_" + "*.json")
+                bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_bhv_data_" + "*.json")
+                session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_session_info_" + "*.json")
+                #
+                trial_record = pd.read_json(trial_record_json[0])
+                bhv_data = pd.read_json(bhv_data_json[0])
+                session_info = pd.read_json(session_info_json[0])
 
         # get animal info from the session information
         animal1 = session_info['lever1_animal'][0].lower()
@@ -617,7 +680,7 @@ except:
                             'pull_other_pooled': pull_other_pool_itv}
         
         # plot the tracking demo video
-        if 1: 
+        if 0: 
             tracking_video_singlecam_wholebody_demo(bodyparts_locs_camI,output_look_ornot,output_allvectors,output_allangles,
                                               lever_locs_camI,tube_locs_camI,time_point_pull1,time_point_pull2,
                                               animalnames_videotrack,bodypartnames_videotrack,date_tgt,
@@ -626,7 +689,7 @@ except:
         
 
     # save data
-    if 0:
+    if 1:
         
         data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
         if not os.path.exists(data_saved_subfolder):
@@ -832,6 +895,7 @@ if savefigs:
 # In[ ]:
 
 
+
 gaze1_num_all_dates = owgaze1_num_all_dates + mtgaze1_num_all_dates
 gaze2_num_all_dates = owgaze2_num_all_dates + mtgaze2_num_all_dates
 gazemean_num_all_dates = (gaze1_num_all_dates+gaze2_num_all_dates)/2
@@ -889,8 +953,8 @@ if savefigs:
 # In[ ]:
 
 
-gaze_numbers = (owgaze1_num_all_dates+owgaze2_num_all_dates+mtgaze1_num_all_dates+mtgaze2_num_all_dates)
-gaze_pull_ratios = (owgaze1_num_all_dates+owgaze2_num_all_dates+mtgaze1_num_all_dates+mtgaze2_num_all_dates)/(pull1_num_all_dates+pull2_num_all_dates)
+gaze_numbers = (owgaze1_num_all_dates+owgaze2_num_all_dates+mtgaze1_num_all_dates+mtgaze2_num_all_dates)/30
+gaze_pull_ratios = (owgaze1_num_all_dates+owgaze2_num_all_dates+mtgaze1_num_all_dates+mtgaze2_num_all_dates)/(pull1_num_all_dates+pull2_num_all_dates)/30
 
 fig, ax1 = plt.subplots(figsize=(10, 5))
 
@@ -906,7 +970,7 @@ gaze_numbers_groups = [np.transpose(gaze_numbers[np.transpose(coopthres_forsort=
 gaze_numbers_plot = plt.boxplot(gaze_numbers_groups)
 
 plt.xticks(np.arange(1, len(grouptypes)+1, 1), grouptypes, fontsize = 12);
-ax1.set_ylim([-20,3000])
+ax1.set_ylim([-30/30,5400/30])
 ax1.set_ylabel("average social gaze numbers",fontsize=13)
 
 savefigs = 1
@@ -914,7 +978,13 @@ if savefigs:
     figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_allsessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
     if not os.path.exists(figsavefolder):
         os.makedirs(figsavefolder)
-    plt.savefig(figsavefolder+"averaged_gazenumbers_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'.jpg')
+    plt.savefig(figsavefolder+"averaged_gazenumbers_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pdf')
+
+
+# In[ ]:
+
+
+
 
 
 # ### prepare the input data for DBN
@@ -949,23 +1019,43 @@ if prepare_input_data:
 
         # load behavioral results
         try:
-            bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
-            trial_record_json = glob.glob(bhv_data_path +date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_TrialRecord_" + "*.json")
-            bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_bhv_data_" + "*.json")
-            session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_session_info_" + "*.json")
-            #
-            trial_record = pd.read_json(trial_record_json[0])
-            bhv_data = pd.read_json(bhv_data_json[0])
-            session_info = pd.read_json(session_info_json[0])
-        except:
-            bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
-            trial_record_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_TrialRecord_" + "*.json")
-            bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_bhv_data_" + "*.json")
-            session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_session_info_" + "*.json")
-            #
-            trial_record = pd.read_json(trial_record_json[0])
-            bhv_data = pd.read_json(bhv_data_json[0])
-            session_info = pd.read_json(session_info_json[0])
+            try:
+                bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                trial_record_json = glob.glob(bhv_data_path +date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_TrialRecord_" + "*.json")
+                bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_bhv_data_" + "*.json")
+                session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_session_info_" + "*.json")
+                #
+                trial_record = pd.read_json(trial_record_json[0])
+                bhv_data = pd.read_json(bhv_data_json[0])
+                session_info = pd.read_json(session_info_json[0])
+            except:
+                bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                trial_record_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_TrialRecord_" + "*.json")
+                bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_bhv_data_" + "*.json")
+                session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_session_info_" + "*.json")
+                #
+                trial_record = pd.read_json(trial_record_json[0])
+                bhv_data = pd.read_json(bhv_data_json[0])
+                session_info = pd.read_json(session_info_json[0])
+        except:    
+            try:
+                bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_forceManipulation_task/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                trial_record_json = glob.glob(bhv_data_path +date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_TrialRecord_" + "*.json")
+                bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_bhv_data_" + "*.json")
+                session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_session_info_" + "*.json")
+                #
+                trial_record = pd.read_json(trial_record_json[0])
+                bhv_data = pd.read_json(bhv_data_json[0])
+                session_info = pd.read_json(session_info_json[0])
+            except:
+                bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_forceManipulation_task/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                trial_record_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_TrialRecord_" + "*.json")
+                bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_bhv_data_" + "*.json")
+                session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_session_info_" + "*.json")
+                #
+                trial_record = pd.read_json(trial_record_json[0])
+                bhv_data = pd.read_json(bhv_data_json[0])
+                session_info = pd.read_json(session_info_json[0])
             
         # get animal info
         animal1 = session_info['lever1_animal'][0].lower()
@@ -1073,6 +1163,12 @@ if prepare_input_data:
         else:
             with open(data_saved_subfolder+'/DBN_input_data_alltypes_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_mergeTempsReSo.pkl', 'wb') as f:
                 pickle.dump(DBN_input_data_alltypes, f)     
+
+
+# In[ ]:
+
+
+DBN_input_data_alltypes['20240223']
 
 
 # ### run the DBN model on the combined session data set
@@ -1279,7 +1375,7 @@ num_starting_points = 100 # number of random starting points/graphs
 nbootstraps = 95
 
 try:
-    # dumpy
+    dumpy
     data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody_allsessions'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
     if not os.path.exists(data_saved_subfolder):
         os.makedirs(data_saved_subfolder)
@@ -1384,84 +1480,84 @@ except:
                 if samplingsizes_name[jj]=='full_row_number':
                     isamplingsize = np.shape(DBN_input_data_allsessions[date_tgt])[0]
 
-                try:
-                    bhv_df_all = DBN_input_data_alltypes[date_tgt]
+                # try:
+                bhv_df_all = DBN_input_data_alltypes[date_tgt]
 
 
-                    # define DBN graph structures; make sure they are the same as in the train_DBN_multiLag
-                    colnames = list(bhv_df_all.columns)
-                    eventnames = ["pull1","pull2","owgaze1","owgaze2"]
-                    nevents = np.size(eventnames)
+                # define DBN graph structures; make sure they are the same as in the train_DBN_multiLag
+                colnames = list(bhv_df_all.columns)
+                eventnames = ["pull1","pull2","owgaze1","owgaze2"]
+                nevents = np.size(eventnames)
 
-                    all_pops = list(bhv_df_all.columns)
-                    from_pops = [pop for pop in all_pops if not pop.endswith('t3')]
-                    to_pops = [pop for pop in all_pops if pop.endswith('t3')]
-                    causal_whitelist = [(from_pop,to_pop) for from_pop in from_pops for to_pop in to_pops]
+                all_pops = list(bhv_df_all.columns)
+                from_pops = [pop for pop in all_pops if not pop.endswith('t3')]
+                to_pops = [pop for pop in all_pops if pop.endswith('t3')]
+                causal_whitelist = [(from_pop,to_pop) for from_pop in from_pops for to_pop in to_pops]
 
-                    nFromNodes = np.shape(from_pops)[0]
-                    nToNodes = np.shape(to_pops)[0]
+                nFromNodes = np.shape(from_pops)[0]
+                nToNodes = np.shape(to_pops)[0]
 
-                    DAGs_randstart = np.zeros((num_starting_points, nFromNodes, nToNodes))
-                    DAGs_randstart_shuffle = np.zeros((num_starting_points, nFromNodes, nToNodes))
-                    score_randstart = np.zeros((num_starting_points))
-                    score_randstart_shuffle = np.zeros((num_starting_points))
+                DAGs_randstart = np.zeros((num_starting_points, nFromNodes, nToNodes))
+                DAGs_randstart_shuffle = np.zeros((num_starting_points, nFromNodes, nToNodes))
+                score_randstart = np.zeros((num_starting_points))
+                score_randstart_shuffle = np.zeros((num_starting_points))
 
-                    # step 1: randomize the starting point for num_starting_points times
-                    for istarting_points in np.arange(0,num_starting_points,1):
+                # step 1: randomize the starting point for num_starting_points times
+                for istarting_points in np.arange(0,num_starting_points,1):
 
-                        # try different down/re-sampling size
-                        bhv_df = bhv_df_all.sample(isamplingsize,replace = True, random_state = istarting_points) # take the subset for DBN training
-                        aic = AicScore(bhv_df)
+                    # try different down/re-sampling size
+                    bhv_df = bhv_df_all.sample(isamplingsize,replace = True, random_state = istarting_points) # take the subset for DBN training
+                    aic = AicScore(bhv_df)
 
-                        #Anirban(Alec) shuffle, slow
-                        bhv_df_shuffle, df_shufflekeys = EfficientShuffle(bhv_df,round(time()))
-                        aic_shuffle = AicScore(bhv_df_shuffle)
+                    #Anirban(Alec) shuffle, slow
+                    bhv_df_shuffle, df_shufflekeys = EfficientShuffle(bhv_df,round(time()))
+                    aic_shuffle = AicScore(bhv_df_shuffle)
 
-                        np.random.seed(istarting_points)
-                        random.seed(istarting_points)
-                        starting_edges = random.sample(causal_whitelist, np.random.randint(1,len(causal_whitelist)))
-                        starting_graph = DAG()
-                        starting_graph.add_nodes_from(nodes=all_pops)
-                        starting_graph.add_edges_from(ebunch=starting_edges)
+                    np.random.seed(istarting_points)
+                    random.seed(istarting_points)
+                    starting_edges = random.sample(causal_whitelist, np.random.randint(1,len(causal_whitelist)))
+                    starting_graph = DAG()
+                    starting_graph.add_nodes_from(nodes=all_pops)
+                    starting_graph.add_edges_from(ebunch=starting_edges)
 
-                        best_model,edges,DAGs = train_DBN_multiLag_training_only(bhv_df,starting_graph,colnames,eventnames,from_pops,to_pops)           
-                        DAGs[0][np.isnan(DAGs[0])]=0
+                    best_model,edges,DAGs = train_DBN_multiLag_training_only(bhv_df,starting_graph,colnames,eventnames,from_pops,to_pops)           
+                    DAGs[0][np.isnan(DAGs[0])]=0
 
-                        DAGs_randstart[istarting_points,:,:] = DAGs[0]
-                        score_randstart[istarting_points] = aic.score(best_model)
+                    DAGs_randstart[istarting_points,:,:] = DAGs[0]
+                    score_randstart[istarting_points] = aic.score(best_model)
 
-                        # step 2: add the shffled data results
-                        # shuffled bhv_df
-                        best_model,edges,DAGs = train_DBN_multiLag_training_only(bhv_df_shuffle,starting_graph,colnames,eventnames,from_pops,to_pops)           
-                        DAGs[0][np.isnan(DAGs[0])]=0
+                    # step 2: add the shffled data results
+                    # shuffled bhv_df
+                    best_model,edges,DAGs = train_DBN_multiLag_training_only(bhv_df_shuffle,starting_graph,colnames,eventnames,from_pops,to_pops)           
+                    DAGs[0][np.isnan(DAGs[0])]=0
 
-                        DAGs_randstart_shuffle[istarting_points,:,:] = DAGs[0]
-                        score_randstart_shuffle[istarting_points] = aic_shuffle.score(best_model)
+                    DAGs_randstart_shuffle[istarting_points,:,:] = DAGs[0]
+                    score_randstart_shuffle[istarting_points] = aic_shuffle.score(best_model)
 
-                    DAGs_alltypes[date_tgt] = DAGs_randstart 
-                    DAGs_shuffle_alltypes[date_tgt] = DAGs_randstart_shuffle
+                DAGs_alltypes[date_tgt] = DAGs_randstart 
+                DAGs_shuffle_alltypes[date_tgt] = DAGs_randstart_shuffle
 
-                    DAGs_scores_alltypes[date_tgt] = score_randstart
-                    DAGs_shuffle_scores_alltypes[date_tgt] = score_randstart_shuffle
+                DAGs_scores_alltypes[date_tgt] = score_randstart
+                DAGs_shuffle_scores_alltypes[date_tgt] = score_randstart_shuffle
 
-                    weighted_graphs = get_weighted_dags(DAGs_alltypes[date_tgt],nbootstraps)
-                    weighted_graphs_shuffled = get_weighted_dags(DAGs_shuffle_alltypes[date_tgt],nbootstraps)
-                    sig_edges = get_significant_edges(weighted_graphs,weighted_graphs_shuffled)
+                weighted_graphs = get_weighted_dags(DAGs_alltypes[date_tgt],nbootstraps)
+                weighted_graphs_shuffled = get_weighted_dags(DAGs_shuffle_alltypes[date_tgt],nbootstraps)
+                sig_edges = get_significant_edges(weighted_graphs,weighted_graphs_shuffled)
 
-                    weighted_graphs_alltypes[date_tgt] = weighted_graphs
-                    weighted_graphs_shuffled_alltypes[date_tgt] = weighted_graphs_shuffled
-                    sig_edges_alltypes[date_tgt] = sig_edges
+                weighted_graphs_alltypes[date_tgt] = weighted_graphs
+                weighted_graphs_shuffled_alltypes[date_tgt] = weighted_graphs_shuffled
+                sig_edges_alltypes[date_tgt] = sig_edges
                     
-                except:
-                    DAGs_alltypes[date_tgt] = [] 
-                    DAGs_shuffle_alltypes[date_tgt] = []
-
-                    DAGs_scores_alltypes[date_tgt] = []
-                    DAGs_shuffle_scores_alltypes[date_tgt] = []
-
-                    weighted_graphs_alltypes[date_tgt] = []
-                    weighted_graphs_shuffled_alltypes[date_tgt] = []
-                    sig_edges_alltypes[date_tgt] = []
+                # except:
+                #     DAGs_alltypes[date_tgt] = [] 
+                #     DAGs_shuffle_alltypes[date_tgt] = []
+                # 
+                #     DAGs_scores_alltypes[date_tgt] = []
+                #     DAGs_shuffle_scores_alltypes[date_tgt] = []
+                # 
+                #     weighted_graphs_alltypes[date_tgt] = []
+                #     weighted_graphs_shuffled_alltypes[date_tgt] = []
+                #     sig_edges_alltypes[date_tgt] = []
                 
             DAGscores_diffTempRo_diffSampSize[(str(temp_resolu),samplingsizes_name[jj])] = DAGs_scores_alltypes
             DAGscores_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),samplingsizes_name[jj])] = DAGs_shuffle_scores_alltypes
@@ -1520,6 +1616,9 @@ except:
 tasktypes_all_dates[tasktypes_all_dates==5] = -1 # change the task type code for no-vision
 coopthres_forsort = (tasktypes_all_dates-1)*coopthres_all_dates/2
 coopthres_forsort[coopthres_forsort==0] = 100 # get the cooperation threshold for sorting
+
+
+
 #
 # sort the data based on task type and dates
 sorting_df = pd.DataFrame({'dates': dates_list, 'coopthres': coopthres_forsort.ravel()}, columns=['dates', 'coopthres'])
@@ -1630,6 +1729,12 @@ if savefigs:
     
 
 
+# In[ ]:
+
+
+weighted_graphs_diffTempRo_diffSampSize[('1','full_row_number')].keys()
+
+
 # #### mean edge weights of selected edges v.s. other behavioral measures
 # ##### only the cooperation days
 
@@ -1637,7 +1742,9 @@ if savefigs:
 
 
 # only select the targeted dates
-sorting_tgt_df = sorting_df[(sorting_df['coopthres']==1)|(sorting_df['coopthres']==2)|(sorting_df['coopthres']==3)]
+# sorting_tgt_df = sorting_df[(sorting_df['coopthres']==1)|(sorting_df['coopthres']==1.5)|(sorting_df['coopthres']==2)|(sorting_df['coopthres']==3)]
+# sorting_tgt_df = sorting_df[(sorting_df['coopthres']==1)|(sorting_df['coopthres']==2)]
+sorting_tgt_df = sorting_df[(sorting_df['coopthres']==1)|(sorting_df['coopthres']==1.5)|(sorting_df['coopthres']==2)]
 # sorting_tgt_df = sorting_df[(sorting_df['coopthres']==1)]
 dates_list_tgt = sorting_tgt_df['dates']
 dates_list_tgt = np.array(dates_list_tgt)
@@ -1739,10 +1846,10 @@ for i_edge in np.arange(0,n_edges,1):
     else:
         axs.flatten()[i_edge].set_xticklabels('')
     #
-    # axs.flatten()[i_edge].text(xxx.min(),1.0,'spearman r='+"{:.2f}".format(rr_spe),fontsize=10)
-    # axs.flatten()[i_edge].text(xxx.min(),0.9,'spearman p='+"{:.2f}".format(pp_spe),fontsize=10)
-    axs.flatten()[i_edge].text(xxx.min(),1.0,'regression r='+"{:.2f}".format(rr_reg),fontsize=10)
-    axs.flatten()[i_edge].text(xxx.min(),0.9,'regression p='+"{:.2f}".format(pp_reg),fontsize=10)
+    axs.flatten()[i_edge].text(xxx.min(),1.0,'spearman r='+"{:.2f}".format(rr_spe),fontsize=10)
+    axs.flatten()[i_edge].text(xxx.min(),0.9,'spearman p='+"{:.2f}".format(pp_spe),fontsize=10)
+    axs.flatten()[i_edge].text(xxx.min(),0.8,'regression r='+"{:.2f}".format(rr_reg),fontsize=10)
+    axs.flatten()[i_edge].text(xxx.min(),0.7,'regression p='+"{:.2f}".format(pp_reg),fontsize=10)
     
 
 
@@ -1755,6 +1862,747 @@ if savefigs:
     plt.savefig(figsavefolder+"edgeweights_vs_"+xplottype+"_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pdf')
     
     
+
+
+# In[ ]:
+
+
+animal2_fixedorder
+
+
+# ## Plots that include all pairs
+# ####  mean edge weights of selected edges v.s. other behavioral measures
+# ##### only the cooperation days
+
+# In[ ]:
+
+
+# PLOT multiple pairs in one plot, so need to load data seperately
+mergetempRos = 0 # 1: merge different time bins
+minmaxfullSampSize = 1 # 1: use the  min row number and max row number, or the full row for each session
+moreSampSize = 0 # 1: use more sample size (more than just minimal row number and max row number)
+#
+animal1_fixedorders = ['eddie','dodson','dannon','ginger','koala']
+animal2_fixedorders = ['sparkle','scorch','kanga','kanga','vermelho']
+nanimalpairs = np.shape(animal1_fixedorders)[0]
+
+#
+# DBN analysis types
+# 1s time lag
+edges_target_names = [['1slag_pull2_pull1','1slag_pull1_pull2'],
+                      ['1slag_gaze1_pull1','1slag_gaze2_pull2'],
+                      ['1slag_pull2_gaze1','1slag_pull1_gaze2'],]
+fromNodesIDs = [[ 9, 8],
+                [10,11],
+                [ 9, 8],]
+toNodesIDs = [[0,1],
+              [0,1],
+              [2,3]]
+n_edges = np.shape(np.array(edges_target_names).flatten())[0]
+
+#
+xplottype = 'succrate' # 'succrate', 'meangazenum', 'meanpullnum'
+xplotlabel = 'successful rate' # 'successful rate', 'mean gaze number', 'mean pull number'
+# xplottype = 'meangazenum' # 'succrate', 'meangazenum', 'meanpullnum'
+# xplotlabel = 'mean gaze number' # 'successful rate', 'mean gaze number', 'mean pull number'
+# xplottype = 'meanpullnum' # 'succrate', 'meangazenum', 'meanpullnum'
+# xplotlabel = 'mean pull number' # 'successful rate', 'mean gaze number', 'mean pull number'
+
+#
+fig, axs = plt.subplots(1,3)
+fig.set_figheight(10)
+fig.set_figwidth(10*3)
+
+# initiate the final data set
+edges_measure_slopes_all = np.zeros((nanimalpairs,n_edges))
+edges_measure_corrR_all = np.zeros((nanimalpairs,n_edges))
+edges_measure_regR_all = np.zeros((nanimalpairs,n_edges))
+
+for ianimalpair in np.arange(0,nanimalpairs,1):
+    animal1_fixedorder = animal1_fixedorders[ianimalpair]
+    animal2_fixedorder = animal2_fixedorders[ianimalpair]
+    
+    # load the basic behavioral measures
+    # load saved data
+    data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'
+    #
+    with open(data_saved_subfolder+'/owgaze1_num_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        owgaze1_num_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/owgaze2_num_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        owgaze2_num_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/mtgaze1_num_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        mtgaze1_num_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/mtgaze2_num_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        mtgaze2_num_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/pull1_num_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        pull1_num_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/pull2_num_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        pull2_num_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/tasktypes_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        tasktypes_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/coopthres_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        coopthres_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/succ_rate_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        succ_rate_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/interpullintv_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        interpullintv_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/trialnum_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        trialnum_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/bhv_intv_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        bhv_intv_all_dates = pickle.load(f)
+    # 
+    pullmean_num_all_dates = (pull1_num_all_dates+pull2_num_all_dates)/2
+    #
+    gaze1_num_all_dates = owgaze1_num_all_dates + mtgaze1_num_all_dates
+    gaze2_num_all_dates = owgaze2_num_all_dates + mtgaze2_num_all_dates
+    gazemean_num_all_dates = (gaze1_num_all_dates+gaze2_num_all_dates)/2
+
+    # load the DBN related analysis
+    # load data
+    data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody_allsessions'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'
+    #
+    if moreSampSize:
+        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+            weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+            weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+            sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+    if minmaxfullSampSize:
+        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_minmaxfullSampSize.pkl', 'rb') as f:
+            weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_minmaxfullSampSize.pkl', 'rb') as f:
+            weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_minmaxfullSampSize.pkl', 'rb') as f:
+            sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+    #
+    # make sure these variables are the same as in the previous steps
+    # temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+    temp_resolus = [1] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+    ntemp_reses = np.shape(temp_resolus)[0]
+    #
+    if moreSampSize:
+        # different data (down/re)sampling numbers
+        # samplingsizes = np.arange(1100,3000,100)
+        samplingsizes = [1100]
+        # samplingsizes = [100,500,1000,1500,2000,2500,3000]        
+        # samplingsizes = [100,500]
+        # samplingsizes_name = ['100','500','1000','1500','2000','2500','3000']
+        samplingsizes_name = list(map(str, samplingsizes))
+    elif minmaxfullSampSize:
+        samplingsizes_name = ['full_row_number']   
+    nsamplings = np.shape(samplingsizes_name)[0]
+    #
+    # only load one set of analysis parameter
+    temp_resolu = temp_resolus[0]
+    j_sampsize_name = samplingsizes_name[0]  
+    
+    
+    #
+    # re-organize the target dates
+    # 100: self; 3: 3s coop; 2: 2s coop; 1.5: 1.5s coop; 1: 1s coop; -1: no-vision
+    tasktypes_all_dates[tasktypes_all_dates==5] = -1 # change the task type code for no-vision
+    coopthres_forsort = (tasktypes_all_dates-1)*coopthres_all_dates/2
+    coopthres_forsort[coopthres_forsort==0] = 100 # get the cooperation threshold for sorting
+    
+    
+    
+    #
+    # sort the data based on task type and dates
+    dates_list = list(weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)].keys())
+    sorting_df = pd.DataFrame({'dates': dates_list, 'coopthres': coopthres_forsort.ravel()}, columns=['dates', 'coopthres'])
+    sorting_df = sorting_df.sort_values(by=['coopthres','dates'], ascending = [False, True])
+    #
+    # only select the targeted dates
+    # sorting_tgt_df = sorting_df[(sorting_df['coopthres']==1)|(sorting_df['coopthres']==1.5)|(sorting_df['coopthres']==2)|(sorting_df['coopthres']==3)]
+    # sorting_tgt_df = sorting_df[(sorting_df['coopthres']==1)|(sorting_df['coopthres']==2)]
+    sorting_tgt_df = sorting_df[(sorting_df['coopthres']==1)|(sorting_df['coopthres']==1.5)|(sorting_df['coopthres']==2)]
+    # sorting_tgt_df = sorting_df[(sorting_df['coopthres']==1)]
+    dates_list_tgt = sorting_tgt_df['dates']
+    dates_list_tgt = np.array(dates_list_tgt)
+    #
+    ndates_tgt = np.shape(dates_list_tgt)[0]
+    
+    
+    # calculate the linear regression and correlation metrics for tgt edges
+    for i_edge in np.arange(0,n_edges,1):
+        #
+        edgeweight_mean_forplot_all_dates = np.zeros((ndates_tgt,1))
+        edgeweight_shuffled_mean_forplot_all_dates = np.zeros((ndates_tgt,1))
+        edgeweight_std_forplot_all_dates = np.zeros((ndates_tgt,1))
+        edgeweight_shuffled_std_forplot_all_dates = np.zeros((ndates_tgt,1))
+
+        edge_tgt_name = np.array(edges_target_names).flatten()[i_edge]
+        fromNodesID = np.array(fromNodesIDs).flatten()[i_edge]
+        toNodesID = np.array(toNodesIDs).flatten()[i_edge]
+
+        for idate in np.arange(0,ndates_tgt,1):
+            idate_name = dates_list_tgt[idate]
+
+            weighted_graphs_tgt = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][idate_name]
+            weighted_graphs_shuffled_tgt = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][idate_name]
+
+            edgeweight_mean_forplot_all_dates[idate] = np.nanmean(weighted_graphs_tgt[:,fromNodesID,toNodesID])
+            edgeweight_shuffled_mean_forplot_all_dates[idate] = np.nanmean(weighted_graphs_shuffled_tgt[:,fromNodesID,toNodesID])
+            edgeweight_std_forplot_all_dates[idate] = np.nanstd(weighted_graphs_tgt[:,fromNodesID,toNodesID])
+            edgeweight_shuffled_std_forplot_all_dates[idate] = np.nanstd(weighted_graphs_shuffled_tgt[:,fromNodesID,toNodesID])
+
+        # calculate correlation and linear regression
+        if xplottype == 'succrate':
+            xxx = succ_rate_all_dates[sorting_tgt_df.index]
+        elif xplottype == 'meangazenum':   
+            xxx = gazemean_num_all_dates[sorting_tgt_df.index]
+        elif xplottype == 'meanpullnum':   
+            xxx = pullmean_num_all_dates[sorting_tgt_df.index]
+        #     
+        yyy = edgeweight_mean_forplot_all_dates
+        #
+        rr_spe,pp_spe = scipy.stats.spearmanr(xxx, yyy)
+        slope, intercept, rr_reg, pp_reg, std_err = st.linregress(xxx.astype(float).T[0], yyy.astype(float).T[0])
+    
+        #
+        edges_measure_slopes_all[ianimalpair,i_edge] = slope
+        edges_measure_corrR_all[ianimalpair,i_edge] = rr_spe
+        edges_measure_regR_all[ianimalpair,i_edge] = rr_reg
+
+# plot
+edges_measure_slopes_all=np.vstack([edges_measure_slopes_all[:,np.arange(0,n_edges,2)],edges_measure_slopes_all[:,np.arange(1,n_edges,2)]])
+edges_measure_corrR_all=np.vstack([edges_measure_corrR_all[:,np.arange(0,n_edges,2)],edges_measure_corrR_all[:,np.arange(1,n_edges,2)]])
+edges_measure_regR_all=np.vstack([edges_measure_regR_all[:,np.arange(0,n_edges,2)],edges_measure_regR_all[:,np.arange(1,n_edges,2)]])
+
+# 
+
+dependencytargets = ['pull-pull','within_gazepull','across_pullgaze']
+# dependencytargets = dependencynames
+
+# plot 1
+# average all animals for each dependency
+# edge_measure_tgt_all = edges_measure_regR_all # regression slope or correlation R or regression R
+# measure_tgt_name = 'regression_R' # 'regression_slopes' or 'correlation_R' or 'regression_R'
+edge_measure_tgt_all = edges_measure_corrR_all # regression slope or correlation R or regression R
+measure_tgt_name = 'correlation_R' # 'regression_slopes' or 'correlation_R' or 'regression_R'
+# 
+edge_measure_tgt_all_df = pd.DataFrame(edge_measure_tgt_all)
+edge_measure_tgt_all_df.columns = dependencytargets
+edge_measure_tgt_all_df['type'] = 'all'
+#
+df_long=pd.concat([edge_measure_tgt_all_df])
+df_long2 = df_long.melt(id_vars=['type'], value_vars=dependencytargets,var_name='condition', value_name='value')
+# barplot ans swarmplot
+seaborn.barplot(ax=axs.ravel()[0],data=df_long2,x='condition',y='value',hue='type',errorbar='se',alpha=.5,capsize=0.1)
+seaborn.swarmplot(ax=axs.ravel()[0],data=df_long2,x='condition',y='value',hue='type',alpha=.9,size= 9,dodge=True,legend=False)
+axs.ravel()[0].set_xlabel('')
+axs.ravel()[0].set_ylabel('edge weight v.s. '+xplotlabel,fontsize=20)
+axs.ravel()[0].set_title('all animals; '+measure_tgt_name ,fontsize=24)
+# axs.ravel()[0].set_ylim([-2.35,2.35])
+axs.ravel()[0].set_ylim([-1,1])
+
+# plot 2
+# separating male and female
+edge_measure_tgt_male_df = pd.DataFrame(edge_measure_tgt_all[[0,1,2,9],:])
+edge_measure_tgt_male_df.columns = dependencytargets
+edge_measure_tgt_male_df['type'] = 'male'
+#
+edge_measure_tgt_female_df = pd.DataFrame(edge_measure_tgt_all[[3,4,5,6,7,8],:])
+edge_measure_tgt_female_df.columns = dependencytargets
+edge_measure_tgt_female_df['type'] = 'female'
+#
+df_long=pd.concat([edge_measure_tgt_male_df,edge_measure_tgt_female_df])
+df_long2 = df_long.melt(id_vars=['type'], value_vars=dependencytargets,var_name='condition', value_name='value')
+# barplot ans swarmplot
+seaborn.barplot(ax=axs.ravel()[1],data=df_long2,x='condition',y='value',hue='type',errorbar='se',alpha=.5,capsize=0.1)
+seaborn.swarmplot(ax=axs.ravel()[1],data=df_long2,x='condition',y='value',hue='type',alpha=.9,size= 9,dodge=True,legend=False)
+axs.ravel()[1].set_xlabel('')
+axs.ravel()[1].set_ylabel('edge weight v.s. '+xplotlabel,fontsize=20)
+axs.ravel()[1].set_title('male vs female; '+measure_tgt_name ,fontsize=24)
+# axs.ravel()[1].set_ylim([-2.35,2.35])
+axs.ravel()[1].set_ylim([-1,1])
+
+# plot 3
+# separating subordinate and dominant
+edge_measure_tgt_sub_df = pd.DataFrame(edge_measure_tgt_all[[0,1,2,3,4],:])
+edge_measure_tgt_sub_df.columns = dependencytargets
+edge_measure_tgt_sub_df['type'] = 'subordinate'
+#
+edge_measure_tgt_dom_df = pd.DataFrame(edge_measure_tgt_all[[5,6,7,8,9],:])
+edge_measure_tgt_dom_df.columns = dependencytargets
+edge_measure_tgt_dom_df['type'] = 'dominant'
+#
+df_long=pd.concat([edge_measure_tgt_sub_df,edge_measure_tgt_dom_df])
+df_long2 = df_long.melt(id_vars=['type'], value_vars=dependencytargets,var_name='condition', value_name='value')
+# barplot ans swarmplot
+seaborn.barplot(ax=axs.ravel()[2],data=df_long2,x='condition',y='value',hue='type',errorbar='se',alpha=.5,capsize=0.1)
+seaborn.swarmplot(ax=axs.ravel()[2],data=df_long2,x='condition',y='value',hue='type',alpha=.9,size= 9,dodge=True,legend=False)
+axs.ravel()[2].set_xlabel('')
+axs.ravel()[2].set_ylabel('edge weight v.s. '+xplotlabel,fontsize=20)
+axs.ravel()[2].set_title('sub vs dom; '+measure_tgt_name ,fontsize=24)
+# axs.ravel()[2].set_ylim([-2.35,2.35])
+axs.ravel()[2].set_ylim([-1,1])
+
+savefigs = 1
+if savefigs:
+    figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_allsessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'
+    if not os.path.exists(figsavefolder):
+        os.makedirs(figsavefolder)
+    plt.savefig(figsavefolder+"edgeweights_vs_"+xplottype+"_"+measure_tgt_name+'.pdf')
+    
+
+
+# In[ ]:
+
+
+edges_measure_slopes_all
+
+
+# In[ ]:
+
+
+st.ttest_1samp(edge_measure_tgt_dom_df['pull-pull'],0)
+
+
+# In[ ]:
+
+
+edge_measure_tgt_sub_df
+
+
+# ## Plots that include all pairs
+# ####  plot the coorelation between pull time, and social gaze time
+# #### pull <-> pull; within animal gaze -> pull; across animal pull -> gaze; within animal pull -> gaze
+
+# In[ ]:
+
+
+# PLOT multiple pairs in one plot, so need to load data seperately
+mergetempRos = 0 # 1: merge different time bins
+minmaxfullSampSize = 1 # 1: use the  min row number and max row number, or the full row for each session
+moreSampSize = 0 # 1: use more sample size (more than just minimal row number and max row number)
+#
+animal1_fixedorders = ['eddie','dodson','dannon','ginger','koala']
+animal2_fixedorders = ['sparkle','scorch','kanga','kanga','vermelho']
+nanimalpairs = np.shape(animal1_fixedorders)[0]
+
+# initiate the final data set
+pull_gaze_time_corr_mean_all = np.zeros((nanimalpairs*2,2))
+
+
+for ianimalpair in np.arange(0,nanimalpairs,1):
+    animal1_fixedorder = animal1_fixedorders[ianimalpair]
+    animal2_fixedorder = animal2_fixedorders[ianimalpair]
+    
+    # load the basic behavioral measures
+    # load saved data
+    data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'
+    #
+    with open(data_saved_subfolder+'/owgaze1_num_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        owgaze1_num_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/owgaze2_num_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        owgaze2_num_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/mtgaze1_num_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        mtgaze1_num_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/mtgaze2_num_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        mtgaze2_num_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/pull1_num_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        pull1_num_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/pull2_num_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        pull2_num_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/tasktypes_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        tasktypes_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/coopthres_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        coopthres_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/succ_rate_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        succ_rate_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/interpullintv_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        interpullintv_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/trialnum_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        trialnum_all_dates = pickle.load(f)
+    with open(data_saved_subfolder+'/bhv_intv_all_dates_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+        bhv_intv_all_dates = pickle.load(f)
+    # 
+    pullmean_num_all_dates = (pull1_num_all_dates+pull2_num_all_dates)/2
+    #
+    gaze1_num_all_dates = owgaze1_num_all_dates + mtgaze1_num_all_dates
+    gaze2_num_all_dates = owgaze2_num_all_dates + mtgaze2_num_all_dates
+    gazemean_num_all_dates = (gaze1_num_all_dates+gaze2_num_all_dates)/2
+
+    # load the DBN related analysis
+    # load data
+    data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody_allsessions'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'
+    #
+    if moreSampSize:
+        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+            weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+            weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+            sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+    if minmaxfullSampSize:
+        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_minmaxfullSampSize.pkl', 'rb') as f:
+            weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_minmaxfullSampSize.pkl', 'rb') as f:
+            weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_minmaxfullSampSize.pkl', 'rb') as f:
+            sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+    #
+    if not mergetempRos:
+        with open(data_saved_subfolder+'/DBN_input_data_alltypes_'+animal1_fixedorder+animal2_fixedorder+'_'+str(temp_resolu)+'sReSo.pkl', 'rb') as f:
+            DBN_input_data_alltypes = pickle.load(f)
+    else:
+        with open(data_saved_subfolder+'//DBN_input_data_alltypes_'+animal1_fixedorder+animal2_fixedorder+'_mergeTempsReSo.pkl', 'rb') as f:
+            DBN_input_data_alltypes = pickle.load(f)
+            
+    #
+    # make sure these variables are the same as in the previous steps
+    # temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+    temp_resolus = [1] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+    ntemp_reses = np.shape(temp_resolus)[0]
+    #
+    if moreSampSize:
+        # different data (down/re)sampling numbers
+        # samplingsizes = np.arange(1100,3000,100)
+        samplingsizes = [1100]
+        # samplingsizes = [100,500,1000,1500,2000,2500,3000]        
+        # samplingsizes = [100,500]
+        # samplingsizes_name = ['100','500','1000','1500','2000','2500','3000']
+        samplingsizes_name = list(map(str, samplingsizes))
+    elif minmaxfullSampSize:
+        samplingsizes_name = ['full_row_number']   
+    nsamplings = np.shape(samplingsizes_name)[0]
+    #
+    # only load one set of analysis parameter
+    temp_resolu = temp_resolus[0]
+    j_sampsize_name = samplingsizes_name[0]  
+    
+    
+    #
+    # re-organize the target dates
+    # 100: self; 3: 3s coop; 2: 2s coop; 1.5: 1.5s coop; 1: 1s coop; -1: no-vision
+    tasktypes_all_dates[tasktypes_all_dates==5] = -1 # change the task type code for no-vision
+    coopthres_forsort = (tasktypes_all_dates-1)*coopthres_all_dates/2
+    coopthres_forsort[coopthres_forsort==0] = 100 # get the cooperation threshold for sorting
+    
+    
+    
+    #
+    # sort the data based on task type and dates
+    dates_list = list(weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)].keys())
+    sorting_df = pd.DataFrame({'dates': dates_list, 'coopthres': coopthres_forsort.ravel()}, columns=['dates', 'coopthres'])
+    sorting_df = sorting_df.sort_values(by=['coopthres','dates'], ascending = [False, True])
+    #
+    # only select the targeted dates
+    sorting_tgt_df = sorting_df[(sorting_df['coopthres']==1)|(sorting_df['coopthres']==1.5)|(sorting_df['coopthres']==2)|(sorting_df['coopthres']==3)]
+    # sorting_tgt_df = sorting_df[(sorting_df['coopthres']==1)]
+    # sorting_tgt_df = sorting_df
+    dates_list_tgt = sorting_tgt_df['dates']
+    dates_list_tgt = np.array(dates_list_tgt)
+    #
+    ndates_tgt = np.shape(dates_list_tgt)[0]
+    
+    #
+    # initiate the final data set
+    within_pull_gaze_time_corr_all_ipair = dict.fromkeys(dates_list_tgt,[])
+    across_pull_gaze_time_corr_all_ipair = dict.fromkeys(dates_list_tgt,[])
+    within_pull_gaze_time_corP_all_ipair = dict.fromkeys(dates_list_tgt,[])
+    across_pull_gaze_time_corP_all_ipair = dict.fromkeys(dates_list_tgt,[])
+
+    
+    for idate in np.arange(0,ndates_tgt,1):
+        idate_name = dates_list_tgt[idate]
+
+        DBN_input_data_idate = DBN_input_data_alltypes[idate_name]
+        #
+        if 0:
+            # single behavioral events  
+            # pull1_t0 and gaze1_t0
+            xxx1 = (np.array(DBN_input_data_idate['pull1_t0'])==1)*1
+            xxx2 = (np.array(DBN_input_data_idate['owgaze1_t0'])==1)*1
+            rr1_spe,pp1_spe = scipy.stats.spearmanr(xxx1, xxx2)                 
+            # pull2_t0 and gaze1_t0
+            xxx1 = (np.array(DBN_input_data_idate['pull2_t0'])==1)*1
+            xxx2 = (np.array(DBN_input_data_idate['owgaze1_t0'])==1)*1
+            rr2_spe,pp2_spe = scipy.stats.spearmanr(xxx1, xxx2)            
+            # pull2_t0 and gaze2_t0
+            xxx1 = (np.array(DBN_input_data_idate['pull2_t0'])==1)*1
+            xxx2 = (np.array(DBN_input_data_idate['owgaze2_t0'])==1)*1
+            rr3_spe,pp3_spe = scipy.stats.spearmanr(xxx1, xxx2)           
+            # pull1_t0 and gaze2_t0
+            xxx1 = (np.array(DBN_input_data_idate['pull1_t0'])==1)*1
+            xxx2 = (np.array(DBN_input_data_idate['owgaze2_t0'])==1)*1
+            rr4_spe,pp4_spe = scipy.stats.spearmanr(xxx1, xxx2)
+        #
+        if 0:
+            # single behavioral events with synced pull
+            xxx1_1 = ((np.array(DBN_input_data_idate['pull2_t0'])==1)&(np.array(DBN_input_data_idate['pull1_t1'])==1))*1
+            xxx1_2 = ((np.array(DBN_input_data_idate['pull1_t0'])==1)&(np.array(DBN_input_data_idate['pull2_t1'])==1))*1 
+            # pull1_t0 and gaze1_t0
+            xxx1 = xxx1_1 + xxx1_2
+            xxx2 = (np.array(DBN_input_data_idate['owgaze1_t1'])==1)*1
+            rr1_spe,pp1_spe = scipy.stats.spearmanr(xxx1, xxx2)                 
+            # pull2_t0 and gaze1_t0
+            xxx1 = xxx1_1 + xxx1_2
+            xxx2 = (np.array(DBN_input_data_idate['owgaze1_t1'])==1)*1
+            rr2_spe,pp2_spe = scipy.stats.spearmanr(xxx1, xxx2)            
+            # pull2_t0 and gaze2_t0
+            xxx1 = xxx1_1 + xxx1_2
+            xxx2 = (np.array(DBN_input_data_idate['owgaze2_t1'])==1)*1
+            rr3_spe,pp3_spe = scipy.stats.spearmanr(xxx1, xxx2)           
+            # pull1_t0 and gaze2_t0
+            xxx1 = xxx1_1 + xxx1_2
+            xxx2 = (np.array(DBN_input_data_idate['owgaze2_t1'])==1)*1
+            rr4_spe,pp4_spe = scipy.stats.spearmanr(xxx1, xxx2)
+        #
+        if 1:
+            # paired behavioral events
+            xxx1_1 = ((np.array(DBN_input_data_idate['pull2_t0'])==1)&(np.array(DBN_input_data_idate['pull1_t1'])==1))*1
+            xxx1_2 = ((np.array(DBN_input_data_idate['pull1_t0'])==1)&(np.array(DBN_input_data_idate['pull2_t1'])==1))*1            
+            # pull1_t1 and gaze1_t0
+            xxx1 = xxx1_1 + xxx1_2
+            xxx2 = ((np.array(DBN_input_data_idate['pull1_t1'])==1)&(np.array(DBN_input_data_idate['owgaze1_t0'])==1))*1
+            #
+            try:
+                xxx_plot = np.linspace(0, np.shape(xxx1)[0], np.shape(xxx1)[0])
+                xxx1 = np.where(xxx1==1)[0]
+                kde = KernelDensity(kernel="gaussian", bandwidth=1).fit(xxx1.reshape(-1, 1))
+                log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+                xxx1 = np.exp(log_dens)
+                #
+                xxx_plot = np.linspace(0, np.shape(xxx2)[0], np.shape(xxx2)[0])
+                xxx2 = np.where(xxx2==1)[0]
+                kde = KernelDensity(kernel="gaussian", bandwidth=1).fit(xxx2.reshape(-1, 1))
+                log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+                xxx2 = np.exp(log_dens)
+                #
+                rr1_spe,pp1_spe = scipy.stats.spearmanr(xxx1, xxx2)
+            except:
+                rr1_spe = np.nan
+                pp1_spe = np.nan            
+            # pull2_t0 and gaze1_t1
+            xxx1 = xxx1_1 + xxx1_2
+            xxx2 = ((np.array(DBN_input_data_idate['pull2_t0'])==1)&(np.array(DBN_input_data_idate['owgaze1_t1'])==1))*1
+            try:
+                xxx_plot = np.linspace(0, np.shape(xxx1)[0], np.shape(xxx1)[0])
+                xxx1 = np.where(xxx1==1)[0]
+                kde = KernelDensity(kernel="gaussian", bandwidth=1).fit(xxx1.reshape(-1, 1))
+                log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+                xxx1 = np.exp(log_dens)
+                #
+                xxx_plot = np.linspace(0, np.shape(xxx2)[0], np.shape(xxx2)[0])
+                xxx2 = np.where(xxx2==1)[0]
+                kde = KernelDensity(kernel="gaussian", bandwidth=1).fit(xxx2.reshape(-1, 1))
+                log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+                xxx2 = np.exp(log_dens)
+                #
+                rr2_spe,pp2_spe = scipy.stats.spearmanr(xxx1, xxx2)
+            except:
+                rr2_spe = np.nan
+                pp2_spe = np.nan        
+            # pull2_t1 and gaze2_t0
+            xxx1 = xxx1_1 + xxx1_2
+            xxx2 = ((np.array(DBN_input_data_idate['pull2_t1'])==1)&(np.array(DBN_input_data_idate['owgaze2_t0'])==1))*1
+            try:
+                xxx_plot = np.linspace(0, np.shape(xxx1)[0], np.shape(xxx1)[0])
+                xxx1 = np.where(xxx1==1)[0]
+                kde = KernelDensity(kernel="gaussian", bandwidth=1).fit(xxx1.reshape(-1, 1))
+                log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+                xxx1 = np.exp(log_dens)
+                #
+                xxx_plot = np.linspace(0, np.shape(xxx2)[0], np.shape(xxx2)[0])
+                xxx2 = np.where(xxx2==1)[0]
+                kde = KernelDensity(kernel="gaussian", bandwidth=1).fit(xxx2.reshape(-1, 1))
+                log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+                xxx2 = np.exp(log_dens)
+                #
+                rr3_spe,pp3_spe = scipy.stats.spearmanr(xxx1, xxx2)
+            except:
+                rr3_spe = np.nan
+                pp3_spe = np.nan           
+            # pull1_t0 and gaze2_t1
+            xxx1 = xxx1_1 + xxx1_2
+            xxx2 = ((np.array(DBN_input_data_idate['pull1_t0'])==1)&(np.array(DBN_input_data_idate['owgaze2_t1'])==1))*1
+            try:
+                xxx_plot = np.linspace(0, np.shape(xxx1)[0], np.shape(xxx1)[0])
+                xxx1 = np.where(xxx1==1)[0]
+                kde = KernelDensity(kernel="gaussian", bandwidth=1).fit(xxx1.reshape(-1, 1))
+                log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+                xxx1 = np.exp(log_dens)
+                #
+                xxx_plot = np.linspace(0, np.shape(xxx2)[0], np.shape(xxx2)[0])
+                xxx2 = np.where(xxx2==1)[0]
+                kde = KernelDensity(kernel="gaussian", bandwidth=1).fit(xxx2.reshape(-1, 1))
+                log_dens = kde.score_samples(xxx_plot.reshape(-1, 1))
+                xxx2 = np.exp(log_dens)
+                #
+                rr4_spe,pp4_spe = scipy.stats.spearmanr(xxx1, xxx2)
+            except:
+                rr4_spe = np.nan
+                pp4_spe = np.nan
+  
+            
+        #    
+        within_pull_gaze_time_corr_all_ipair[idate_name] = [rr1_spe,rr3_spe]
+        across_pull_gaze_time_corr_all_ipair[idate_name] = [rr2_spe,rr4_spe]
+        within_pull_gaze_time_corP_all_ipair[idate_name] = [pp1_spe,pp3_spe]
+        across_pull_gaze_time_corP_all_ipair[idate_name] = [pp2_spe,pp4_spe]
+    
+    # organize the data to the summarizing mean variables
+    pull_gaze_time_corr_mean_all[[ianimalpair*2,ianimalpair*2+1],0]=np.nanmean(pd.DataFrame(within_pull_gaze_time_corr_all_ipair),axis=1)
+    pull_gaze_time_corr_mean_all[[ianimalpair*2,ianimalpair*2+1],1]=np.nanmean(pd.DataFrame(across_pull_gaze_time_corr_all_ipair),axis=1)
+
+    
+    # plot each animal pair first
+    # figure initiate
+    fig, axs = plt.subplots(2,2)
+    fig.set_figheight(5*2)
+    fig.set_figwidth(10*2)
+    #
+    plottype_names = ['within animal gaze to pull, '+animal1_fixedorder,
+                      'across animal pull to gaze, '+animal1_fixedorder,
+                      'within animal gaze to pull, '+animal2_fixedorder,
+                      'across animal pull to gaze, '+animal2_fixedorder]
+    plotCorrs_pooled = [
+                        np.array(pd.DataFrame(within_pull_gaze_time_corr_all_ipair).T)[:,0],
+                        np.array(pd.DataFrame(across_pull_gaze_time_corr_all_ipair).T)[:,0],
+                        np.array(pd.DataFrame(within_pull_gaze_time_corr_all_ipair).T)[:,1],
+                        np.array(pd.DataFrame(across_pull_gaze_time_corr_all_ipair).T)[:,1],
+                       ]
+    #
+    for iplot in np.arange(0,4,1):
+        #
+        plottype_name = plottype_names[iplot]
+        plotCorrs = plotCorrs_pooled[iplot]
+        
+        # plot 
+        axs.flatten()[iplot].plot(np.arange(0,ndates_tgt,1),plotCorrs,'ko',markersize=10)
+        #
+        axs.flatten()[iplot].set_title(plottype_name,fontsize=16)
+        axs.flatten()[iplot].set_ylabel('time coorelation with pull <-> pull',fontsize=13)
+        axs.flatten()[iplot].set_ylim([-1.1,1.1])
+        axs.flatten()[iplot].set_xlim([-0.5,ndates_tgt-0.5])
+        #
+        if iplot > 1:
+            axs.flatten()[iplot].set_xticks(np.arange(0,ndates_tgt,1))
+            axs.flatten()[iplot].set_xticklabels(dates_list_tgt, rotation=90,fontsize=10)
+        else:
+            axs.flatten()[iplot].set_xticklabels('')
+        #
+        # tasktypes = ['self','coop(3s)','coop(2s)','coop(1.5s)','coop(1s)','no-vision']
+        tasktypes = ['coop(3s)','coop(2s)','coop(1.5s)','coop(1s)']
+        taskswitches = np.where(np.array(sorting_tgt_df['coopthres'])[1:]-np.array(sorting_tgt_df['coopthres'])[:-1]!=0)[0]+0.5
+        for itaskswitch in np.arange(0,np.shape(taskswitches)[0],1):
+            taskswitch = taskswitches[itaskswitch]
+            axs.flatten()[iplot].plot([taskswitch,taskswitch],[-1.1,1.1],'k--')
+        taskswitches = np.concatenate(([0],taskswitches))
+        for itaskswitch in np.arange(0,np.shape(taskswitches)[0],1):
+            taskswitch = taskswitches[itaskswitch]
+            axs.flatten()[iplot].text(taskswitch+0.25,-0.9,tasktypes[itaskswitch],fontsize=10)
+        axs.flatten()[iplot].plot([0,ndates_tgt],[0,0],'k--')
+
+    savefigs = 1
+    if savefigs:
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_allsessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'       
+        if not os.path.exists(figsavefolder):
+            os.makedirs(figsavefolder)
+        plt.savefig(figsavefolder+'syncedpulltime_pullgazetime_correlation_'+animal1_fixedorder+animal2_fixedorder+'.pdf')
+    
+    
+    
+    
+# plot the summarizing figure
+#
+fig, axs = plt.subplots(1,3)
+fig.set_figheight(10)
+fig.set_figwidth(10*3)
+
+dependencytargets = ['within_gazepull','across_pullgaze']
+# dependencytargets = dependencynames
+
+# plot 1
+# average all animals for each dependency
+pull_gaze_time_corr_tgt_all = pull_gaze_time_corr_mean_all 
+measure_tgt_name = 'time point correlation' 
+# 
+pull_gaze_time_corr_tgt_all_df = pd.DataFrame(pull_gaze_time_corr_tgt_all)
+pull_gaze_time_corr_tgt_all_df.columns = dependencytargets
+pull_gaze_time_corr_tgt_all_df['type'] = 'all'
+#
+df_long=pd.concat([pull_gaze_time_corr_tgt_all_df])
+df_long2 = df_long.melt(id_vars=['type'], value_vars=dependencytargets,var_name='condition', value_name='value')
+# barplot ans swarmplot
+seaborn.barplot(ax=axs.ravel()[0],data=df_long2,x='condition',y='value',hue='type',errorbar='se',alpha=.5,capsize=0.1)
+seaborn.swarmplot(ax=axs.ravel()[0],data=df_long2,x='condition',y='value',hue='type',alpha=.9,size= 9,dodge=True,legend=False)
+axs.ravel()[0].set_xlabel('')
+axs.ravel()[0].set_ylabel(measure_tgt_name,fontsize=20)
+axs.ravel()[0].set_title('all animals' ,fontsize=24)
+# axs.ravel()[0].set_ylim([-2.35,2.35])
+axs.ravel()[0].set_ylim([-1,1])
+
+# plot 2
+# separating male and female
+pull_gaze_time_corr_tgt_male_df = pd.DataFrame(pull_gaze_time_corr_tgt_all[[0,2,4,9],:])
+pull_gaze_time_corr_tgt_male_df.columns = dependencytargets
+pull_gaze_time_corr_tgt_male_df['type'] = 'male'
+#
+pull_gaze_time_corr_tgt_female_df = pd.DataFrame(pull_gaze_time_corr_tgt_all[[1,3,5,6,7,8],:])
+pull_gaze_time_corr_tgt_female_df.columns = dependencytargets
+pull_gaze_time_corr_tgt_female_df['type'] = 'female'
+#
+df_long=pd.concat([pull_gaze_time_corr_tgt_male_df,pull_gaze_time_corr_tgt_female_df])
+df_long2 = df_long.melt(id_vars=['type'], value_vars=dependencytargets,var_name='condition', value_name='value')
+# barplot ans swarmplot
+seaborn.barplot(ax=axs.ravel()[1],data=df_long2,x='condition',y='value',hue='type',errorbar='se',alpha=.5,capsize=0.1)
+seaborn.swarmplot(ax=axs.ravel()[1],data=df_long2,x='condition',y='value',hue='type',alpha=.9,size= 9,dodge=True,legend=False)
+axs.ravel()[1].set_xlabel('')
+axs.ravel()[1].set_ylabel(measure_tgt_name,fontsize=20)
+axs.ravel()[1].set_title('male vs female' ,fontsize=24)
+# axs.ravel()[1].set_ylim([-2.35,2.35])
+axs.ravel()[1].set_ylim([-1,1])
+
+# plot 3
+# separating subordinate and dominant
+pull_gaze_time_corr_tgt_sub_df = pd.DataFrame(pull_gaze_time_corr_tgt_all[[0,2,4,6,8],:])
+pull_gaze_time_corr_tgt_sub_df.columns = dependencytargets
+pull_gaze_time_corr_tgt_sub_df['type'] = 'subordinate'
+#
+pull_gaze_time_corr_tgt_dom_df = pd.DataFrame(pull_gaze_time_corr_tgt_all[[1,3,5,7,9],:])
+pull_gaze_time_corr_tgt_dom_df.columns = dependencytargets
+pull_gaze_time_corr_tgt_dom_df['type'] = 'dominant'
+#
+df_long=pd.concat([pull_gaze_time_corr_tgt_sub_df,pull_gaze_time_corr_tgt_dom_df])
+df_long2 = df_long.melt(id_vars=['type'], value_vars=dependencytargets,var_name='condition', value_name='value')
+# barplot ans swarmplot
+seaborn.barplot(ax=axs.ravel()[2],data=df_long2,x='condition',y='value',hue='type',errorbar='se',alpha=.5,capsize=0.1)
+seaborn.swarmplot(ax=axs.ravel()[2],data=df_long2,x='condition',y='value',hue='type',alpha=.9,size= 9,dodge=True,legend=False)
+axs.ravel()[2].set_xlabel('')
+axs.ravel()[2].set_ylabel(measure_tgt_name,fontsize=20)
+axs.ravel()[2].set_title('sub vs dom' ,fontsize=24)
+# axs.ravel()[2].set_ylim([-2.35,2.35])
+axs.ravel()[2].set_ylim([-1,1])
+
+
+savefigs = 1
+if savefigs:
+    figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_allsessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'
+    if not os.path.exists(figsavefolder):
+        os.makedirs(figsavefolder)
+    plt.savefig(figsavefolder+"syncedpulltime_pullgazetime_correlation_summaryplot.pdf")
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
 
 # In[ ]:
