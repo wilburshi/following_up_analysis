@@ -25,7 +25,7 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
                 ]
     nskeletons = np.shape(skeletons)[0]
     
-    colors = ['b','r','k']
+    colors = ['#bf3eff','#f5911e','#5c5c5c']
     
     import matplotlib.animation as animation
 
@@ -54,16 +54,18 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
     
     # align the plot with the session start
     iframe_min = int(np.round(session_start_time*fps))
-    iframe_max = nframes+iframe_min   
+    iframe_max = int(nframes+iframe_min)   
 
 
     # set up the figure setting  
-    fig = plt.figure(figsize = (15,12))
-    gs=GridSpec(7,4) # 7 rows, 4 columns
+    fig = plt.figure(figsize = (15,15))
+    gs=GridSpec(9,4) # 9 rows, 4 columns
 
     ax1=fig.add_subplot(gs[0:5,:]) # animal tracking frame
-    ax2=fig.add_subplot(gs[5,:]) # animal1 behavioral events
-    ax3=fig.add_subplot(gs[6,:]) # animal2 behavioral events
+    ax2=fig.add_subplot(gs[5,:]) # animal1 gaze
+    ax3=fig.add_subplot(gs[6,:]) # animal1 pull
+    ax4=fig.add_subplot(gs[7,:]) # animal2 gaze
+    ax5=fig.add_subplot(gs[8,:]) # animal2 pull
 
     ax1.set_xlim([0,1920])
     ax1.set_ylim([0,1080])
@@ -74,6 +76,7 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
     ax1.invert_yaxis()
     ax1.xaxis.set_ticks_position('top')
     ax1.xaxis.set_label_position('top')
+    ax1.axis('off')
     
     ax2.set_xlim([iframe_min,iframe_max]) 
     ax2.set_xticks(np.arange(iframe_min,iframe_max,300)) 
@@ -81,18 +84,59 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
     ax2.set_ylim([0,1])
     ax2.set_yticklabels('')
     ax2.set_xlabel('')
-    ax2.set_ylabel('')
-    # ax2.set_title('animal 1 behavioral events')
-    
+    ax2.set_ylabel('animal1\nsocial gaze',fontsize=15)
+    ax2.tick_params(axis='y', labelsize=20)
+    ax2.spines['top'].set_visible(False)
+    ax2.spines['right'].set_visible(False)
+    ax2.spines['bottom'].set_visible(False)
+    ax2.spines['left'].set_visible(False)
+    ax2.get_xaxis().set_ticks([])
+    ax2.get_yaxis().set_ticks([])
+
     ax3.set_xlim([iframe_min,iframe_max])  
     ax3.set_xticks(np.arange(iframe_min,iframe_max,300)) 
-    ax3.set_xticklabels(list(map(str,np.arange(0/fps,nframes/fps,300/fps))))
-    ax3.tick_params(axis='x', labelsize=20)
+    ax3.set_xticklabels('')
     ax3.set_ylim([0,1])
     ax3.set_yticklabels('')
-    ax3.set_xlabel('time (s)',fontsize = 24)
-    ax3.set_ylabel('')
-    # ax3.set_title('animal 2 behavioral events')
+    ax3.set_xlabel('')
+    ax3.set_ylabel('animal1\npull',fontsize=15)
+    ax3.tick_params(axis='y', labelsize=20)
+    ax3.spines['top'].set_visible(False)
+    ax3.spines['right'].set_visible(False)
+    ax3.spines['bottom'].set_visible(False)
+    ax3.spines['left'].set_visible(False)
+    ax3.get_xaxis().set_ticks([])
+    ax3.get_yaxis().set_ticks([])
+
+    ax4.set_xlim([iframe_min,iframe_max]) 
+    ax4.set_xticks(np.arange(iframe_min,iframe_max,300)) 
+    ax4.set_xticklabels('')
+    ax4.set_ylim([0,1])
+    ax4.set_yticklabels('')
+    ax4.set_xlabel('')
+    ax4.set_ylabel('animal2\nsocial gaze',fontsize=15)
+    ax4.tick_params(axis='y', labelsize=20)
+    ax4.spines['top'].set_visible(False)
+    ax4.spines['right'].set_visible(False)
+    ax4.spines['bottom'].set_visible(False)
+    ax4.spines['left'].set_visible(False)
+    ax4.get_xaxis().set_ticks([])
+    ax4.get_yaxis().set_ticks([])
+
+    ax5.set_xlim([iframe_min,iframe_max])  
+    ax5.set_xticks(np.arange(iframe_min,iframe_max,300)) 
+    ax5.set_xticklabels('')
+    ax5.set_ylim([0,1])
+    ax5.set_yticklabels('')
+    ax5.set_xlabel('time (s)',fontsize = 24)
+    ax5.set_ylabel('animal2\npull',fontsize=15)
+    ax5.tick_params(axis='y', labelsize=20)
+    ax5.spines['top'].set_visible(False)
+    ax5.spines['right'].set_visible(False)
+    # ax5.spines['bottom'].set_visible(False)
+    ax5.spines['left'].set_visible(False)
+    # ax5.get_xaxis().set_ticks([])
+    ax5.get_yaxis().set_ticks([])
 
 
 
@@ -104,11 +148,14 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
         
             if clear_frames:
                 fig.clear()
-                gs=GridSpec(7,4) # 7 rows, 4 columns
+                gs=GridSpec(9,4) # 9 rows, 4 columns
 
                 ax1=fig.add_subplot(gs[0:5,:]) # animal tracking frame
-                ax2=fig.add_subplot(gs[5,:]) # animal1 behavioral events
-                ax3=fig.add_subplot(gs[6,:]) # animal2 behavioral events
+                ax2=fig.add_subplot(gs[5,:]) # animal1 gaze
+                ax3=fig.add_subplot(gs[6,:]) # animal1 pull
+                ax4=fig.add_subplot(gs[7,:]) # animal2 gaze
+                ax5=fig.add_subplot(gs[8,:]) # animal2 pull
+                
 
                 ax1.set_xlim([0,1920])
                 ax1.set_ylim([0,1080])
@@ -119,26 +166,67 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
                 ax1.invert_yaxis()
                 ax1.xaxis.set_ticks_position('top')
                 ax1.xaxis.set_label_position('top')
+                ax1.axis('off')
 
-                
                 ax2.set_xlim([iframe_min,iframe_max]) 
                 ax2.set_xticks(np.arange(iframe_min,iframe_max,300)) 
                 ax2.set_xticklabels('')
                 ax2.set_ylim([0,1])
                 ax2.set_yticklabels('')
                 ax2.set_xlabel('')
-                ax2.set_ylabel('')
-                #ax2.set_title('animal 1 behavioral events')
-    
+                ax2.set_ylabel('animal1\nsocial gaze',fontsize=15)
+                # ax2.tick_params(axis='y', labelsize=20)
+                ax2.spines['top'].set_visible(False)
+                ax2.spines['right'].set_visible(False)
+                ax2.spines['bottom'].set_visible(False)
+                ax2.spines['left'].set_visible(False)
+                ax2.get_xaxis().set_ticks([])
+                ax2.get_yaxis().set_ticks([])
+
                 ax3.set_xlim([iframe_min,iframe_max])  
                 ax3.set_xticks(np.arange(iframe_min,iframe_max,300)) 
-                ax3.set_xticklabels(list(map(str,np.arange(0/fps,nframes/fps,300/fps))))
-                ax3.tick_params(axis='x', labelsize=20)
+                ax3.set_xticklabels('')
                 ax3.set_ylim([0,1])
                 ax3.set_yticklabels('')
-                ax3.set_xlabel('time (s)',fontsize = 24)
-                ax3.set_ylabel('')
-                #ax3.set_title('animal 2 behavioral events')
+                ax3.set_xlabel('')
+                ax3.set_ylabel('animal1\npull',fontsize=15)
+                # ax3.tick_params(axis='y', labelsize=20)
+                ax3.spines['top'].set_visible(False)
+                ax3.spines['right'].set_visible(False)
+                ax3.spines['bottom'].set_visible(False)
+                ax3.spines['left'].set_visible(False)
+                ax3.get_xaxis().set_ticks([])
+                ax3.get_yaxis().set_ticks([])
+
+                ax4.set_xlim([iframe_min,iframe_max]) 
+                ax4.set_xticks(np.arange(iframe_min,iframe_max,300)) 
+                ax4.set_xticklabels('')
+                ax4.set_ylim([0,1])
+                ax4.set_yticklabels('')
+                ax4.set_xlabel('')
+                ax4.set_ylabel('animal2\nsocial gaze',fontsize=15)
+                # ax4.tick_params(axis='y', labelsize=20)
+                ax4.spines['top'].set_visible(False)
+                ax4.spines['right'].set_visible(False)
+                ax4.spines['bottom'].set_visible(False)
+                ax4.spines['left'].set_visible(False)
+                ax4.get_xaxis().set_ticks([])
+                ax4.get_yaxis().set_ticks([])
+
+                ax5.set_xlim([iframe_min,iframe_max])  
+                ax5.set_xticks(np.arange(iframe_min,iframe_max,300)) 
+                ax5.set_xticklabels('')
+                ax5.set_ylim([0,1])
+                ax5.set_yticklabels('')
+                ax5.set_xlabel('time (s)',fontsize = 24)
+                ax5.set_ylabel('animal2\npull',fontsize=15)
+                # ax5.tick_params(axis='y', labelsize=20)
+                ax5.spines['top'].set_visible(False)
+                ax5.spines['right'].set_visible(False)
+                # ax5.spines['bottom'].set_visible(False)
+                ax5.spines['left'].set_visible(False)
+                # ax5.get_xaxis().set_ticks([])
+                ax5.get_yaxis().set_ticks([])
 
                 # plot the original videos
                 vidcap.set(cv2.CAP_PROP_POS_FRAMES, iframe)
@@ -156,12 +244,10 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
                     ibdpart_name = body_parts_unique[ibdpart]
                     bodypart_loc_iframe[ibdpart,:] = np.array(bodyparts_locs_camN[(ianimal_name,ibdpart_name)])[iframe,:]
                 # plot the body parts
-                if (ianimal==0): 
-                    ax1.plot(bodypart_loc_iframe[:,0], bodypart_loc_iframe[:,1], '.', color=colors[ianimal],label ='animal1')
-                else:
-                    ax1.plot(bodypart_loc_iframe[:,0], bodypart_loc_iframe[:,1], '.', color=colors[ianimal],label ='animal2')
+                ax1.plot(bodypart_loc_iframe[:,0], bodypart_loc_iframe[:,1], '.', color=colors[ianimal])
                 
-                # draw skeleton                
+                # draw skeleton     
+                withlabel = 0           
                 for iskel in np.arange(0,nskeletons,1):
                     try:
                         iskeleton_name = skeletons[iskel]
@@ -173,7 +259,15 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
                         skelbody12_loc_iframe[0,:] = np.array(bodyparts_locs_camN[(ianimal_name,skel_body1_name)])[iframe,:]
                         skelbody12_loc_iframe[1,:] = np.array(bodyparts_locs_camN[(ianimal_name,skel_body2_name)])[iframe,:]
                         # plot one skeleton
-                        ax1.plot(skelbody12_loc_iframe[:,0],skelbody12_loc_iframe[:,1],'-',color=colors[ianimal])
+                        # add the label for legend
+                        if not withlabel:
+                            if (ianimal==0): 
+                                ax1.plot(skelbody12_loc_iframe[:,0],skelbody12_loc_iframe[:,1],'-',color=colors[ianimal],label ='animal 1')
+                            else:
+                                ax1.plot(skelbody12_loc_iframe[:,0],skelbody12_loc_iframe[:,1],'-',color=colors[ianimal],label ='animal 2')
+                            withlabel = 1
+                        else:
+                            ax1.plot(skelbody12_loc_iframe[:,0],skelbody12_loc_iframe[:,1],'-',color=colors[ianimal])
                     except:
                         continue
 
@@ -202,35 +296,37 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
                 ax1.plot([face_mass[0]+face_offset,face_mass[0]+face_offset],[face_mass[1]-face_offset,face_mass[1]+face_offset],'--',color=colors[ianimal])       
 
                 # draw the estimated body
-                ax1.plot([face_mass[0]-face_offset,face_mass[0]+face_offset],[face_mass[1]-face_offset,face_mass[1]-face_offset],'--',color=colors[ianimal])
-                ax1.plot([face_mass[0]-face_offset,face_mass[0]+face_offset],[face_mass[1]+sqr_thres_body*face_offset,face_mass[1]+sqr_thres_body*face_offset],'--',color=colors[ianimal])
-                ax1.plot([face_mass[0]-face_offset,face_mass[0]-face_offset],[face_mass[1]-face_offset,face_mass[1]+sqr_thres_body*face_offset],'--',color=colors[ianimal])
-                ax1.plot([face_mass[0]+face_offset,face_mass[0]+face_offset],[face_mass[1]-face_offset,face_mass[1]+sqr_thres_body*face_offset],'--',color=colors[ianimal])                       
-
+                if 0:
+                    ax1.plot([face_mass[0]-face_offset,face_mass[0]+face_offset],[face_mass[1]-face_offset,face_mass[1]-face_offset],'--',color=colors[ianimal])
+                    ax1.plot([face_mass[0]-face_offset,face_mass[0]+face_offset],[face_mass[1]+sqr_thres_body*face_offset,face_mass[1]+sqr_thres_body*face_offset],'--',color=colors[ianimal])
+                    ax1.plot([face_mass[0]-face_offset,face_mass[0]-face_offset],[face_mass[1]-face_offset,face_mass[1]+sqr_thres_body*face_offset],'--',color=colors[ianimal])
+                    ax1.plot([face_mass[0]+face_offset,face_mass[0]+face_offset],[face_mass[1]-face_offset,face_mass[1]+sqr_thres_body*face_offset],'--',color=colors[ianimal])                       
                 
                 # draw lever and tube location
-                if (ianimal==1): 
-                    ax1.plot(lever_loc_both[ianimal_name][0],lever_loc_both[ianimal_name][1],'o',color='g',label='lever')
-                    ax1.plot(tube_loc_both[ianimal_name][0],tube_loc_both[ianimal_name][1],'o',color='y',label='tube')
-                else:
-                    ax1.plot(lever_loc_both[ianimal_name][0],lever_loc_both[ianimal_name][1],'o',color='g')
-                    ax1.plot(tube_loc_both[ianimal_name][0],tube_loc_both[ianimal_name][1],'o',color='y')
-
+                if 0:
+                    if (ianimal==1): 
+                        ax1.plot(lever_loc_both[ianimal_name][0],lever_loc_both[ianimal_name][1],'o',color='g',label='lever')
+                        ax1.plot(tube_loc_both[ianimal_name][0],tube_loc_both[ianimal_name][1],'o',color='y',label='tube')
+                    else:
+                        ax1.plot(lever_loc_both[ianimal_name][0],lever_loc_both[ianimal_name][1],'o',color='g')
+                        ax1.plot(tube_loc_both[ianimal_name][0],tube_loc_both[ianimal_name][1],'o',color='y')
                 
                 # draw lever square
-                sqr_offset = sqr_thres_tubelever # usually set as 75: draw a 150x150 pixel around lever 
-                ax1.plot([lever_loc_both[ianimal_name][0]-sqr_offset,lever_loc_both[ianimal_name][0]+sqr_offset],[lever_loc_both[ianimal_name][1]-sqr_offset,lever_loc_both[ianimal_name][1]-sqr_offset],'--',color='g')
-                ax1.plot([lever_loc_both[ianimal_name][0]-sqr_offset,lever_loc_both[ianimal_name][0]+sqr_offset],[lever_loc_both[ianimal_name][1]+sqr_offset,lever_loc_both[ianimal_name][1]+sqr_offset],'--',color='g')
-                ax1.plot([lever_loc_both[ianimal_name][0]-sqr_offset,lever_loc_both[ianimal_name][0]-sqr_offset],[lever_loc_both[ianimal_name][1]-sqr_offset,lever_loc_both[ianimal_name][1]+sqr_offset],'--',color='g')
-                ax1.plot([lever_loc_both[ianimal_name][0]+sqr_offset,lever_loc_both[ianimal_name][0]+sqr_offset],[lever_loc_both[ianimal_name][1]-sqr_offset,lever_loc_both[ianimal_name][1]+sqr_offset],'--',color='g')
+                if 0:
+                    sqr_offset = sqr_thres_tubelever # usually set as 75: draw a 150x150 pixel around lever 
+                    ax1.plot([lever_loc_both[ianimal_name][0]-sqr_offset,lever_loc_both[ianimal_name][0]+sqr_offset],[lever_loc_both[ianimal_name][1]-sqr_offset,lever_loc_both[ianimal_name][1]-sqr_offset],'--',color='g')
+                    ax1.plot([lever_loc_both[ianimal_name][0]-sqr_offset,lever_loc_both[ianimal_name][0]+sqr_offset],[lever_loc_both[ianimal_name][1]+sqr_offset,lever_loc_both[ianimal_name][1]+sqr_offset],'--',color='g')
+                    ax1.plot([lever_loc_both[ianimal_name][0]-sqr_offset,lever_loc_both[ianimal_name][0]-sqr_offset],[lever_loc_both[ianimal_name][1]-sqr_offset,lever_loc_both[ianimal_name][1]+sqr_offset],'--',color='g')
+                    ax1.plot([lever_loc_both[ianimal_name][0]+sqr_offset,lever_loc_both[ianimal_name][0]+sqr_offset],[lever_loc_both[ianimal_name][1]-sqr_offset,lever_loc_both[ianimal_name][1]+sqr_offset],'--',color='g')
 
 
                 # draw tube square
-                sqr_offset = sqr_thres_tubelever # usually set as 75: draw a 150x150 pixel around lever 
-                ax1.plot([tube_loc_both[ianimal_name][0]-sqr_offset,tube_loc_both[ianimal_name][0]+sqr_offset],[tube_loc_both[ianimal_name][1]-sqr_offset,tube_loc_both[ianimal_name][1]-sqr_offset],'--',color='y')
-                ax1.plot([tube_loc_both[ianimal_name][0]-sqr_offset,tube_loc_both[ianimal_name][0]+sqr_offset],[tube_loc_both[ianimal_name][1]+sqr_offset,tube_loc_both[ianimal_name][1]+sqr_offset],'--',color='y')
-                ax1.plot([tube_loc_both[ianimal_name][0]-sqr_offset,tube_loc_both[ianimal_name][0]-sqr_offset],[tube_loc_both[ianimal_name][1]-sqr_offset,tube_loc_both[ianimal_name][1]+sqr_offset],'--',color='y')
-                ax1.plot([tube_loc_both[ianimal_name][0]+sqr_offset,tube_loc_both[ianimal_name][0]+sqr_offset],[tube_loc_both[ianimal_name][1]-sqr_offset,tube_loc_both[ianimal_name][1]+sqr_offset],'--',color='y')
+                if 0:
+                    sqr_offset = sqr_thres_tubelever # usually set as 75: draw a 150x150 pixel around lever 
+                    ax1.plot([tube_loc_both[ianimal_name][0]-sqr_offset,tube_loc_both[ianimal_name][0]+sqr_offset],[tube_loc_both[ianimal_name][1]-sqr_offset,tube_loc_both[ianimal_name][1]-sqr_offset],'--',color='y')
+                    ax1.plot([tube_loc_both[ianimal_name][0]-sqr_offset,tube_loc_both[ianimal_name][0]+sqr_offset],[tube_loc_both[ianimal_name][1]+sqr_offset,tube_loc_both[ianimal_name][1]+sqr_offset],'--',color='y')
+                    ax1.plot([tube_loc_both[ianimal_name][0]-sqr_offset,tube_loc_both[ianimal_name][0]-sqr_offset],[tube_loc_both[ianimal_name][1]-sqr_offset,tube_loc_both[ianimal_name][1]+sqr_offset],'--',color='y')
+                    ax1.plot([tube_loc_both[ianimal_name][0]+sqr_offset,tube_loc_both[ianimal_name][0]+sqr_offset],[tube_loc_both[ianimal_name][1]-sqr_offset,tube_loc_both[ianimal_name][1]+sqr_offset],'--',color='y')
               
            
                 # draw head vector
@@ -271,7 +367,7 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
                         ax1.plot([meaneye_loc_iframe[0],lever_loc_iframe[0]],[meaneye_loc_iframe[1],lever_loc_iframe[1]],'-',color = 'g')
 
 
-                ax1.legend(loc='upper right',fontsize=15)
+                ax1.legend(loc='upper right',fontsize=20)
                          
 
 
@@ -296,24 +392,26 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
                     bhv_events_iframe = bhv_events_plot[iplotframe]
                     if (ianimal == 0):
                         if (np.isin(bhv_events_iframe,look_at_other_framenum_plot)): 
-                            ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = colors[np.absolute(ianimal-1)])
-                        elif (np.isin(bhv_events_iframe,look_at_lever_framenum_plot)): 
-                            ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'g')
-                        elif (np.isin(bhv_events_iframe,look_at_tube_framenum_plot)): 
-                            ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'y')
-                        elif (np.isin(bhv_events_iframe,pull1_framenum_plot)): 
-                            ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'k')
+                            # ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = colors[np.absolute(ianimal-1)])
+                            ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = colors[np.absolute(ianimal)])
+                        # elif (np.isin(bhv_events_iframe,look_at_lever_framenum_plot)): 
+                        #     ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'g')
+                        # elif (np.isin(bhv_events_iframe,look_at_tube_framenum_plot)): 
+                        #     ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'y')
+                        if (np.isin(bhv_events_iframe,pull1_framenum_plot)): 
+                            ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'k')
                         # else:
                         #     ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = '0.5')
                     elif (ianimal == 1):
                         if (np.isin(bhv_events_iframe,look_at_other_framenum_plot)): 
-                            ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = colors[np.absolute(ianimal-1)])
-                        elif (np.isin(bhv_events_iframe,look_at_lever_framenum_plot)): 
-                            ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'g')
-                        elif (np.isin(bhv_events_iframe,look_at_tube_framenum_plot)): 
-                            ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'y')
-                        elif (np.isin(bhv_events_iframe,pull2_framenum_plot)): 
-                            ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'k')
+                            # ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = colors[np.absolute(ianimal-1)])
+                            ax4.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = colors[np.absolute(ianimal)])
+                        # elif (np.isin(bhv_events_iframe,look_at_lever_framenum_plot)): 
+                        #     ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'g')
+                        # elif (np.isin(bhv_events_iframe,look_at_tube_framenum_plot)): 
+                        #     ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'y')
+                        if (np.isin(bhv_events_iframe,pull2_framenum_plot)): 
+                            ax5.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'k')
                         # else:
                         #     ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = '0.5')                          
                     

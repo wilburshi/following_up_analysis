@@ -442,6 +442,7 @@ spike_channels_data,channel_to_depth):
 
 
                 # plot the neural activity
+                # neural activities are already aligned to the start of the sessions, so don't need to take the iframe_min time (session_start_time) out  
                 if (ianimal == 0):
                     for ichannel_iplot in np.arange(0,64,1):
                         #
@@ -453,15 +454,18 @@ spike_channels_data,channel_to_depth):
                         spike_time_data_ichannel = spike_time_data[spike_channels_data == ichannel_iplot]
                         spike_time_data_ichannel = np.unique(spike_time_data_ichannel)
                         #
-                        spike_time_data_ichannel = spike_time_data_ichannel[spike_time_data_ichannel>iframe_min]
-                        spike_time_data_ichannel = spike_time_data_ichannel[spike_time_data_ichannel<iframe]
+                        # spike_time_data_ichannel = spike_time_data_ichannel[spike_time_data_ichannel>iframe_min]
+                        # spike_time_data_ichannel = spike_time_data_ichannel[spike_time_data_ichannel<iframe]
+                        spike_time_data_ichannel = spike_time_data_ichannel[spike_time_data_ichannel>0]
+                        spike_time_data_ichannel = spike_time_data_ichannel[spike_time_data_ichannel<iframe-iframe_min]
                         #  
                         for ispike in spike_time_data_ichannel:
                             ax6.plot([ispike,ispike],[(ichannel_depth-0.7)*2,(ichannel_depth+0.7)*2],'k-')
 
                         #
                         # plot LFP
-                        lfp_filt_ichannel = lfp_filt_sess_aligned[ichannel_iplot,iframe_min:iframe+1]
+                        # lfp_filt_ichannel = lfp_filt_sess_aligned[ichannel_iplot,iframe_min:iframe+1]
+                        lfp_filt_ichannel = lfp_filt_sess_aligned[ichannel_iplot,0:iframe-iframe_min+1]
                         lfp_filt_ichannel_forplot = lfp_filt_ichannel*4*0.2 + ichannel_depth*2-0.2*2
                         ax6.plot(lfp_filt_ichannel_forplot,'-',color = (0.7,0.7,0.7))
 
