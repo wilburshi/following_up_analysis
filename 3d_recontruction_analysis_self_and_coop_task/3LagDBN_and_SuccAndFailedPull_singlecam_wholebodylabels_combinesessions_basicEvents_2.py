@@ -296,7 +296,7 @@ if 0:
     animal2_filename = "Kanga"
 
 # dannon kanga
-if 0:
+if 1:
     if not do_bestsession:
         dates_list = [
                       "20230718","20230720","20230914","20230829","20230907","20230915",
@@ -329,7 +329,7 @@ if 0:
     animal2_filename = "Kanga"
     
 # Koala Vermelho
-if 1:
+if 0:
     if not do_bestsession:
         dates_list = [
                       "20231221","20231222","20231226","20231227",  "20231229","20231230",

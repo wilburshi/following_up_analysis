@@ -261,7 +261,7 @@ if 0:
     animal2_filename = "Sparkle"
     
 # ginger kanga
-if 0:
+if 1:
     if not do_bestsession:
         dates_list = [
                       "20230209","20230213","20230214","20230216","20230222","20230223","20230228","20230302",
@@ -273,7 +273,8 @@ if 0:
                               ] # in second 
     elif do_bestsession:   
         dates_list = [
-                      "20230213","20230214","20230216",
+                      # "20230213",
+                      "20230214","20230216",
                       "20230228","20230302","20230303","20230307",          
                       "20230314","20230315","20230316","20230317",
                       "20230301","20230320","20230321","20230322",
@@ -281,7 +282,8 @@ if 0:
                       "20230522_ws","20230524","20230605_1","20230606","20230607"
                    ]
         session_start_times = [ 
-                                 0.00,  0.00, 48.00, 
+                                # 0.00,  
+                                 0.00, 48.00, 
                                 23.00, 28.50, 34.00, 25.50, 
                                 25.50, 31.50, 28.00, 30.50,
                                 33.50, 22.20, 50.00,  0.00, 
@@ -329,7 +331,7 @@ if 0:
     animal2_filename = "Kanga"
     
 # Koala Vermelho
-if 1:
+if 0:
     if not do_bestsession:
         dates_list = [
                       "20231221","20231222","20231226","20231227",  "20231229","20231230",
@@ -1478,7 +1480,6 @@ except:
 
 
 # for self condition, use the same for failed pull and succ pull
-
 DAGscores_diffTempRo_diffSampSize[('failedpull', '1', 'min_row_number')]['self']=DAGscores_diffTempRo_diffSampSize[('succpull', '1', 'min_row_number')]['self']
 DAGscores_shuffled_diffTempRo_diffSampSize[('failedpull', '1', 'min_row_number')]['self']=DAGscores_shuffled_diffTempRo_diffSampSize[('succpull', '1', 'min_row_number')]['self']
 weighted_graphs_diffTempRo_diffSampSize[('failedpull', '1', 'min_row_number')]['self']=weighted_graphs_diffTempRo_diffSampSize[('succpull', '1', 'min_row_number')]['self']

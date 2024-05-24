@@ -216,7 +216,7 @@ if 0:
     animal2_filename = "Scorch"
     
 # eddie sparkle
-if 0:
+if 1:
     if not do_bestsession:
         dates_list = [
                       "20221122","20221125","20221128","20221129","20221130","20221202","20221206",
@@ -329,7 +329,7 @@ if 0:
     animal2_filename = "Kanga"
     
 # Koala Vermelho
-if 1:
+if 0:
     if not do_bestsession:
         dates_list = [
                       "20231221","20231222","20231226","20231227",  "20231229","20231230",

@@ -162,7 +162,7 @@ if 0:
     animal2_filename = "Scorch"
     
 # eddie sparkle
-if 1:
+if 0:
     if not do_bestsession:
         dates_list = [
                       "20221122","20221125","20221128","20221129","20221130","20221202","20221206",
@@ -219,7 +219,8 @@ if 0:
                               ] # in second 
     elif do_bestsession:   
         dates_list = [
-                      "20230213","20230214","20230216",
+                      "20230213", # camera2 is set up wrong
+                      "20230214","20230216",
                       "20230228","20230302","20230303","20230307",          
                       "20230314","20230315","20230316","20230317",
                       "20230301","20230320","20230321","20230322",
@@ -227,7 +228,8 @@ if 0:
                       "20230522_ws","20230524","20230605_1","20230606","20230607"
                    ]
         session_start_times = [ 
-                                 0.00,  0.00, 48.00, 
+                                 0.00, # camera2 is set up wrong
+                                 0.00, 48.00, 
                                 23.00, 28.50, 34.00, 25.50, 
                                 25.50, 31.50, 28.00, 30.50,
                                 33.50, 22.20, 50.00,  0.00, 
@@ -241,11 +243,86 @@ if 0:
     animal1_filename = "Ginger"
     animal2_filename = "Kanga"
 
-      
+# dannon kanga
+if 1:
+    if not do_bestsession:
+        dates_list = [
+                      "20230718","20230720","20230914","20230829","20230907","20230915",
+                      "20230918","20230926","20230928","20231002","20231010","20231011",
+                      "20231013",
+                   ]
+        session_start_times = [ 
+                                 0, 0, 0, 0, 0, 0, 
+                                 0, 0, 0, 0, 0, 0,
+                                 0, 0, 0, 0, 
+                              ] # in second 
+    elif do_bestsession:   
+        dates_list = [
+                      "20230718","20230720","20230914","20230726","20230727","20230809",
+                      "20230810","20230811","20230814","20230816","20230829","20230907","20230915",
+                      "20230918","20230926","20230928","20231002","20231010","20231011",
+                      "20231013","20231020","20231024","20231025",
+                   ]
+        session_start_times = [ 
+                                    0,    0,    0, 32.2, 27.2, 37.5,
+                                 21.0, 21.5, 19.8, 32.0,    0,    0,   0, 
+                                    0,    0,    0,    0,    0,    0,
+                                    0,    0,    0,    0, 
+                              ] # in second 
+    
+    animal1_fixedorder = ['dannon']
+    animal2_fixedorder = ['kanga']
+
+    animal1_filename = "Dannon"
+    animal2_filename = "Kanga"
+    
+    
+# Koala Vermelho
+if 0:
+    if not do_bestsession:
+        dates_list = [
+                      "20231221","20231222","20231226","20231227",  "20231229","20231230",
+                      "20231231","20240102","20240104","20240104-2","20240105","20240108",
+                      "20240109","20240115","20240116","20240117",  "20240118","20240119",
+                      "20240122","20240123","20240124","20240125",  "20240126","20240129",
+                      "20240130","20240131","20240201","20240202",  
+                     ]
+        session_start_times = [ 
+                                0.00,  0.00,  0.00,  0.00,  0.00,  0.00, 
+                                0.00,  0.00,  0.00,  0.00,  0.00,  0.00, 
+                                0.00,  0.00,  0.00,  0.00,  0.00,  0.00,
+                                0.00,  0.00,  0.00,  0.00,  0.00,  0.00,
+                                0.00,  0.00,  0.00,  0.00,
+                              ] # in second
+    elif do_bestsession:
+        # pick only five sessions for each conditions
+        dates_list = [
+                      "20231222","20231226","20231227",  "20231229","20231230",
+                      "20231231","20240102","20240104-2","20240105","20240108",
+                      "20240109","20240115","20240116",  "20240117","20240118","20240119",
+                      "20240207","20240208","20240209",  "20240212","20240213",
+                      "20240214","20240215","20240216",  "20240220","20240222","20240223",
+                     ]
+        session_start_times = [ 
+                                21.5,  0.00,  0.00,  0.00,  0.00, 
+                                0.00,  12.2,  0.00,  18.8,  31.2,  
+                                32.5,  0.00,  50.0,  0.00,  37.5,  29.5,
+                                58.5,  72.0,  0.00,  71.5,  70.5,
+                                86.8,  94.0,  65.0,  68.8,  43.8,  13.2,
+                              ] # in second
+    
+    animal1_fixedorder = ['koala']
+    animal2_fixedorder = ['vermelho']
+
+    animal1_filename = "Koala"
+    animal2_filename = "Vermelho"
+    
+    
+
 # a test case
 if 0:
-    dates_list = ["20221128"]
-    session_start_times = [1.00] # in second
+    dates_list = ["20230324"]
+    session_start_times = [5.50] # in second
     animal1_fixedorder = ['eddie']
     animal2_fixedorder = ['sparkle']
     animal1_filename = "Eddie"
@@ -268,6 +345,7 @@ succ_rate_all_dates = np.zeros((ndates,1))
 interpullintv_all_dates = np.zeros((ndates,1))
 trialnum_all_dates = np.zeros((ndates,1))
 
+# switch animals to make animal 1 and 2 consistent
 owgaze1_num_all_dates = np.zeros((ndates,1))
 owgaze2_num_all_dates = np.zeros((ndates,1))
 mtgaze1_num_all_dates = np.zeros((ndates,1))
@@ -305,7 +383,7 @@ if not os.path.exists(video_file_dir):
 try:
     if redo_anystep:
         dummy
-    #dummy
+    # dummy
     
     data_saved_subfolder = data_saved_folder+'data_saved_combinedsessions_Anipose'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
     with open(data_saved_subfolder+'/owgaze1_num_all_dates_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
@@ -381,23 +459,43 @@ except:
                     
             # load behavioral results
             try:
-                bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
-                trial_record_json = glob.glob(bhv_data_path +date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_TrialRecord_" + "*.json")
-                bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_bhv_data_" + "*.json")
-                session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_session_info_" + "*.json")
-                #
-                trial_record = pd.read_json(trial_record_json[0])
-                bhv_data = pd.read_json(bhv_data_json[0])
-                session_info = pd.read_json(session_info_json[0])
+                try:
+                    bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                    trial_record_json = glob.glob(bhv_data_path +date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_TrialRecord_" + "*.json")
+                    bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_bhv_data_" + "*.json")
+                    session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_session_info_" + "*.json")
+                    #
+                    trial_record = pd.read_json(trial_record_json[0])
+                    bhv_data = pd.read_json(bhv_data_json[0])
+                    session_info = pd.read_json(session_info_json[0])
+                except:
+                    bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                    trial_record_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_TrialRecord_" + "*.json")
+                    bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_bhv_data_" + "*.json")
+                    session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_session_info_" + "*.json")
+                    #
+                    trial_record = pd.read_json(trial_record_json[0])
+                    bhv_data = pd.read_json(bhv_data_json[0])
+                    session_info = pd.read_json(session_info_json[0])
             except:
-                bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
-                trial_record_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_TrialRecord_" + "*.json")
-                bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_bhv_data_" + "*.json")
-                session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_session_info_" + "*.json")
-                #
-                trial_record = pd.read_json(trial_record_json[0])
-                bhv_data = pd.read_json(bhv_data_json[0])
-                session_info = pd.read_json(session_info_json[0])
+                try:
+                    bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_forceManipulation_task/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                    trial_record_json = glob.glob(bhv_data_path +date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_TrialRecord_" + "*.json")
+                    bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_bhv_data_" + "*.json")
+                    session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_session_info_" + "*.json")
+                    #
+                    trial_record = pd.read_json(trial_record_json[0])
+                    bhv_data = pd.read_json(bhv_data_json[0])
+                    session_info = pd.read_json(session_info_json[0])
+                except:
+                    bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_forceManipulation_task/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                    trial_record_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_TrialRecord_" + "*.json")
+                    bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_bhv_data_" + "*.json")
+                    session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_session_info_" + "*.json")
+                    #
+                    trial_record = pd.read_json(trial_record_json[0])
+                    bhv_data = pd.read_json(bhv_data_json[0])
+                    session_info = pd.read_json(session_info_json[0])
 
             # get animal info
             animal1 = session_info['lever1_animal'][0].lower()
@@ -454,9 +552,13 @@ except:
             #
             interpullintv_all_dates[idate] = mean_interpull_intv
 
-            pull1_num_all_dates[idate] = np.sum(bhv_data['behavior_events']==1) 
-            pull2_num_all_dates[idate] = np.sum(bhv_data['behavior_events']==2)
-
+            if np.isin(animal1,animal1_fixedorder):
+                pull1_num_all_dates[idate] = np.sum(bhv_data['behavior_events']==1) 
+                pull2_num_all_dates[idate] = np.sum(bhv_data['behavior_events']==2)
+            else:
+                pull1_num_all_dates[idate] = np.sum(bhv_data['behavior_events']==2)
+                pull2_num_all_dates[idate] = np.sum(bhv_data['behavior_events']==1) 
+                
             # load behavioral event results
             try:
                 # dummy
@@ -541,11 +643,31 @@ except:
                 plt.savefig(data_saved_folder+"bhv_events_Anipose/"+animal1_fixedorder[0]+animal2_fixedorder[0]+"/"+date_tgt+'/'+date_tgt+"_Anipose.pdf")
   
             #
-            owgaze1_num_all_dates[idate] = np.shape(oneway_gaze1)[0]
-            owgaze2_num_all_dates[idate] = np.shape(oneway_gaze2)[0]
-            mtgaze1_num_all_dates[idate] = np.shape(mutual_gaze1)[0]
-            mtgaze2_num_all_dates[idate] = np.shape(mutual_gaze2)[0]
-
+            # # old definition
+            # if np.isin(animal1,animal1_fixedorder):
+            #     owgaze1_num_all_dates[idate] = np.shape(oneway_gaze1)[0]
+            #     owgaze2_num_all_dates[idate] = np.shape(oneway_gaze2)[0]
+            #     mtgaze1_num_all_dates[idate] = np.shape(mutual_gaze1)[0]
+            #     mtgaze2_num_all_dates[idate] = np.shape(mutual_gaze2)[0]
+            # else:
+            #     owgaze1_num_all_dates[idate] = np.shape(oneway_gaze2)[0]
+            #     owgaze2_num_all_dates[idate] = np.shape(oneway_gaze1)[0]
+            #     mtgaze1_num_all_dates[idate] = np.shape(mutual_gaze2)[0]
+            #     mtgaze2_num_all_dates[idate] = np.shape(mutual_gaze1)[0]
+            #
+            # new defnition
+            # <500ms counts as one gaze, gaze number per second
+            if np.isin(animal1,animal1_fixedorder):
+                owgaze1_num_all_dates[idate] = np.sum(oneway_gaze1[1:]-oneway_gaze1[:-1]>=0.5)/(min_length/fps)
+                owgaze2_num_all_dates[idate] = np.sum(oneway_gaze2[1:]-oneway_gaze2[:-1]>=0.5)/(min_length/fps)
+                mtgaze1_num_all_dates[idate] = np.sum(mutual_gaze1[1:]-mutual_gaze1[:-1]>=0.5)/(min_length/fps)
+                mtgaze2_num_all_dates[idate] = np.sum(mutual_gaze2[1:]-mutual_gaze2[:-1]>=0.5)/(min_length/fps)
+            else:
+                owgaze1_num_all_dates[idate] = np.sum(oneway_gaze2[1:]-oneway_gaze2[:-1]>=0.5)/(min_length/fps)
+                owgaze2_num_all_dates[idate] = np.sum(oneway_gaze1[1:]-oneway_gaze1[:-1]>=0.5)/(min_length/fps)
+                mtgaze1_num_all_dates[idate] = np.sum(mutual_gaze2[1:]-mutual_gaze2[:-1]>=0.5)/(min_length/fps)
+                mtgaze2_num_all_dates[idate] = np.sum(mutual_gaze1[1:]-mutual_gaze1[:-1]>=0.5)/(min_length/fps)
+            
             
             # plot key continuous behavioral variables
             if 1:
@@ -588,9 +710,6 @@ except:
         data_saved_subfolder = data_saved_folder+'data_saved_combinedsessions_Anipose'+savefile_sufix+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
         if not os.path.exists(data_saved_subfolder):
             os.makedirs(data_saved_subfolder)
-                
-        # with open(data_saved_subfolder+'/DBN_input_data_alltypes_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
-        #     pickle.dump(DBN_input_data_alltypes, f)
 
         with open(data_saved_subfolder+'/owgaze1_num_all_dates_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
             pickle.dump(owgaze1_num_all_dates, f)
@@ -628,6 +747,24 @@ except:
             
 
 
+# In[ ]:
+
+
+owgaze1_num_all_dates
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
 # #### redefine the tasktype and cooperation threshold to merge them together
 
 # In[ ]:
@@ -638,6 +775,18 @@ except:
 tasktypes_all_dates[tasktypes_all_dates==5] = -1 # change the task type code for no-vision
 coopthres_forsort = (tasktypes_all_dates-1)*coopthres_all_dates/2
 coopthres_forsort[coopthres_forsort==0] = 100 # get the cooperation threshold for sorting
+
+
+# In[ ]:
+
+
+np.shape(coopthres_all_dates)
+
+
+# In[ ]:
+
+
+np.shape(dates_list)
 
 
 # ### plot behavioral events interval to get a sense about time bin
@@ -819,15 +968,16 @@ ndates_sorted = np.shape(dates_list_sorted)[0]
 
 
 
-ax1.plot(np.arange(0,ndates_sorted,1),gaze1_num_all_dates[sorting_df.index],'b^',markersize=5,label='animal1 gaze #')
-ax1.plot(np.arange(0,ndates_sorted,1),gaze2_num_all_dates[sorting_df.index],'r^',markersize=5,label='animal2 gaze #')
-ax1.plot(np.arange(0,ndates_sorted,1),gazemean_num_all_dates[sorting_df.index],'k^',markersize=8,label='mean gaze #')
+ax1.plot(np.arange(0,ndates_sorted,1),gaze1_num_all_dates[sorting_df.index],'b^',markersize=5,label='animal1 gaze # per s')
+ax1.plot(np.arange(0,ndates_sorted,1),gaze2_num_all_dates[sorting_df.index],'r^',markersize=5,label='animal2 gaze # per s')
+ax1.plot(np.arange(0,ndates_sorted,1),gazemean_num_all_dates[sorting_df.index],'k^',markersize=8,label='mean gaze # per s')
 ax1.legend()
 
 
 #
-ax1.set_ylabel("social gaze number",fontsize=13)
-ax1.set_ylim([-20,1500])
+ax1.set_ylabel("social gaze number per second",fontsize=13)
+# ax1.set_ylim([-20,1500])
+ax1.set_ylim([0,1])
 ax1.set_xlim([-0.5,ndates_sorted-0.5])
 
 #
@@ -838,11 +988,12 @@ tasktypes = ['self','coop(3s)','coop(2s)','coop(1.5s)','coop(1s)','no-vision']
 taskswitches = np.where(np.array(sorting_df['coopthres'])[1:]-np.array(sorting_df['coopthres'])[:-1]!=0)[0]+0.5
 for itaskswitch in np.arange(0,np.shape(taskswitches)[0],1):
     taskswitch = taskswitches[itaskswitch]
-    ax1.plot([taskswitch,taskswitch],[-20,1500],'k--')
+    # ax1.plot([taskswitch,taskswitch],[-20,1500],'k--')
+    ax1.plot([taskswitch,taskswitch],[0,1],'k--')
 taskswitches = np.concatenate(([0],taskswitches))
 for itaskswitch in np.arange(0,np.shape(taskswitches)[0],1):
     taskswitch = taskswitches[itaskswitch]
-    ax1.text(taskswitch+0.25,-10,tasktypes[itaskswitch],fontsize=10)
+    ax1.text(taskswitch+0.25,0.5,tasktypes[itaskswitch],fontsize=10)
     
 savefigs = 1
 if savefigs:
@@ -855,26 +1006,29 @@ if savefigs:
 # In[ ]:
 
 
-gaze_numbers = (owgaze1_num_all_dates+owgaze2_num_all_dates+mtgaze1_num_all_dates+mtgaze2_num_all_dates)/30
+gaze_numbers = (owgaze1_num_all_dates+owgaze2_num_all_dates+mtgaze1_num_all_dates+mtgaze2_num_all_dates)
 gaze_pull_ratios = (owgaze1_num_all_dates+owgaze2_num_all_dates+mtgaze1_num_all_dates+mtgaze2_num_all_dates)/(pull1_num_all_dates+pull2_num_all_dates)
 
-fig, ax1 = plt.subplots(figsize=(5, 5))
+fig, ax1 = plt.subplots(figsize=(10, 5))
 
-# grouptypes = ['self reward','3s threshold','2s threshold','1.5s threshold','1s threshold','novision']
-grouptypes = ['self reward','cooperative','no-vision']
+grouptypes = ['self reward','3s threshold','2s threshold','1.5s threshold','1s threshold','novision']
+# grouptypes = ['self reward','cooperative','no-vision']
 
 gaze_numbers_groups = [np.transpose(gaze_numbers[np.transpose(coopthres_forsort==100)[0]])[0],
-                      # np.transpose(gaze_numbers[np.transpose(coopthres_forsort==3)[0]])[0],
-                      # np.transpose(gaze_numbers[np.transpose(coopthres_forsort==2)[0]])[0],
-                      # np.transpose(gaze_numbers[np.transpose(coopthres_forsort==1.5)[0]])[0],
+                       np.transpose(gaze_numbers[np.transpose(coopthres_forsort==3)[0]])[0],
+                       np.transpose(gaze_numbers[np.transpose(coopthres_forsort==2)[0]])[0],
+                      np.transpose(gaze_numbers[np.transpose(coopthres_forsort==1.5)[0]])[0],
                        np.transpose(gaze_numbers[np.transpose(coopthres_forsort==1)[0]])[0],
                        np.transpose(gaze_numbers[np.transpose(coopthres_forsort==-1)[0]])[0]]
 
 gaze_numbers_plot = plt.boxplot(gaze_numbers_groups,whis=1.5, meanline=True)
+# gaze_numbers_plot = seaborn.barplot(gaze_numbers_groups)
+# seaborn.swarmplot(gaze_numbers_groups)
 
-plt.xticks(np.arange(1, len(grouptypes)+1, 1), grouptypes, fontsize = 14);
-ax1.set_ylim([240/30,2100/30])
-ax1.set_ylabel("average social gaze time (s)",fontsize=14)
+plt.xticks(np.arange(0+1, len(grouptypes)+1, 1), grouptypes, fontsize = 14);
+# ax1.set_ylim([240/30,2100/30])
+ax1.set_ylim([0,1])
+ax1.set_ylabel("average social gaze number per second",fontsize=14)
 
 savefigs = 1
 if savefigs:
@@ -887,15 +1041,15 @@ if savefigs:
 # In[ ]:
 
 
-fig, ax1 = plt.subplots(figsize=(5, 5))
+fig, ax1 = plt.subplots(figsize=(10, 5))
 
-# grouptypes = ['self reward','3s threshold','2s threshold','1.5s threshold','1s threshold','novision']
-grouptypes = ['self reward','cooperative','no-vision']
+grouptypes = ['self reward','3s threshold','2s threshold','1.5s threshold','1s threshold','novision']
+# grouptypes = ['self reward','cooperative','no-vision']
 
 BhvIntv_groups = [pull_other_intv_mean[np.where(coopthres_forsort==100)[0]],
-                  # pull_other_intv_mean[np.where(coopthres_forsort==3)[0]],
-                  # pull_other_intv_mean[np.where(coopthres_forsort==2)[0]],
-                  # pull_other_intv_mean[np.where(coopthres_forsort==1.5)[0]],
+                  pull_other_intv_mean[np.where(coopthres_forsort==3)[0]],
+                  pull_other_intv_mean[np.where(coopthres_forsort==2)[0]],
+                  pull_other_intv_mean[np.where(coopthres_forsort==1.5)[0]],
                   pull_other_intv_mean[np.where(coopthres_forsort==1)[0]],
                   pull_other_intv_mean[np.where(coopthres_forsort==-1)[0]]
                  ]
@@ -909,8 +1063,10 @@ BhvIntv_groups = [pull_other_intv_mean[np.where(coopthres_forsort==100)[0]],
 #                 ]
 
 gaze_numbers_plot = plt.boxplot(BhvIntv_groups,whis=3, meanline=True)
+# gaze_numbers_plot = seaborn.barplot(BhvIntv_groups)
+# seaborn.swarmplot(BhvIntv_groups)
 
-plt.xticks(np.arange(1, len(grouptypes)+1, 1), grouptypes, fontsize = 14);
+plt.xticks(np.arange(0+1, len(grouptypes)+1, 1), grouptypes, fontsize = 14);
 #ax1.set_ylim([250,2000])
 ax1.set_ylabel("average behavioral event intervals (s)",fontsize=14)
 
@@ -920,6 +1076,16 @@ if savefigs:
     if not os.path.exists(figsavefolder):
         os.makedirs(figsavefolder)
     plt.savefig(figsavefolder+"averaged_bhvIntv_"+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pdf')
+
+
+# #### plot the gaze number and gaze pull interval for all individuals 
+
+# In[ ]:
+
+
+animal1_fixedorders = ['eddie','dodson','dannon','ginger','koala']
+animal2_fixedorders = ['sparkle','scorch','kanga','kanga','vermelho']
+nanimalpairs = np.shape(animal1_fixedorders)[0]
 
 
 # ### plot pull triggered event related plot
