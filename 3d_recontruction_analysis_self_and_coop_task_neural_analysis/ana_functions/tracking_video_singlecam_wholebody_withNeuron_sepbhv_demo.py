@@ -144,8 +144,10 @@ spike_channels_data,channel_to_depth):
     ax5.get_xaxis().set_ticks([])
     ax5.get_yaxis().set_ticks([])
 
-    ax6.set_xlim([iframe_min,iframe_max])  
-    ax6.set_xticks(np.arange(iframe_min,iframe_max,300)) 
+    # ax6.set_xlim([iframe_min,iframe_max])  
+    # ax6.set_xticks(np.arange(iframe_min,iframe_max,300)) 
+    ax6.set_xlim([0,iframe_max-iframe_min])  
+    ax6.set_xticks(np.arange(0,iframe_max-iframe_min,300)) 
     ax6.set_xticklabels(list(map(str,np.arange(0/fps,nframes/fps,300/fps))))
     ax6.tick_params(axis='x', labelsize=20)
     ax6.set_ylim([-65*2,0]) # all 64 channels
@@ -252,8 +254,10 @@ spike_channels_data,channel_to_depth):
                 ax5.get_xaxis().set_ticks([])
                 ax5.get_yaxis().set_ticks([])
 
-                ax6.set_xlim([iframe_min,iframe_max])  
-                ax6.set_xticks(np.arange(iframe_min,iframe_max,300)) 
+                # ax6.set_xlim([iframe_min,iframe_max])  
+                # ax6.set_xticks(np.arange(iframe_min,iframe_max,300)) 
+                ax6.set_xlim([0,iframe_max-iframe_min])  
+                ax6.set_xticks(np.arange(0,iframe_max-iframe_min,300)) 
                 ax6.set_xticklabels(list(map(str,np.arange(0/fps,nframes/fps,300/fps))))
                 ax6.tick_params(axis='x', labelsize=20)
                 ax6.set_ylim([-65*2,0]) # all 64 channels
