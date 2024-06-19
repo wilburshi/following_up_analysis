@@ -13,6 +13,7 @@ def PCA_around_bhv_events(FR_timepoint_allch,FR_zscore_allch_np_merged,time_poin
 
     from ana_functions.confidence_ellipse import confidence_ellipse
 
+
     fps_FR = int(np.ceil(np.shape(FR_timepoint_allch)[0]/np.max(FR_timepoint_allch)))
 
     time_point_pull1 = np.array(time_point_pull1)
@@ -229,10 +230,10 @@ def PCA_around_bhv_events(FR_timepoint_allch,FR_zscore_allch_np_merged,time_poin
         # plot the confidence ellipse
         # plot the trajectories, highlight the start, middle(event time), end
         FR_aligned_concat_test_list = list(FR_aligned_concat_test.values())
-        non_empty_arrays = [arr for arr in FR_aligned_concat_test_list if np.shape(arr)[0] > 0]
+        non_empty_arrays = [arr for arr in FR_aligned_concat_test_list if np.shape(arr)[0] == PCAtwins*2*fps_FR]
         FR_aligned_concat_test_ar = np.array(non_empty_arrays)
         FR_aligned_concat_test_mean = np.nanmean(FR_aligned_concat_test_ar,axis=0)
-        #
+
         fig = plt.figure(figsize=(8*3,8*1))
         ax1 = fig.add_subplot(1, 3, 1,)
         ax2 = fig.add_subplot(1, 3, 2)
@@ -420,7 +421,7 @@ def PCA_around_bhv_events(FR_timepoint_allch,FR_zscore_allch_np_merged,time_poin
             PC3_succ_threepoints[ievent,:] = [zline[0],zline[PCAtwins*fps_FR],zline[-1]]
         #
         FR_aligned_concat_test_list = list(FR_aligned_concat_test.values())
-        non_empty_arrays = [arr for arr in FR_aligned_concat_test_list if np.shape(arr)[0] > 0]
+        non_empty_arrays = [arr for arr in FR_aligned_concat_test_list if np.shape(arr)[0] == PCAtwins*2*fps_FR]
         FR_aligned_concat_test_ar = np.array(non_empty_arrays)
         FR_aligned_concat_test_succ_mean = np.nanmean(FR_aligned_concat_test_ar,axis=0)
 
@@ -521,11 +522,12 @@ def PCA_around_bhv_events(FR_timepoint_allch,FR_zscore_allch_np_merged,time_poin
             PC1_fail_threepoints[ievent,:] = [xline[0],xline[PCAtwins*fps_FR],xline[-1]]
             PC2_fail_threepoints[ievent,:] = [yline[0],yline[PCAtwins*fps_FR],yline[-1]]
             PC3_fail_threepoints[ievent,:] = [zline[0],zline[PCAtwins*fps_FR],zline[-1]]
-        #    
+        #  
         FR_aligned_concat_test_list = list(FR_aligned_concat_test.values())
-        non_empty_arrays = [arr for arr in FR_aligned_concat_test_list if np.shape(arr)[0] > 0]
+        non_empty_arrays = [arr for arr in FR_aligned_concat_test_list if np.shape(arr)[0] == PCAtwins*2*fps_FR] 
         FR_aligned_concat_test_ar = np.array(non_empty_arrays)
         FR_aligned_concat_test_fail_mean = np.nanmean(FR_aligned_concat_test_ar,axis=0)
+
 
         fig.tight_layout()
 

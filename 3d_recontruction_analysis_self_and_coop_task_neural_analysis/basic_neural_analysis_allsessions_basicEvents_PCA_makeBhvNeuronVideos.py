@@ -168,7 +168,7 @@ from ana_functions.AicScore import AicScore
 
 # ### prepare the basic behavioral data (especially the time stamps for each bhv events)
 
-# In[16]:
+# In[19]:
 
 
 # instead of using gaze angle threshold, use the target rectagon to deside gaze info
@@ -209,18 +209,29 @@ else:
 # currently the session_start_time will be manually typed in. It can be updated after a better method is used
 
 # dodson ginger
-if 0:
+if 1:
     if do_DLPFC:
         neural_record_conditions = [
-                                     '20231204_Dodson_withGinger_SR', 
-                                     '20231204_Dodson_withGinger_MC',
+                                     # # '20231204_Dodson_withGinger_SR', 
+                                     # '20231204_Dodson_withGinger_MC',
+                                    # '20240610_Dodson_MC',
+                                    '20240531_Dodson_MC_and_SR',
                                    ]
         dates_list = [
-                      "20231204_SR","20231204_MC",
+                      # # "20231204_SR","20231204_MC",
+                      # '20240610_MC',
+                      '20240531',
                      ]
         session_start_times = [ 
-                                 0.00,  107.50, 
+                                # # 0.00,  107.50, 
+                                # 0.00, 
+                                0.00,
                               ] # in second
+        kilosortvers = [ 
+                         # # 2, 2,
+                         # 4,
+                         4,
+                       ]
     elif do_OFC:
         # pick only five sessions for each conditions
         neural_record_conditions = [
@@ -244,6 +255,9 @@ if 0:
                                 #  0.00,  
                                 #  0.00, 
                               ] # in second
+        kilosortvers = [ 
+                         2, # 2, 2, 2,
+                       ]
     
     animal1_fixedorder = ['dodson']
     animal2_fixedorder = ['ginger']
@@ -253,7 +267,7 @@ if 0:
 
     
 # dannon kanga
-if 1:
+if 0:
     if do_DLPFC:
         neural_record_conditions = [
                                      '20240509_Kanga_MC', 
@@ -264,6 +278,9 @@ if 1:
         session_start_times = [ 
                                  36.0,
                               ] # in second
+        kilosortvers = [ 
+                         4,
+                       ]
     elif do_OFC:
         # pick only five sessions for each conditions
         neural_record_conditions = [
@@ -275,6 +292,9 @@ if 1:
         session_start_times = [ 
                                 
                               ] # in second
+        kilosortvers = [ 
+
+                       ]
     
     animal1_fixedorder = ['dannon']
     animal2_fixedorder = ['kanga']
@@ -352,7 +372,7 @@ neural_data_folder = '/gpfs/gibbs/pi/jadi/Marmoset_neural_recording/'
     
 
 
-# In[17]:
+# In[20]:
 
 
 # basic behavior analysis (define time stamps for each bhv events, etc)
@@ -401,6 +421,9 @@ except:
         neural_record_condition = neural_record_conditions[idate]
         
         session_start_time = session_start_times[idate]
+        
+        kilosortver = kilosortvers[idate]
+
 
         # folder and file path
         camera12_analyzed_path = "/gpfs/gibbs/pi/jadi/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_camera12/"
@@ -624,10 +647,10 @@ except:
         # # load spike sorting results
         if 1:
             print('load spike data for '+neural_record_condition)
-            try:
+            if kilosortver == 2:
                 spike_time_file = neural_data_folder+neural_record_condition+'/Kilosort/spike_times.npy'
                 spike_time_data = np.load(spike_time_file)
-            except:
+            elif kilosortver == 4:
                 spike_time_file = neural_data_folder+neural_record_condition+'/kilosort4_6500HzNotch/spike_times.npy'
                 spike_time_data = np.load(spike_time_file)
             # 
@@ -637,33 +660,33 @@ except:
             spike_time_data = spike_time_data/fs_spikes*fps
             spike_time_data = np.round(spike_time_data)
             #
-            try:
+            if kilosortver == 2:
                 spike_clusters_file = neural_data_folder+neural_record_condition+'/Kilosort/spike_clusters.npy'
                 spike_clusters_data = np.load(spike_clusters_file)
                 spike_channels_data = np.copy(spike_clusters_data)
-            except:
+            elif kilosortver == 4:
                 spike_clusters_file = neural_data_folder+neural_record_condition+'/kilosort4_6500HzNotch/spike_clusters.npy'
                 spike_clusters_data = np.load(spike_clusters_file)
                 spike_channels_data = np.copy(spike_clusters_data)
             #
-            try:
+            if kilosortver == 2:
                 channel_maps_file = neural_data_folder+neural_record_condition+'/Kilosort/channel_map.npy'
                 channel_maps_data = np.load(channel_maps_file)
-            except:
+            elif kilosortver == 4:
                 channel_maps_file = neural_data_folder+neural_record_condition+'/kilosort4_6500HzNotch/channel_map.npy'
                 channel_maps_data = np.load(channel_maps_file)
             #
-            try:
+            if kilosortver == 2:
                 channel_pos_file = neural_data_folder+neural_record_condition+'/Kilosort/channel_positions.npy'
                 channel_pos_data = np.load(channel_pos_file)
-            except:
+            elif kilosortver == 4:
                 channel_pos_file = neural_data_folder+neural_record_condition+'/kilosort4_6500HzNotch/channel_positions.npy'
                 channel_pos_data = np.load(channel_pos_file)
             #
-            try:
+            if kilosortver == 2:
                 clusters_info_file = neural_data_folder+neural_record_condition+'/Kilosort/cluster_info.tsv'
                 clusters_info_data = pd.read_csv(clusters_info_file,sep="\t")
-            except:
+            elif kilosortver == 4:
                 clusters_info_file = neural_data_folder+neural_record_condition+'/kilosort4_6500HzNotch/cluster_info.tsv'
                 clusters_info_data = pd.read_csv(clusters_info_file,sep="\t")
             #
@@ -701,16 +724,13 @@ except:
                 channel_to_depth = np.vstack([channel_maps_data.T,channel_depth])
                 channel_to_depth[1] = channel_to_depth[1]/30-64 # make the y axis consistent
             #
-            ########
-            # # manusally remove bad channel from "20231101_Dodson_withGinger_MC"
-            if date_tgt == "20231101_MC":
-                bad_channel = channel_to_depth[0,channel_to_depth[1,:]==-38]
-                spike_time_data = spike_time_data[spike_channels_data!=bad_channel]
-                spike_channels_data = spike_channels_data[spike_channels_data!=bad_channel]
-            #########
+           
             
             # calculate the firing rate
-            FR_kernel = 0.20 # in the unit of second
+            # FR_kernel = 0.20 # in the unit of second
+            FR_kernel = 1/30 # in the unit of second # 1/30 same resolution as the video recording
+            # FR_kernel is sent to to be this if want to explore it's relationship with continuous trackng data
+            
             totalsess_time_forFR = np.floor(np.shape(output_look_ornot['look_at_lever_or_not_merge']['dodson'])[0]/30)  # to match the total time of the video recording
             # _,FR_timepoint_allclusters,FR_allclusters,FR_zscore_allclusters = spike_analysis_FR_calculation(fps, FR_kernel, totalsess_time_forFR,
             #                                                                                                spike_clusters_data, spike_time_data)
@@ -726,9 +746,9 @@ except:
             #
             # # run PCA around the -PCAtwins to PCAtwins for each behavioral events
             PCAtwins = 5 # 5 second
-            gaze_thresold = 1.05 # min length threshold to define if a gaze is real gaze or noise, in the unit of second 
+            gaze_thresold = 0.5 # min length threshold to define if a gaze is real gaze or noise, in the unit of second 
             savefigs = 1 
-            if 0:
+            if 1:
                 PCA_around_bhv_events(FR_timepoint_allch,FR_zscore_allch_np_merged,time_point_pull1,time_point_pull2,time_point_pulls_succfail, 
                               oneway_gaze1,oneway_gaze2,mutual_gaze1,mutual_gaze2,gaze_thresold,totalsess_time_forFR,PCAtwins,fps,
                               savefigs,data_saved_folder,cameraID,animal1_filename,animal2_filename,date_tgt)
@@ -786,7 +806,7 @@ except:
         
 
     # save data
-    if 0:
+    if 1:
         
         data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
         if not os.path.exists(data_saved_subfolder):
@@ -853,6 +873,24 @@ except:
 
 
 
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
 # ### plot 
 # #### plot the PCs
 
@@ -880,10 +918,10 @@ for iplotype in np.arange(0,4,1):
         eventplot  = np.array(time_point_pull2)
         eventplotname = 'animal2_pull'
     elif iplotype == 2:
-        eventplot  = oneway_gaze1
+        eventplot  = np.hstack([oneway_gaze1,mutual_gaze1])
         eventplotname = 'animal1_gaze'
     elif iplotype == 3:
-        eventplot  = oneway_gaze2
+        eventplot  = np.hstack([oneway_gaze2,mutual_gaze2])
         eventplotname = 'animal2_gaze'
         
 
@@ -931,27 +969,27 @@ for iplotype in np.arange(0,4,1):
 # In[ ]:
 
 
+FR_allch
+
+
+# In[ ]:
+
+
 
 
 
 # In[ ]:
 
 
-
-
-
-# In[ ]:
-
-
-st.zscore(FR_allch['1'])
+st.zscore(FR_allch['0'])
 
 
 # In[ ]:
 
 
-plt.plot(FR_timepoint_allch,FR_zscore_allch['1'])
+plt.plot(FR_timepoint_allch,FR_zscore_allch['0'])
 plt.plot(FR_timepoint_allch,FR_zscore_allch['2'])
-plt.plot(FR_timepoint_allch,FR_zscore_allch['5'])
+plt.plot(FR_timepoint_allch,FR_zscore_allch['13'])
 
 
 # In[ ]:

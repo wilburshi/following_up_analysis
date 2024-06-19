@@ -12,6 +12,8 @@ def plot_continuous_bhv_var(date_tgt,savefig, animal1, animal2, session_start_ti
 
     fps = 30 
 
+    gausKernelsize = 3
+
     nanimals = np.shape(animalnames_videotrack)[0]
 
     con_vars_plot = ['gaze_other_angle','gaze_tube_angle','gaze_lever_angle','animal_animal_dist','animal_tube_dist','animal_lever_dist','othergaze_self_angle','mass_move_speed','gaze_angle_speed']
@@ -59,39 +61,39 @@ def plot_continuous_bhv_var(date_tgt,savefig, animal1, animal2, session_start_ti
         xxx_time = np.arange(0,min_length,1)/fps
 
         gaze_other_angle = output_allangles['face_eye_angle_all_Anipose'][animal_name]
-        gaze_other_angle = scipy.ndimage.gaussian_filter1d(gaze_other_angle,3)  # smooth the curve, use 30 before, change to 3 
+        gaze_other_angle = scipy.ndimage.gaussian_filter1d(gaze_other_angle,gausKernelsize)  # smooth the curve, use 30 before, change to 3 
         gaze_tube_angle = output_allangles['selftube_eye_angle_all_Anipose'][animal_name]
-        gaze_tube_angle = scipy.ndimage.gaussian_filter1d(gaze_tube_angle,3)  
+        gaze_tube_angle = scipy.ndimage.gaussian_filter1d(gaze_tube_angle,gausKernelsize)  
         gaze_lever_angle = output_allangles['selflever_eye_angle_all_Anipose'][animal_name]
-        gaze_lever_angle = scipy.ndimage.gaussian_filter1d(gaze_lever_angle,3)  
+        gaze_lever_angle = scipy.ndimage.gaussian_filter1d(gaze_lever_angle,gausKernelsize)  
 
         othergaze_self_angle = output_allangles['face_eye_angle_all_Anipose'][animal_name_other]
-        othergaze_self_angle = scipy.ndimage.gaussian_filter1d(othergaze_self_angle,3)  
+        othergaze_self_angle = scipy.ndimage.gaussian_filter1d(othergaze_self_angle,gausKernelsize)  
 
 
         a = output_key_locations['facemass_loc_all_Anipose'][animal_name_other].transpose()
         b = output_key_locations['facemass_loc_all_Anipose'][animal_name].transpose()
         a_min_b = a - b
         animal_animal_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
-        animal_animal_dist = scipy.ndimage.gaussian_filter1d(animal_animal_dist,3)  
+        animal_animal_dist = scipy.ndimage.gaussian_filter1d(animal_animal_dist,gausKernelsize)  
 
         a = output_key_locations['tube_loc_all_Anipose'][animal_name_other].transpose()
         b = output_key_locations['meaneye_loc_all_Anipose'][animal_name].transpose()
         a_min_b = a - b
         animal_tube_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
-        animal_tube_dist = scipy.ndimage.gaussian_filter1d(animal_tube_dist,3)  
+        animal_tube_dist = scipy.ndimage.gaussian_filter1d(animal_tube_dist,gausKernelsize)  
 
         a = output_key_locations['lever_loc_all_Anipose'][animal_name_other].transpose()
         b = output_key_locations['meaneye_loc_all_Anipose'][animal_name].transpose()
         a_min_b = a - b
         animal_lever_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
-        animal_lever_dist = scipy.ndimage.gaussian_filter1d(animal_lever_dist,3)  
+        animal_lever_dist = scipy.ndimage.gaussian_filter1d(animal_lever_dist,gausKernelsize)  
 
         a = output_key_locations['facemass_loc_all_Anipose'][animal_name].transpose()
         a = np.hstack((a,[[np.nan],[np.nan],[np.nan]]))
         at1_min_at0 = (a[:,1:]-a[:,:-1])
         mass_move_speed = np.sqrt(np.einsum('ij,ij->j', at1_min_at0, at1_min_at0))*fps 
-        mass_move_speed = scipy.ndimage.gaussian_filter1d(mass_move_speed,3)  
+        mass_move_speed = scipy.ndimage.gaussian_filter1d(mass_move_speed,gausKernelsize)  
 
         a = np.array(output_allvectors['eye_direction_Anipose'][animal_name]).transpose()
         a = np.hstack((a,[[np.nan],[np.nan],[np.nan]]))
@@ -104,7 +106,7 @@ def plot_continuous_bhv_var(date_tgt,savefig, animal1, animal2, session_start_ti
         #
         for iframe in np.arange(0,nframes,1):
             gaze_angle_speed[iframe] = np.arccos(np.clip(np.dot(at1[:,iframe]/np.linalg.norm(at1[:,iframe]), at0[:,iframe]/np.linalg.norm(at0[:,iframe])), -1.0, 1.0))    
-        gaze_angle_speed = scipy.ndimage.gaussian_filter1d(gaze_angle_speed,3)  
+        gaze_angle_speed = scipy.ndimage.gaussian_filter1d(gaze_angle_speed,gausKernelsize)  
 
 
         # put all the data together in the same order as the con_vars_plot
