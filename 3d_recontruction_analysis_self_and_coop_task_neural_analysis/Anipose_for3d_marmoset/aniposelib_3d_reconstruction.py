@@ -52,18 +52,18 @@ else:
 
 
 # dates for Dannon Kanga
-if 0:
+if 1:
     analyzed_dates = [ 
-                      "20240509",
+                      "20240508","20240513","20240514","20240524","20240621_1",
                      ]
     session_start_times = [ 
-                            36.0,   
+                            0, 69.5, 0, 0, 0, 
                           ] # in second 
     animal1 = "Dannon"
     animal2 = "Kanga"    
 
 # dates for Dodson Ginger
-if 1:
+if 0:
     analyzed_dates = [ 
                       "20240531",
                      ]

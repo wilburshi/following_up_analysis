@@ -197,10 +197,14 @@ def plot_continuous_bhv_var_and_neuralFR(date_tgt,savefig,save_path, animal1, an
                     yyy_bhv = yyy_bhv[1:]
                 elif np.shape(yyy_fr)[0] > np.shape(yyy_bhv)[0]:
                     yyy_fr = yyy_fr[1:]
-                corr,pcorr = st.pearsonr(yyy_fr,yyy_bhv)
-                #
-                axs[iplot].text(mintime_forplot*1.02,1,'corr ='+"{:.2f}".format(corr))
-                axs[iplot].text(mintime_forplot*1.02,0.90,'corr p ='+"{:.2f}".format(pcorr))
+                try:
+                    corr,pcorr = st.pearsonr(yyy_fr,yyy_bhv)
+                    #
+                    axs[iplot].text(mintime_forplot*1.02,1,'corr ='+"{:.2f}".format(corr))
+                    axs[iplot].text(mintime_forplot*1.02,0.90,'corr p ='+"{:.2f}".format(pcorr))
+                except:
+                    corr = np.nan
+                    pcorr = np.nan
 
 
 

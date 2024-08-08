@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# ### Basic neural activity analysis
-# ### making the demo videos
+# ### Basic neural activity analysis with single camera tracking
+# #### analyze the firing rate PC1,2,3
+# #### making the demo videos
+# #### analyze the spike triggered pull and gaze ditribution
 
 # In[1]:
 
@@ -125,6 +127,7 @@ from ana_functions.bhv_events_interval import bhv_events_interval
 
 
 from ana_functions.spike_analysis_FR_calculation import spike_analysis_FR_calculation
+from ana_functions.plot_spike_triggered_singlecam_bhvevent import plot_spike_triggered_singlecam_bhvevent
 
 
 # ### function - PCA projection
@@ -168,7 +171,7 @@ from ana_functions.AicScore import AicScore
 
 # ### prepare the basic behavioral data (especially the time stamps for each bhv events)
 
-# In[19]:
+# In[18]:
 
 
 # instead of using gaze angle threshold, use the target rectagon to deside gaze info
@@ -209,7 +212,7 @@ else:
 # currently the session_start_time will be manually typed in. It can be updated after a better method is used
 
 # dodson ginger
-if 1:
+if 0:
     if do_DLPFC:
         neural_record_conditions = [
                                      # # '20231204_Dodson_withGinger_SR', 
@@ -217,6 +220,9 @@ if 1:
                                     # '20240610_Dodson_MC',
                                     '20240531_Dodson_MC_and_SR',
                                    ]
+        task_conditions = [
+                            'MC_and_SR',
+                          ]
         dates_list = [
                       # # "20231204_SR","20231204_MC",
                       # '20240610_MC',
@@ -241,6 +247,9 @@ if 1:
                                      # '20231129_Dodson_withGinger_MC',
                                      # '20231101_Dodson_withGinger_SR',
                                    ]
+        task_conditions = [
+                            'MC',
+                          ]
         dates_list = [
                       "20231101_MC",
                       # "20231107_MC",
@@ -267,20 +276,98 @@ if 1:
 
     
 # dannon kanga
-if 0:
+if 1:
     if do_DLPFC:
         neural_record_conditions = [
-                                     '20240509_Kanga_MC', 
+                                     '20240508_Kanga_SR',
+                                     '20240509_Kanga_MC',
+                                     '20240513_Kanga_MC',
+                                     '20240514_Kanga_SR',
+                                     '20240523_Kanga_MC',
+                                     '20240524_Kanga_SR',
+                                     '20240606_Kanga_MC',
+                                     '20240613_Kanga_MC_DannonAuto',
+                                     '20240614_Kanga_MC_DannonAuto',
+                                     '20240617_Kanga_MC_DannonAuto',
+                                     '20240618_Kanga_MC_KangaAuto',
+                                     '20240619_Kanga_MC_KangaAuto',
+                                     '20240620_Kanga_MC_KangaAuto',
+                                     '20240621_1_Kanga_NoVis',
+                                     '20240624_Kanga_NoVis',
+                                     '20240626_Kanga_NoVis',
                                    ]
         dates_list = [
+                      "20240508",
                       "20240509",
+                      "20240513",
+                      "20240514",
+                      "20240523",
+                      "20240524",
+                      "20240606",
+                      "20240613",
+                      "20240614",
+                      "20240617",
+                      "20240618",
+                      "20240619",
+                      "20240620",
+                      "20240621_1",
+                      "20240624",
+                      "20240626",
                      ]
+        task_conditions = [
+                             'SR',
+                             'MC',
+                             'MC',
+                             'SR',
+                             'MC',
+                             'SR',
+                             'MC',
+                             'MC_DannonAuto',
+                             'MC_DannonAuto',
+                             'MC_DannonAuto',
+                             'MC_KangaAuto',
+                             'MC_KangaAuto',
+                             'MC_KangaAuto',
+                             'NV',
+                             'NV',
+                             'NV',    
+                          ]
         session_start_times = [ 
+                                 0.00,
                                  36.0,
+                                 69.5,
+                                 0.00,
+                                 62.0,
+                                 0.00,
+                                 89.0,
+                                 0.00,
+                                 0.00,
+                                 0.00,
+                                 165.8,
+                                 96.0, 
+                                 0.00,
+                                 0.00,
+                                 0.00,
+                                 48.0,
                               ] # in second
-        kilosortvers = [ 
+        kilosortvers = [
                          4,
-                       ]
+                         4,
+                         4,
+                         4,
+                         4,
+                         4,
+                         4,
+                         4,
+                         4,
+                         4,
+                         4,
+                         4,
+                         4,
+                         4,
+                         4,
+                         4,
+                        ]
     elif do_OFC:
         # pick only five sessions for each conditions
         neural_record_conditions = [
@@ -289,6 +376,9 @@ if 0:
         dates_list = [
                       
                      ]
+        task_conditions = [
+                           
+                          ]
         session_start_times = [ 
                                 
                               ] # in second
@@ -304,9 +394,18 @@ if 0:
     
 
     
-#    
-# dates_list = ["20221128"]
-# session_start_times = [1.00] # in second
+# a test case
+if 0:
+    neural_record_conditions = ['20240508_Kanga_SR']
+    dates_list = ["20240508"]
+    task_conditions = ['SR']
+    session_start_times = [0.0] # in second
+    kilosortvers = [4]
+    animal1_fixedorder = ['dannon']
+    animal2_fixedorder = ['kanga']
+    animal1_filename = "Dannon"
+    animal2_filename = "Kanga"
+    
 ndates = np.shape(dates_list)[0]
 
 session_start_frames = session_start_times * fps # fps is 30Hz
@@ -362,17 +461,18 @@ pull2_num_all_dates = np.zeros((ndates,1))
 
 bhv_intv_all_dates = dict.fromkeys(dates_list, [])
 
+spike_trig_events_all_dates = dict.fromkeys(dates_list, [])
 
 # where to save the summarizing data
-data_saved_folder = '/gpfs/gibbs/pi/jadi/VideoTracker_SocialInter/3d_recontruction_analysis_self_and_coop_task_data_saved/'
+data_saved_folder = '/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/3d_recontruction_analysis_self_and_coop_task_data_saved/'
 
 # neural data folder
-neural_data_folder = '/gpfs/gibbs/pi/jadi/Marmoset_neural_recording/'
+neural_data_folder = '/gpfs/radev/pi/nandy/jadi_gibbs_data/Marmoset_neural_recording/'
 
     
 
 
-# In[20]:
+# In[19]:
 
 
 # basic behavior analysis (define time stamps for each bhv events, etc)
@@ -410,6 +510,9 @@ try:
     with open(data_saved_subfolder+'/bhv_intv_all_dates_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
         bhv_intv_all_dates = pickle.load(f)
 
+    with open(data_saved_subfolder+'/spike_trig_events_all_dates_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'rb') as f:
+        spike_trig_events_all_dates = pickle.load(f) 
+        
     print('all data from all dates are loaded')
 
 except:
@@ -426,8 +529,8 @@ except:
 
 
         # folder and file path
-        camera12_analyzed_path = "/gpfs/gibbs/pi/jadi/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_camera12/"
-        camera23_analyzed_path = "/gpfs/gibbs/pi/jadi/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_camera23/"
+        camera12_analyzed_path = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_camera12/"
+        camera23_analyzed_path = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_camera23/"
         
         # singlecam_ana_type = "DLC_dlcrnetms5_marmoset_tracking_with_middle_cameraSep1shuffle1_150000"
         if date_tgt == "20231101_MC":
@@ -752,7 +855,7 @@ except:
                 PCA_around_bhv_events(FR_timepoint_allch,FR_zscore_allch_np_merged,time_point_pull1,time_point_pull2,time_point_pulls_succfail, 
                               oneway_gaze1,oneway_gaze2,mutual_gaze1,mutual_gaze2,gaze_thresold,totalsess_time_forFR,PCAtwins,fps,
                               savefigs,data_saved_folder,cameraID,animal1_filename,animal2_filename,date_tgt)
-            if 1:
+            if 0:
                 if np.isin(animal1, ['dodson','dannon']):
                     PCA_around_bhv_events_video(FR_timepoint_allch,FR_zscore_allch_np_merged,time_point_pull1,time_point_pull2,time_point_pulls_succfail, 
                                       oneway_gaze1,oneway_gaze2,mutual_gaze1,mutual_gaze2,gaze_thresold,totalsess_time_forFR,PCAtwins,fps,
@@ -768,10 +871,28 @@ except:
                                       data_saved_folder,cameraID,animal1_filename,animal2_filename,date_tgt)
             
             
-                                                                                                           
+            # do the spike triggered average of different bhv variables, for the single camera tracking, look at the pulling and social gaze actions
+            # the goal is to get a sense for glm
+            if 1: 
+                print('plot spike triggered bhv variables')
+
+                savefig = 1
+                save_path = data_saved_folder+"fig_for_basic_neural_analysis_allsessions_basicEvents/"+cameraID+"/"+animal1_filename+"_"+animal2_filename+"/"+date_tgt
+                if not os.path.exists(save_path):
+                    os.makedirs(save_path)
+                #
+                do_shuffle = 0
+                #
+                spike_trig_average_all =  plot_spike_triggered_singlecam_bhvevent(date_tgt,savefig,save_path, animal1, animal2, session_start_time,
+                                                                              time_point_pull1, time_point_pull2, time_point_pulls_succfail,
+                                                                              oneway_gaze1,oneway_gaze2,mutual_gaze1,mutual_gaze2,gaze_thresold,animalnames_videotrack,
+                                                                              spike_clusters_data, spike_time_data,spike_channels_data,do_shuffle)
+
+                spike_trig_events_all_dates[date_tgt] = spike_trig_average_all
+
             
         # load filtered lfp
-        if 1:
+        if 0:
             print('load LFP data for '+neural_record_condition)
             lfp_filt_filename = neural_data_folder+neural_record_condition+'/lfp_filt_subsample.txt' # already downsample to 30Hz
             lfp_filt_data_df = genfromtxt(lfp_filt_filename, delimiter=',')
@@ -784,7 +905,7 @@ except:
             
         
         # plot the tracking demo video
-        if 1: 
+        if 0: 
             if 0:
                 # all the bhv traces in the same panel
                 tracking_video_singlecam_wholebody_withNeuron_demo(bodyparts_locs_camI,output_look_ornot,output_allvectors,output_allangles,
@@ -840,49 +961,10 @@ except:
             pickle.dump(trialnum_all_dates, f)
         with open(data_saved_subfolder+'/bhv_intv_all_dates_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
             pickle.dump(bhv_intv_all_dates, f)
+            
+        with open(data_saved_subfolder+'/spike_trig_events_all_dates_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
+            pickle.dump(spike_trig_events_all_dates, f)  
     
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
 
 
 # In[ ]:
@@ -897,79 +979,405 @@ except:
 # In[ ]:
 
 
-fig, axs = plt.subplots(12,1)
-fig.set_figheight(20*1)
-fig.set_figwidth(5*3)
+if 0:
+    fig, axs = plt.subplots(12,1)
+    fig.set_figheight(20*1)
+    fig.set_figwidth(5*3)
 
-x_lims = [0,totalsess_time_forFR]
-PC1min = np.min(FR_zscore_allch_PCs[:,0])
-PC1max = np.max(FR_zscore_allch_PCs[:,0])
-PC2min = np.min(FR_zscore_allch_PCs[:,1])
-PC2max = np.max(FR_zscore_allch_PCs[:,1])
-PC3min = np.min(FR_zscore_allch_PCs[:,2])
-PC3max = np.max(FR_zscore_allch_PCs[:,2])
+    x_lims = [0,totalsess_time_forFR]
+    PC1min = np.min(FR_zscore_allch_PCs[:,0])
+    PC1max = np.max(FR_zscore_allch_PCs[:,0])
+    PC2min = np.min(FR_zscore_allch_PCs[:,1])
+    PC2max = np.max(FR_zscore_allch_PCs[:,1])
+    PC3min = np.min(FR_zscore_allch_PCs[:,2])
+    PC3max = np.max(FR_zscore_allch_PCs[:,2])
 
-for iplotype in np.arange(0,4,1):
+    for iplotype in np.arange(0,4,1):
+
+        if iplotype == 0:
+            eventplot  = np.array(time_point_pull1)
+            eventplotname = 'animal1_pull'
+        elif iplotype == 1:
+            eventplot  = np.array(time_point_pull2)
+            eventplotname = 'animal2_pull'
+        elif iplotype == 2:
+            eventplot  = np.hstack([oneway_gaze1,mutual_gaze1])
+            eventplotname = 'animal1_gaze'
+        elif iplotype == 3:
+            eventplot  = np.hstack([oneway_gaze2,mutual_gaze2])
+            eventplotname = 'animal2_gaze'
+
+        # plot 1
+        nevents = np.shape(eventplot)[0]
+        for ievent in np.arange(0,nevents,1):
+            axs[0+3*iplotype].plot([eventplot[ievent],eventplot[ievent]],[PC1min,PC1max],'k-')
+        axs[0+3*iplotype].set_xlim(x_lims[0],x_lims[1])
+        axs[0+3*iplotype].set_ylim(PC1min,PC1max)
+        #
+        axs[0+3*iplotype].plot(FR_timepoint_allch,FR_zscore_allch_PCs[:,0])
+        axs[0+3*iplotype].set_xlim(x_lims[0],x_lims[1])
+        axs[0+3*iplotype].set_ylabel('PC1\n'+eventplotname)
+
+        # plot 2
+        nevents = np.shape(eventplot)[0]
+        for ievent in np.arange(0,nevents,1):
+            axs[1+3*iplotype].plot([eventplot[ievent],eventplot[ievent]],[PC2min,PC2max],'k-')
+        axs[1+3*iplotype].set_xlim(x_lims[0],x_lims[1])
+        axs[1+3*iplotype].set_ylim(PC2min,PC2max)
+        #
+        axs[1+3*iplotype].plot(FR_timepoint_allch,FR_zscore_allch_PCs[:,1])
+        axs[1+3*iplotype].set_xlim(x_lims[0],x_lims[1])
+        axs[1+3*iplotype].set_ylabel('PC2\n'+eventplotname)
+
+        # plot 3
+        nevents = np.shape(eventplot)[0]
+        for ievent in np.arange(0,nevents,1):
+            axs[2+3*iplotype].plot([eventplot[ievent],eventplot[ievent]],[PC3min,PC3max],'k-')
+        axs[2+3*iplotype].set_xlim(x_lims[0],x_lims[1])
+        axs[2+3*iplotype].set_ylim(PC3min,PC3max)
+        #
+        axs[2+3*iplotype].plot(FR_timepoint_allch,FR_zscore_allch_PCs[:,2])
+        axs[2+3*iplotype].set_xlim(x_lims[0],x_lims[1])
+        axs[2+3*iplotype].set_ylabel('PC3\n'+eventplotname)
+
+
+# #### analyze the spike triggered behavioral variables across all dates
+# #### plot the tsne or PCA clusters
+
+# In[ ]:
+
+
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_samples, silhouette_score
+
+doPCA = 1
+doTSNE = 0
+
+spike_trig_events_all_dates_df = pd.DataFrame(columns=['dates','condition','act_animal','bhv_name','clusterID',
+                                                       'channelID','st_average'])
+
+# reorganize to a dataframes
+for idate in np.arange(0,ndates,1):
+    date_tgt = dates_list[idate]
+    task_condition = task_conditions[idate]
     
-    if iplotype == 0:
-        eventplot  = np.array(time_point_pull1)
-        eventplotname = 'animal1_pull'
-    elif iplotype == 1:
-        eventplot  = np.array(time_point_pull2)
-        eventplotname = 'animal2_pull'
-    elif iplotype == 2:
-        eventplot  = np.hstack([oneway_gaze1,mutual_gaze1])
-        eventplotname = 'animal1_gaze'
-    elif iplotype == 3:
-        eventplot  = np.hstack([oneway_gaze2,mutual_gaze2])
-        eventplotname = 'animal2_gaze'
+    act_animals = list(spike_trig_events_all_dates[date_tgt].keys())
+    
+    for iact_animal in act_animals:
         
+        bhv_types = list(spike_trig_events_all_dates[date_tgt][iact_animal].keys())
+        
+        for ibhv_type in bhv_types:
+            
+            clusterIDs = list(spike_trig_events_all_dates[date_tgt][iact_animal][ibhv_type].keys())
+    
+            for iclusterID in clusterIDs:
+            
+                ichannelID = spike_trig_events_all_dates[date_tgt][iact_animal][ibhv_type][iclusterID]['ch']
+                ist_average = spike_trig_events_all_dates[date_tgt][iact_animal][ibhv_type][iclusterID]['st_average']
 
-    # plot 1
-    nevents = np.shape(eventplot)[0]
-    for ievent in np.arange(0,nevents,1):
-        axs[0+3*iplotype].plot([eventplot[ievent],eventplot[ievent]],[PC1min,PC1max],'k-')
-    axs[0+3*iplotype].set_xlim(x_lims[0],x_lims[1])
-    axs[0+3*iplotype].set_ylim(PC1min,PC1max)
-    #
-    axs[0+3*iplotype].plot(FR_timepoint_allch,FR_zscore_allch_PCs[:,0])
-    axs[0+3*iplotype].set_xlim(x_lims[0],x_lims[1])
-    axs[0+3*iplotype].set_ylabel('PC1\n'+eventplotname)
+                spike_trig_events_all_dates_df = spike_trig_events_all_dates_df.append({'dates': date_tgt, 
+                                                                                        'condition':task_condition,
+                                                                                        'act_animal': iact_animal, 
+                                                                                        'bhv_name': ibhv_type,
+                                                                                        'clusterID':iclusterID,
+                                                                                        'channelID':ichannelID,
+                                                                                        'st_average':ist_average,
+                                                                                       }, ignore_index=True)
+if 0:
+    # normalize st_average for each unit
+    nspikeunits = np.shape(spike_trig_events_all_dates_df)[0]
+    for ispikeunit in np.arange(0,nspikeunits,1):
+        stevent = spike_trig_events_all_dates_df['st_average'][ispikeunit]
+        stevent_norm = (stevent-np.nanmin(stevent))/(np.nanmax(stevent)-np.nanmin(stevent))
+        spike_trig_events_all_dates_df['st_average'][ispikeunit] = stevent_norm            
+        
+# only focus on the certain act animal and certain bhv_name
+# act_animals_all = ['kanga']
+# bhv_names_all = ['leverpull_prob']
+act_animals_all = np.unique(spike_trig_events_all_dates_df['act_animal'])
+bhv_names_all = np.unique(spike_trig_events_all_dates_df['bhv_name'])
+#
+nact_animals = np.shape(act_animals_all)[0]
+nbhv_names = np.shape(bhv_names_all)[0]
 
-    # plot 2
-    nevents = np.shape(eventplot)[0]
-    for ievent in np.arange(0,nevents,1):
-        axs[1+3*iplotype].plot([eventplot[ievent],eventplot[ievent]],[PC2min,PC2max],'k-')
-    axs[1+3*iplotype].set_xlim(x_lims[0],x_lims[1])
-    axs[1+3*iplotype].set_ylim(PC2min,PC2max)
-    #
-    axs[1+3*iplotype].plot(FR_timepoint_allch,FR_zscore_allch_PCs[:,1])
-    axs[1+3*iplotype].set_xlim(x_lims[0],x_lims[1])
-    axs[1+3*iplotype].set_ylabel('PC2\n'+eventplotname)
+# set for plot
+# plot all units
+fig1, axs1 = plt.subplots(nact_animals,nbhv_names)
+fig1.set_figheight(8*nact_animals)
+fig1.set_figwidth(8*nbhv_names)
 
-    # plot 3
-    nevents = np.shape(eventplot)[0]
-    for ievent in np.arange(0,nevents,1):
-        axs[2+3*iplotype].plot([eventplot[ievent],eventplot[ievent]],[PC3min,PC3max],'k-')
-    axs[2+3*iplotype].set_xlim(x_lims[0],x_lims[1])
-    axs[2+3*iplotype].set_ylim(PC3min,PC3max)
-    #
-    axs[2+3*iplotype].plot(FR_timepoint_allch,FR_zscore_allch_PCs[:,2])
-    axs[2+3*iplotype].set_xlim(x_lims[0],x_lims[1])
-    axs[2+3*iplotype].set_ylabel('PC3\n'+eventplotname)
+# plot all units but separate different days
+fig2, axs2 = plt.subplots(nact_animals,nbhv_names)
+fig2.set_figheight(8*nact_animals)
+fig2.set_figwidth(8*nbhv_names)
 
+# plot all units but seprate different channels
+fig3, axs3 = plt.subplots(nact_animals,nbhv_names)
+fig3.set_figheight(8*nact_animals)
+fig3.set_figwidth(8*nbhv_names)
 
+# plot all units but separate different conditions
+fig4, axs4 = plt.subplots(nact_animals,nbhv_names)
+fig4.set_figheight(8*nact_animals)
+fig4.set_figwidth(8*nbhv_names)
 
+# spike triggered average for different task conditions
+# to be save, prepare for five conditions
+fig6, axs6 = plt.subplots(nact_animals*5,nbhv_names)
+fig6.set_figheight(8*nact_animals*5)
+fig6.set_figwidth(8*nbhv_names)
 
+# plot all units but separate different k-mean cluster
+fig5, axs5 = plt.subplots(nact_animals,nbhv_names)
+fig5.set_figheight(8*nact_animals)
+fig5.set_figwidth(8*nbhv_names)
 
+# spike triggered average for different k-mean cluster
+# to be save, prepare for 14 clusters
+fig7, axs7 = plt.subplots(nact_animals*14,nbhv_names)
+fig7.set_figheight(8*nact_animals*14)
+fig7.set_figwidth(8*nbhv_names)
 
+#
+for ianimal in np.arange(0,nact_animals,1):
+    
+    act_animal = act_animals_all[ianimal]
+    
+    for ibhvname in np.arange(0,nbhv_names,1):
+        
+        bhv_name = bhv_names_all[ibhvname]
+        
+        ind = (spike_trig_events_all_dates_df['act_animal']==act_animal)&(spike_trig_events_all_dates_df['bhv_name']==bhv_name)
+        
+        spike_trig_events_tgt = np.vstack(list(spike_trig_events_all_dates_df[ind]['st_average']))
+        
+        
+        # k means clustering
+        # run clustering on the 15 dimension PC space (for doPCA), or the whole dataset (for doTSNE)
+        pca = PCA(n_components=15)
+        spike_trig_events_pca = pca.fit_transform(spike_trig_events_tgt)
+        tsne = TSNE(n_components=3, random_state=0)
+        spike_trig_events_tsne = tsne.fit_transform(spike_trig_events_tgt)
+        #
+        range_n_clusters = np.arange(2,15,1)
+        silhouette_avg_all = np.ones(np.shape(range_n_clusters))*np.nan
+        nkmeancls = np.shape(range_n_clusters)[0]
+        #
+        for ikmeancl in np.arange(0,nkmeancls,1):
+            n_clusters = range_n_clusters[ikmeancl]
+            #
+            clusterer = KMeans(n_clusters=n_clusters, random_state=10)
+            # cluster_labels = clusterer.fit_predict(spike_trig_events_tgt)
+            if doPCA:
+                cluster_labels = clusterer.fit_predict(spike_trig_events_pca)
+            if doTSNE:
+                cluster_labels = clusterer.fit_predict(spike_trig_events_tgt)
+                # cluster_labels = clusterer.fit_predict(spike_trig_events_tsne)
+            #
+            # The silhouette_score gives the average value for all the samples.
+            # This gives a perspective into the density and separation of the formed
+            # clusters
+            # silhouette_avg = silhouette_score(spike_trig_events_tgt, cluster_labels)
+            if doPCA:
+                silhouette_avg = silhouette_score(spike_trig_events_pca, cluster_labels)
+            if doTSNE:
+                silhouette_avg = silhouette_score(spike_trig_events_tgt, cluster_labels)
+                # silhouette_avg = silhouette_score(spike_trig_events_tsne, cluster_labels)
+            #
+            silhouette_avg_all[ikmeancl] = silhouette_avg
+        #
+        best_k_num = range_n_clusters[silhouette_avg_all==np.nanmax(silhouette_avg_all)][0]
+        #
+        clusterer = KMeans(n_clusters=best_k_num, random_state=0)
+        # kmean_cluster_labels = clusterer.fit_predict(spike_trig_events_tgt)
+        if doPCA:
+            kmean_cluster_labels = clusterer.fit_predict(spike_trig_events_pca)
+        if doTSNE:
+            kmean_cluster_labels = clusterer.fit_predict(spike_trig_events_tgt)
+            # kmean_cluster_labels = clusterer.fit_predict(spike_trig_events_tsne)
+    
+    
+        # run PCA and TSNE     
+        pca = PCA(n_components=2)
+        tsne = TSNE(n_components=2, random_state=0)
+        #
+        spike_trig_events_pca = pca.fit_transform(spike_trig_events_tgt)
+        spike_trig_events_tsne = tsne.fit_transform(spike_trig_events_tgt)
+        
+        # plot all units
+        # plot the tsne
+        if doTSNE:
+            axs1[ianimal,ibhvname].plot(spike_trig_events_tsne[:,0],spike_trig_events_tsne[:,1],'.')
+        # plot the pca
+        if doPCA:
+            axs1[ianimal,ibhvname].plot(spike_trig_events_pca[:,0],spike_trig_events_pca[:,1],'.')
+        
+        axs1[ianimal,ibhvname].set_xticklabels([])
+        axs1[ianimal,ibhvname].set_yticklabels([])
+        axs1[ianimal,ibhvname].set_title(act_animal+'\n'+bhv_name)
+        
+        
+        # plot all units, but seprate different dates
+        dates_forplot = np.unique(spike_trig_events_all_dates_df[ind]['dates'])
+        for idate_forplot in dates_forplot:
+            ind_idate = list(spike_trig_events_all_dates_df[ind]['dates']==idate_forplot)
+            #
+            # plot the tsne
+            if doTSNE:
+                axs2[ianimal,ibhvname].plot(spike_trig_events_tsne[ind_idate,0],spike_trig_events_tsne[ind_idate,1],
+                                        '.',label=idate_forplot)
+            # plot the pca
+            if doPCA:
+                axs2[ianimal,ibhvname].plot(spike_trig_events_pca[ind_idate,0],spike_trig_events_pca[ind_idate,1],
+                                        '.',label=idate_forplot)
+            #
+        axs2[ianimal,ibhvname].set_xticklabels([])
+        axs2[ianimal,ibhvname].set_yticklabels([])
+        axs2[ianimal,ibhvname].set_title(act_animal+'\n'+bhv_name)
+        axs2[ianimal,ibhvname].legend()
+        
+        
+        # plot all units, but seprate different channels
+        chs_forplot = np.unique(spike_trig_events_all_dates_df[ind]['channelID'])
+        for ich_forplot in chs_forplot:
+            ind_ich = list(spike_trig_events_all_dates_df[ind]['channelID']==ich_forplot)
+            #
+            # plot the tsne
+            if doTSNE:
+                axs3[ianimal,ibhvname].plot(spike_trig_events_tsne[ind_ich,0],spike_trig_events_tsne[ind_ich,1],
+                                        '.',label=str(ich_forplot))
+            # plot the pca
+            if doPCA:
+                axs3[ianimal,ibhvname].plot(spike_trig_events_pca[ind_ich,0],spike_trig_events_pca[ind_ich,1],
+                                        '.',label=str(ich_forplot))
+            #
+        axs3[ianimal,ibhvname].set_xticklabels([])
+        axs3[ianimal,ibhvname].set_yticklabels([])
+        axs3[ianimal,ibhvname].set_title(act_animal+'\n'+bhv_name)
+        axs3[ianimal,ibhvname].legend()
+        
+        
+        # plot all units, but seprate different task conditions
+        cons_forplot = np.unique(spike_trig_events_all_dates_df[ind]['condition'])
+        for icon_forplot in cons_forplot:
+            ind_icon = list(spike_trig_events_all_dates_df[ind]['condition']==icon_forplot)
+            #
+            # plot the tsne
+            if doTSNE:
+                axs4[ianimal,ibhvname].plot(spike_trig_events_tsne[ind_icon,0],spike_trig_events_tsne[ind_icon,1],
+                                        '.',label=icon_forplot)
+            # plot the pca
+            if doPCA:
+                axs4[ianimal,ibhvname].plot(spike_trig_events_pca[ind_icon,0],spike_trig_events_pca[ind_icon,1],
+                                        '.',label=icon_forplot)
+            #
+        axs4[ianimal,ibhvname].set_xticklabels([])
+        axs4[ianimal,ibhvname].set_yticklabels([])
+        axs4[ianimal,ibhvname].set_title(act_animal+'\n'+bhv_name)
+        axs4[ianimal,ibhvname].legend()
+    
+        # plot the mean spike trigger average trace across neurons in each condition
+        trig_twins = [-6,6] # the time window to examine the spike triggered average, in the unit of s
+        xxx_forplot = np.arange(trig_twins[0]*fps,trig_twins[1]*fps,1)
+        #
+        cons_forplot = np.unique(spike_trig_events_all_dates_df[ind]['condition'])
+        icon_ind = 0
+        for icon_forplot in cons_forplot:
+            ind_icon = list(spike_trig_events_all_dates_df[ind]['condition']==icon_forplot)
+            #
+            mean_trig_trace_icon = np.nanmean(spike_trig_events_tgt[ind_icon,:],axis=0)
+            std_trig_trace_icon = np.nanstd(spike_trig_events_tgt[ind_icon,:],axis=0)
+            sem_trig_trace_icon = np.nanstd(spike_trig_events_tgt[ind_icon,:],axis=0)/np.sqrt(np.shape(spike_trig_events_tgt[ind_icon,:])[0])
+            itv95_trig_trace_icon = 1.96*sem_trig_trace_icon
+            #
+            axs6[ianimal*5+icon_ind,ibhvname].errorbar(xxx_forplot,mean_trig_trace_icon,yerr=itv95_trig_trace_icon,
+                                                       color='#E0E0E0',ecolor='#EEEEEE',label=icon_forplot)
+            axs6[ianimal*5+icon_ind,ibhvname].plot([0,0],[np.nanmin(mean_trig_trace_icon-itv95_trig_trace_icon),
+                                                          np.nanmax(mean_trig_trace_icon+itv95_trig_trace_icon)],'--k')
+            axs6[ianimal*5+icon_ind,ibhvname].set_xlabel('time (s)')
+            axs6[ianimal*5+icon_ind,ibhvname].set_xticks(np.arange(trig_twins[0]*fps,trig_twins[1]*fps,60))
+            axs6[ianimal*5+icon_ind,ibhvname].set_xticklabels(list(map(str,np.arange(trig_twins[0],trig_twins[1],2))))
+            axs6[ianimal*5+icon_ind,ibhvname].set_title(act_animal+'\n'+bhv_name)
+            axs6[ianimal*5+icon_ind,ibhvname].legend()
+            #
+            icon_ind = icon_ind + 1
+    
+    
+        # plot all units, but seprate different k-mean clusters
+        kms_forplot = np.unique(kmean_cluster_labels)
+        for ikm_forplot in kms_forplot:
+            ind_ikm = list(kmean_cluster_labels==ikm_forplot)
+            #
+            # plot the tsne
+            if doTSNE:
+                axs5[ianimal,ibhvname].plot(spike_trig_events_tsne[ind_ikm,0],spike_trig_events_tsne[ind_ikm,1],
+                                        '.',label=str(ikm_forplot))
+            # plot the pca
+            if doPCA:
+                axs5[ianimal,ibhvname].plot(spike_trig_events_pca[ind_ikm,0],spike_trig_events_pca[ind_ikm,1],
+                                        '.',label=str(ikm_forplot))
+            #
+        axs5[ianimal,ibhvname].set_xticklabels([])
+        axs5[ianimal,ibhvname].set_yticklabels([])
+        axs5[ianimal,ibhvname].set_title(act_animal+'\n'+bhv_name)
+        axs5[ianimal,ibhvname].legend()
+        
+        # plot the mean spike trigger average trace across neurons in each cluster
+        trig_twins = [-6,6] # the time window to examine the spike triggered average, in the unit of s
+        xxx_forplot = np.arange(trig_twins[0]*fps,trig_twins[1]*fps,1)
+        #
+        kms_forplot = np.unique(kmean_cluster_labels)
+        for ikm_forplot in kms_forplot:
+            ind_ikm = list(kmean_cluster_labels==ikm_forplot)
+            #
+            mean_trig_trace_ikm = np.nanmean(spike_trig_events_tgt[ind_ikm,:],axis=0)
+            std_trig_trace_ikm = np.nanstd(spike_trig_events_tgt[ind_ikm,:],axis=0)
+            sem_trig_trace_ikm = np.nanstd(spike_trig_events_tgt[ind_ikm,:],axis=0)/np.sqrt(np.shape(spike_trig_events_tgt[ind_ikm,:])[0])
+            itv95_trig_trace_ikm = 1.96*sem_trig_trace_ikm
+            #
+            axs7[ianimal*14+ikm_forplot,ibhvname].errorbar(xxx_forplot,mean_trig_trace_ikm,yerr=itv95_trig_trace_ikm,
+                                                          color='#E0E0E0',ecolor='#EEEEEE',label='cluster#'+str(ikm_forplot))
+            axs7[ianimal*14+ikm_forplot,ibhvname].plot([0,0],[np.nanmin(mean_trig_trace_ikm-itv95_trig_trace_ikm),
+                                                             np.nanmax(mean_trig_trace_ikm+itv95_trig_trace_ikm)],'--k')
+            axs7[ianimal*14+ikm_forplot,ibhvname].set_xlabel('time (s)')
+            axs7[ianimal*14+ikm_forplot,ibhvname].set_xticks(np.arange(trig_twins[0]*fps,trig_twins[1]*fps,60))
+            axs7[ianimal*14+ikm_forplot,ibhvname].set_xticklabels(list(map(str,np.arange(trig_twins[0],trig_twins[1],2))))
+            axs7[ianimal*14+ikm_forplot,ibhvname].set_title(act_animal+'\n'+bhv_name)
+            axs7[ianimal*14+ikm_forplot,ibhvname].legend()
+    
+    
+savefig = 1
+if savefig:
+    figsavefolder = data_saved_folder+"fig_for_basic_neural_analysis_allsessions_basicEvents/"+cameraID+"/"+animal1_filename+"_"+animal2_filename+"/"
 
+    if not os.path.exists(figsavefolder):
+        os.makedirs(figsavefolder)
+    if doTSNE:
+        fig1.savefig(figsavefolder+'spike_triggered_bhv_variables_tsne_clusters_all_dates.pdf')
+        fig2.savefig(figsavefolder+'spike_triggered_bhv_variables_tsne_clusters_all_dates_separated_dates.pdf')
+        fig3.savefig(figsavefolder+'spike_triggered_bhv_variables_tsne_clusters_all_dates_separated_channels.pdf')
+        fig4.savefig(figsavefolder+'spike_triggered_bhv_variables_tsne_clusters_all_dates_separated_conditions.pdf')
+        fig5.savefig(figsavefolder+'spike_triggered_bhv_variables_tsne_clusters_all_dates_separated_kmeanclusters.pdf')
+        fig6.savefig(figsavefolder+'spike_triggered_bhv_variables_tsne_clusters_all_dates_sttraces_for_conditions.pdf')        
+        fig7.savefig(figsavefolder+'spike_triggered_bhv_variables_tsne_clusters_all_dates_sttraces_for_kmeanclusters.pdf')
+
+    if doPCA:
+        fig1.savefig(figsavefolder+'spike_triggered_bhv_variables_pca_clusters_all_dates.pdf')
+        fig2.savefig(figsavefolder+'spike_triggered_bhv_variables_pca_clusters_all_dates_separated_dates.pdf')
+        fig3.savefig(figsavefolder+'spike_triggered_bhv_variables_pca_clusters_all_dates_separated_channels.pdf')
+        fig4.savefig(figsavefolder+'spike_triggered_bhv_variables_pca_clusters_all_dates_separated_conditions.pdf')
+        fig5.savefig(figsavefolder+'spike_triggered_bhv_variables_pca_clusters_all_dates_separated_kmeanclusters.pdf')
+        fig6.savefig(figsavefolder+'spike_triggered_bhv_variables_pca_clusters_all_dates_sttraces_for_conditions.pdf')                           
+        fig7.savefig(figsavefolder+'spike_triggered_bhv_variables_pca_clusters_all_dates_sttraces_for_kmeanclusters.pdf')
 
 
 # In[ ]:
 
 
-FR_allch
+
 
 
 # In[ ]:
