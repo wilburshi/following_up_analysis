@@ -1,5 +1,5 @@
-# # function - run PCA around behavior events
-def plot_bhv_events_aligned_FR(date_tgt,savefig,save_path, animal1, animal2,time_point_pull1,time_point_pull2,time_point_pulls_succfail,oneway_gaze1,oneway_gaze2,mutual_gaze1,mutual_gaze2,gaze_thresold,totalsess_time_forFR,aligntwins,fps,FR_timepoint_allch,FR_zscore_allch):
+# # function - run firing rate around behavior events
+def plot_bhv_events_aligned_FR(date_tgt,savefig,save_path, animal1, animal2,time_point_pull1,time_point_pull2,time_point_pulls_succfail,oneway_gaze1,oneway_gaze2,mutual_gaze1,mutual_gaze2,gaze_thresold,totalsess_time_forFR,aligntwins,fps,FR_timepoint_allch,FR_zscore_allch,clusters_info_data):
     
     
     import pandas as pd
@@ -44,19 +44,19 @@ def plot_bhv_events_aligned_FR(date_tgt,savefig,save_path, animal1, animal2,time
 
 
     # keep the total time consistent
-    time_point_pull1 = time_point_pull1[time_point_pull1<totalsess_time_forFR]
-    time_point_pull2 = time_point_pull2[time_point_pull2<totalsess_time_forFR]
-    oneway_gaze1 = oneway_gaze1[oneway_gaze1<totalsess_time_forFR]
-    oneway_gaze2 = oneway_gaze2[oneway_gaze2<totalsess_time_forFR]
-    animal1_gaze_start = animal1_gaze_start[animal1_gaze_start<totalsess_time_forFR]
-    animal2_gaze_start = animal2_gaze_start[animal2_gaze_start<totalsess_time_forFR]
-    animal1_gaze_stop = animal1_gaze_stop[animal1_gaze_stop<totalsess_time_forFR]
-    animal2_gaze_stop = animal2_gaze_stop[animal2_gaze_stop<totalsess_time_forFR]
+    time_point_pull1 = np.unique(time_point_pull1[time_point_pull1<totalsess_time_forFR])
+    time_point_pull2 = np.unique(time_point_pull2[time_point_pull2<totalsess_time_forFR])
+    oneway_gaze1 = np.unique(oneway_gaze1[oneway_gaze1<totalsess_time_forFR])
+    oneway_gaze2 = np.unique(oneway_gaze2[oneway_gaze2<totalsess_time_forFR])
+    animal1_gaze_start = np.unique(animal1_gaze_start[animal1_gaze_start<totalsess_time_forFR])
+    animal2_gaze_start = np.unique(animal2_gaze_start[animal2_gaze_start<totalsess_time_forFR])
+    animal1_gaze_stop = np.unique(animal1_gaze_stop[animal1_gaze_stop<totalsess_time_forFR])
+    animal2_gaze_stop = np.unique(animal2_gaze_stop[animal2_gaze_stop<totalsess_time_forFR])
     #
-    time_point_pull1_succ = time_point_pull1_succ[time_point_pull1_succ<totalsess_time_forFR]
-    time_point_pull2_succ = time_point_pull2_succ[time_point_pull2_succ<totalsess_time_forFR]
-    time_point_pull1_fail = time_point_pull1_fail[time_point_pull1_fail<totalsess_time_forFR]
-    time_point_pull2_fail = time_point_pull2_fail[time_point_pull2_fail<totalsess_time_forFR]
+    time_point_pull1_succ = np.unique(time_point_pull1_succ[time_point_pull1_succ<totalsess_time_forFR])
+    time_point_pull2_succ = np.unique(time_point_pull2_succ[time_point_pull2_succ<totalsess_time_forFR])
+    time_point_pull1_fail = np.unique(time_point_pull1_fail[time_point_pull1_fail<totalsess_time_forFR])
+    time_point_pull2_fail = np.unique(time_point_pull2_fail[time_point_pull2_fail<totalsess_time_forFR])
 
 
     # unit clusters
@@ -120,6 +120,7 @@ def plot_bhv_events_aligned_FR(date_tgt,savefig,save_path, animal1, animal2,time
 
     #
     bhvevents_aligned_FR_average_all = dict.fromkeys(bhv_events_names,[])
+    bhvevents_aligned_FR_allevents_all = dict.fromkeys(bhv_events_names,[])
 
     # 
     fig2, axs2 = plt.subplots(nanatypes,ncells)
@@ -137,12 +138,15 @@ def plot_bhv_events_aligned_FR(date_tgt,savefig,save_path, animal1, animal2,time
 
         #
         bhvevents_aligned_FR_average_all[bhvevent_name] = dict.fromkeys(clusterIDs,[])
+        bhvevents_aligned_FR_allevents_all[bhvevent_name] = dict.fromkeys(clusterIDs,[])
         
         # loop for all units/cells/neurons
         for icell in np.arange(0,ncells,1):
 
             clusterID = clusterIDs[icell]
-
+            
+            spike_channel = list(clusters_info_data[clusters_info_data['cluster_id']==int(clusterID)]['ch'])[0]
+            
             # load the FR
             FR_target = FR_zscore_allch[clusterID]
 
@@ -190,8 +194,8 @@ def plot_bhv_events_aligned_FR(date_tgt,savefig,save_path, animal1, animal2,time
                 axs2[ianatype,icell].set_title('cluster#'+str(clusterID))
 
             # put the data in the summarizing dataset
-            bhvevents_aligned_FR_average_all[bhvevent_name][str(clusterID)] = {'st_average':mean_trig_trace}
-               
+            bhvevents_aligned_FR_average_all[bhvevent_name][str(clusterID)] = {'ch':spike_channel,'FR_average':mean_trig_trace}
+            bhvevents_aligned_FR_allevents_all[bhvevent_name][str(clusterID)] = {'ch':spike_channel,'FR_allevents':alltraces_icell}   
                 
                 
     #
@@ -199,5 +203,5 @@ def plot_bhv_events_aligned_FR(date_tgt,savefig,save_path, animal1, animal2,time
         fig2.savefig(save_path+"/"+date_tgt+'_bhv_events_aligned_FR.pdf')
 
     
-    return bhvevents_aligned_FR_average_all
+    return bhvevents_aligned_FR_average_all, bhvevents_aligned_FR_allevents_all
           

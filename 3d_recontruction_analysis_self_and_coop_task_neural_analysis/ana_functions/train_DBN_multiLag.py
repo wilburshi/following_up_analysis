@@ -409,7 +409,7 @@ def train_DBN_multiLag(totalsess_time, session_start_time, temp_resolu, time_poi
     nevents = np.size(eventnames)
     bhv_df = pd.DataFrame(data, columns=colnames)
 
-    # define DBN structures
+    # define BAY structures
     all_pops = list(bhv_df.columns)
     from_pops = [pop for pop in all_pops if not pop.endswith('t3')]
     to_pops = [pop for pop in all_pops if pop.endswith('t3')]
