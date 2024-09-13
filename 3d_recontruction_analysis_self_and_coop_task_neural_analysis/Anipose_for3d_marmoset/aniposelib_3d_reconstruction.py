@@ -51,29 +51,29 @@ else:
     cgroup = CameraGroup.load('calibration.toml')
 
 
-# dates for Dannon Kanga
-if 1:
-    analyzed_dates = [ 
-                      "20240508","20240513","20240514","20240524","20240621_1",
-                     ]
-    session_start_times = [ 
-                            0, 69.5, 0, 0, 0, 
-                          ] # in second 
-    animal1 = "Dannon"
-    animal2 = "Kanga"    
 
-# dates for Dodson Ginger
+# dates for Ginger Kanga
 if 0:
     analyzed_dates = [ 
-                      "20240531",
+                      "20240813","20240814","20240815",
                      ]
     session_start_times = [ 
-                              0.0,    
+                            50, 0, 69.8, 
                           ] # in second 
-
-    animal1 = "Dodson"
-    animal2 = "Ginger"
+    animal1 = "Kanga"
+    animal2 = "Koala"    
     
+
+# dates for Dodson Ginger
+if 1:
+    analyzed_dates = [ 
+                      "20240531","20240603","20240604","20240605","20240606",
+                     ]
+    session_start_times = [ 
+                            0.00, 340, 72, 60.1, 82.2,
+                          ] # in second 
+    animal1 = "Dodson"
+    animal2 = "Ginger"   
 
 
 # session_start_times = [1.00]
@@ -116,8 +116,8 @@ nbodyparts_ana = np.shape(bodypartnames_videotrack)[0]
 for idate in np.arange(0,ndates,1):
     date_tgt = analyzed_dates[idate]
 
-    twocamera_videos_cam12 = "/gpfs/gibbs/pi/jadi/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera12/"
-    twocamera_videos_cam23 = "/gpfs/gibbs/pi/jadi/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera23/"
+    twocamera_videos_cam12 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera12/"
+    twocamera_videos_cam23 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera23/"
 
     bodyparts_cam1_cam12 = twocamera_videos_cam12+date_tgt+"_"+animal1+"_"+animal2+"_camera-1"+singlecam_ana_type+"_el_filtered.h5"
     bodyparts_cam2_cam12 = twocamera_videos_cam12+date_tgt+"_"+animal1+"_"+animal2+"_camera-2"+singlecam_ana_type+"_el_filtered.h5"
@@ -375,7 +375,7 @@ for idate in np.arange(0,ndates,1):
 
 
     ## Section 3 - plot the demo videos
-    do_videodemos = 1
+    do_videodemos = 0
 
     if do_videodemos:
 

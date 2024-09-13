@@ -189,7 +189,7 @@ def train_DBN_multiLag_create_df_only(totalsess_time, session_start_time, temp_r
         spike_time_point_num[ispike_unique,1] = np.sum(np.isin(spike_time_point,ispike_time_unique))
     # 
     # only consider time point with higher spike counts
-    spikes_threshold = np.nanmedian(spike_time_point_num[:,1])
+    # spikes_threshold = np.nanmedian(spike_time_point_num[:,1])
     #
     # only consider time point when spike counts are higher than the baseline (before session is started)
     # spikes_outlier = np.nanmean(spike_time_point_num[:,1])+3*np.nanstd(spike_time_point_num[:,1])
@@ -201,29 +201,32 @@ def train_DBN_multiLag_create_df_only(totalsess_time, session_start_time, temp_r
     spikes_outlier = np.nanmean(spike_time_point_num[:,1])+3*np.nanstd(spike_time_point_num[:,1])
     spikes_outlier = 200
     spike_time_point_num = spike_time_point_num[spike_time_point_num[:,1]<spikes_outlier,:] 
-    spikes_threshold = np.nanmean(spike_time_point_num[-50:-1,1])+2*np.nanstd(spike_time_point_num[-50:-1,1])
+    # spikes_threshold = np.nanmean(spike_time_point_num[-50:-1,1])+2*np.nanstd(spike_time_point_num[-50:-1,1])
+    spikes_threshold = np.nanmean(spike_time_point_num[:,1])+1.5*np.nanstd(spike_time_point_num[:,1])
     # 
     spike_time_high_point = spike_time_point_num[spike_time_point_num[:,1]>spikes_threshold,0]     
+  
 
     # optional - conbine mutual gaze and one way gaze
     oneway_gaze1 = np.sort(np.concatenate((oneway_gaze1,mutual_gaze1)))
     oneway_gaze2 = np.sort(np.concatenate((oneway_gaze2,mutual_gaze2)))
     
     total_time = int(np.floor((totalsess_time - session_start_time)/temp_resolu))
-    time_point_pull1_round = np.floor(time_point_pull1/temp_resolu).reset_index(drop = True).astype(int)
-    time_point_pull1_round = time_point_pull1_round[time_point_pull1_round<total_time]
-    time_point_pull2_round  = np.floor(time_point_pull2/temp_resolu).reset_index(drop = True).astype(int)
-    time_point_pull2_round = time_point_pull2_round[time_point_pull2_round<total_time]
-    time_point_onewaygaze1_round = np.floor(pd.Series(oneway_gaze1)/temp_resolu).reset_index(drop = True).astype(int)
-    time_point_onewaygaze2_round = np.floor(pd.Series(oneway_gaze2)/temp_resolu).reset_index(drop = True).astype(int)
-    time_point_mutualgaze1_round = np.floor(pd.Series(mutual_gaze1)/temp_resolu).reset_index(drop = True).astype(int)
-    time_point_mutualgaze2_round = np.floor(pd.Series(mutual_gaze2)/temp_resolu).reset_index(drop = True).astype(int)
+    
+    time_point_pull1_round = np.floor(time_point_pull1/temp_resolu-session_start_time).reset_index(drop = True).astype(int)
+    time_point_pull1_round = time_point_pull1_round[(time_point_pull1_round>0)&(time_point_pull1_round<total_time)]
+    time_point_pull2_round  = np.floor(time_point_pull2/temp_resolu-session_start_time).reset_index(drop = True).astype(int)
+    time_point_pull2_round = time_point_pull2_round[(time_point_pull2_round>0)&(time_point_pull2_round<total_time)]
+    time_point_onewaygaze1_round = np.floor(pd.Series(oneway_gaze1)/temp_resolu-session_start_time).reset_index(drop = True).astype(int)
+    time_point_onewaygaze2_round = np.floor(pd.Series(oneway_gaze2)/temp_resolu-session_start_time).reset_index(drop = True).astype(int)
+    time_point_mutualgaze1_round = np.floor(pd.Series(mutual_gaze1)/temp_resolu-session_start_time).reset_index(drop = True).astype(int)
+    time_point_mutualgaze2_round = np.floor(pd.Series(mutual_gaze2)/temp_resolu-session_start_time).reset_index(drop = True).astype(int)
     time_point_onewaygaze1_round = time_point_onewaygaze1_round[(time_point_onewaygaze1_round>0)&(time_point_onewaygaze1_round<total_time)]
     time_point_onewaygaze2_round = time_point_onewaygaze2_round[(time_point_onewaygaze2_round>0)&(time_point_onewaygaze2_round<total_time)]
     time_point_mutualgaze1_round = time_point_mutualgaze1_round[(time_point_mutualgaze1_round>0)&(time_point_mutualgaze1_round<total_time)]
     time_point_mutualgaze2_round = time_point_mutualgaze2_round[(time_point_mutualgaze2_round>0)&(time_point_mutualgaze2_round<total_time)]
 	
-    time_point_spikes_round = np.floor(pd.Series(spike_time_high_point)/temp_resolu).reset_index(drop = True).astype(int)
+    time_point_spikes_round = np.floor(pd.Series(spike_time_high_point)/temp_resolu-session_start_time).reset_index(drop = True).astype(int)
     time_point_spikes_round = time_point_spikes_round[(time_point_spikes_round>0)&(time_point_spikes_round<total_time)]
 
 	# t3 - current

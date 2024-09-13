@@ -145,7 +145,10 @@ def plot_bhv_events_aligned_FR(date_tgt,savefig,save_path, animal1, animal2,time
 
             clusterID = clusterIDs[icell]
             
-            spike_channel = list(clusters_info_data[clusters_info_data['cluster_id']==int(clusterID)]['ch'])[0]
+            try:
+                spike_channel = list(clusters_info_data[clusters_info_data['cluster_id']==int(clusterID)]['ch'])[0]
+            except:
+                spike_channel = list(clusters_info_data[clusters_info_data['id']==int(clusterID)]['ch'])[0]
             
             # load the FR
             FR_target = FR_zscore_allch[clusterID]
