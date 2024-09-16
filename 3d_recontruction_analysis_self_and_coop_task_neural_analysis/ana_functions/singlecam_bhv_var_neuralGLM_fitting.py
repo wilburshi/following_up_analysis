@@ -1,6 +1,6 @@
-#  function - get continuous variables and neurons and then do the GLM fitting
+#  function - get singlecam variables and neurons and then do the GLM fitting
 
-def get_continuous_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_videotrack, session_start_time, starttime, endtime, stg_twins, time_point_pull1, time_point_pull2, time_point_juice1, time_point_juice2, time_point_pulls_succfail, oneway_gaze1, oneway_gaze2, mutual_gaze1, mutual_gaze2, gaze_thresold, output_look_ornot,  output_allvectors, output_allangles, output_key_locations, spike_clusters_data, spike_time_data, spike_channels_data):
+def get_singlecam_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_videotrack, session_start_time, starttime, endtime, totalsess_time, stg_twins, time_point_pull1, time_point_pull2, time_point_juice1, time_point_juice2, time_point_pulls_succfail, oneway_gaze1, oneway_gaze2, mutual_gaze1, mutual_gaze2, gaze_thresold, spike_clusters_data, spike_time_data, spike_channels_data):
     
     import pandas as pd
     import numpy as np
@@ -147,9 +147,7 @@ def get_continuous_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_v
     fps = 30     
 
 
-    con_vars_plot = ['gaze_other_angle','gaze_tube_angle','gaze_lever_angle','animal_animal_dist',
-                     'animal_tube_dist','animal_lever_dist','othergaze_self_angle','mass_move_speed',
-                     'gaze_angle_speed','leverpull_prob','socialgaze_prob','juice_prob',
+    con_vars_plot = ['leverpull_prob','socialgaze_prob','juice_prob',
                      'sync_pull_prob','gaze_lead_pull_prob','social_attention_prob']
 
     nconvarplots = np.shape(con_vars_plot)[0]
@@ -163,6 +161,9 @@ def get_continuous_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_v
     endtimeframe = int(np.round((endtime + session_start_time)*fps)+1)
     #
     nallframes = endtimeframe-starttimeframe
+    
+    totalsess_nframes = int(np.round(totalsess_time*fps))
+    
 
     # define and organize the continuous variables
     for ianimal in np.arange(0,nanimals,1):
@@ -177,56 +178,6 @@ def get_continuous_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_v
         # get the variables
         # keep the tracking time to the start of video recording
 
-        gaze_other_angle = output_allangles['face_eye_angle_all_Anipose'][animal_name]
-        gaze_other_angle = scipy.ndimage.gaussian_filter1d(gaze_other_angle,gausKernelsize)  
-        #
-        gaze_tube_angle = output_allangles['selftube_eye_angle_all_Anipose'][animal_name]
-        gaze_tube_angle = scipy.ndimage.gaussian_filter1d(gaze_tube_angle,gausKernelsize)  
-        #
-        gaze_lever_angle = output_allangles['selflever_eye_angle_all_Anipose'][animal_name]
-        gaze_lever_angle = scipy.ndimage.gaussian_filter1d(gaze_lever_angle,gausKernelsize) 
-
-        othergaze_self_angle = output_allangles['face_eye_angle_all_Anipose'][animal_name_other]
-        othergaze_self_angle = scipy.ndimage.gaussian_filter1d(othergaze_self_angle,gausKernelsize)  
-
-
-        a = output_key_locations['facemass_loc_all_Anipose'][animal_name_other].transpose()
-        b = output_key_locations['facemass_loc_all_Anipose'][animal_name].transpose()
-        a_min_b = a - b
-        animal_animal_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
-        animal_animal_dist = scipy.ndimage.gaussian_filter1d(animal_animal_dist,gausKernelsize)  
-
-        a = output_key_locations['tube_loc_all_Anipose'][animal_name_other].transpose()
-        b = output_key_locations['meaneye_loc_all_Anipose'][animal_name].transpose()
-        a_min_b = a - b
-        animal_tube_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
-        animal_tube_dist = scipy.ndimage.gaussian_filter1d(animal_tube_dist,gausKernelsize)  
-
-        a = output_key_locations['lever_loc_all_Anipose'][animal_name_other].transpose()
-        b = output_key_locations['meaneye_loc_all_Anipose'][animal_name].transpose()
-        a_min_b = a - b
-        animal_lever_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
-        animal_lever_dist = scipy.ndimage.gaussian_filter1d(animal_lever_dist,gausKernelsize)  
-
-        a = output_key_locations['facemass_loc_all_Anipose'][animal_name].transpose()
-        a = np.hstack((a,[[np.nan],[np.nan],[np.nan]]))
-        at1_min_at0 = (a[:,1:]-a[:,:-1])
-        mass_move_speed = np.sqrt(np.einsum('ij,ij->j', at1_min_at0, at1_min_at0))*fps 
-        mass_move_speed = scipy.ndimage.gaussian_filter1d(mass_move_speed,gausKernelsize)  
-
-        a = np.array(output_allvectors['eye_direction_Anipose'][animal_name]).transpose()
-        a = np.hstack((a,[[np.nan],[np.nan],[np.nan]]))
-        at1 = a[:,1:]
-        at0 = a[:,:-1] 
-        nframes = np.shape(at1)[1]
-        gaze_angle_speed = np.empty((1,nframes,))
-        gaze_angle_speed[:] = np.nan
-        gaze_angle_speed = gaze_angle_speed[0]
-        #
-        for iframe in np.arange(0,nframes,1):
-            gaze_angle_speed[iframe] = np.arccos(np.clip(np.dot(at1[:,iframe]/np.linalg.norm(at1[:,iframe]), at0[:,iframe]/np.linalg.norm(at0[:,iframe])), -1.0, 1.0))    
-        gaze_angle_speed = scipy.ndimage.gaussian_filter1d(gaze_angle_speed,gausKernelsize)  
-
         #
         # get the pull time series
         # align to the start of the video recording
@@ -236,7 +187,7 @@ def get_continuous_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_v
             timepoint_pull = time_point_pull2+session_start_time
         #
         try:
-            timeseries_pull = np.zeros(np.shape(gaze_angle_speed))
+            timeseries_pull = np.zeros((totalsess_nframes,))
             timeseries_pull[list(map(int,list(np.round((timepoint_pull))*fps)))]=1
         except: # some videos are shorter than the task 
             timeseries_pull = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_pull*fps))))+1,))
@@ -254,7 +205,7 @@ def get_continuous_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_v
             timepoint_juice = time_point_juice2+session_start_time
         #
         try:
-            timeseries_juice = np.zeros(np.shape(gaze_angle_speed))
+            timeseries_juice = np.zeros((totalsess_nframes,))
             timeseries_juice[list(map(int,list(np.round((timepoint_juice))*fps)))]=1
         except: # some videos are shorter than the task 
             timeseries_juice = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_juice*fps))))+1,))
@@ -272,7 +223,7 @@ def get_continuous_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_v
             timepoint_gaze = oneway_gaze2+session_start_time
         #
         try:
-            timeseries_gaze = np.zeros(np.shape(gaze_angle_speed))
+            timeseries_gaze = np.zeros((totalsess_nframes,))
             timeseries_gaze[list(map(int,list(np.round((timepoint_gaze))*fps)))]=1
         except: # some videos are shorter than the task 
             # timeseries_gaze = np.zeros(np.shape(gaze_angle_speed))
@@ -294,7 +245,7 @@ def get_continuous_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_v
             timepoint_syncpull = tpoint_pull1_to_pull2+session_start_time
         #
         try:
-            timeseries_syncpull = np.zeros(np.shape(gaze_angle_speed))
+            timeseries_syncpull = np.zeros((totalsess_nframes,))
             timeseries_syncpull[list(map(int,list(np.round((timepoint_syncpull))*fps)))]=1
         except: # some videos are shorter than the task 
             timeseries_syncpull = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_syncpull*fps))))+1,))
@@ -312,7 +263,7 @@ def get_continuous_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_v
             timepoint_gazepull = tpoint_gaze2_to_pull2+session_start_time
         #
         try:
-            timeseries_gazepull = np.zeros(np.shape(gaze_angle_speed))
+            timeseries_gazepull = np.zeros((totalsess_nframes,))
             timeseries_gazepull[list(map(int,list(np.round((timepoint_gazepull))*fps)))]=1
         except: # some videos are shorter than the task 
             timeseries_gazepull = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_gazepull*fps))))+1,))
@@ -330,7 +281,7 @@ def get_continuous_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_v
             timepoint_pullgaze = tpoint_pull1_to_gaze2+session_start_time
         #
         try:
-            timeseries_pullgaze = np.zeros(np.shape(gaze_angle_speed))
+            timeseries_pullgaze = np.zeros((totalsess_nframes,))
             timeseries_pullgaze[list(map(int,list(np.round((timepoint_pullgaze))*fps)))]=1
         except: # some videos are shorter than the task 
             timeseries_pullgaze = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_pullgaze*fps))))+1,))
@@ -340,15 +291,6 @@ def get_continuous_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_v
         # 
         
         
-        gaze_other_angle = gaze_other_angle[starttimeframe:endtimeframe]
-        gaze_tube_angle = gaze_tube_angle[starttimeframe:endtimeframe]
-        gaze_lever_angle = gaze_lever_angle[starttimeframe:endtimeframe]
-        othergaze_self_angle = othergaze_self_angle[starttimeframe:endtimeframe]
-        animal_animal_dist = animal_animal_dist[starttimeframe:endtimeframe]
-        animal_tube_dist = animal_tube_dist[starttimeframe:endtimeframe]
-        animal_lever_dist = animal_lever_dist[starttimeframe:endtimeframe]
-        mass_move_speed = mass_move_speed[starttimeframe:endtimeframe]
-        gaze_angle_speed = gaze_angle_speed[starttimeframe:endtimeframe]
         leverpull_prob = leverpull_prob[starttimeframe:endtimeframe]
         juice_prob = juice_prob[starttimeframe:endtimeframe]
         socialgaze_prob = socialgaze_prob[starttimeframe:endtimeframe]
@@ -358,14 +300,10 @@ def get_continuous_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_v
 
         # put all the data together in the same order as the con_vars_plot
         if ianimal == 0:
-            data_summary[animal1] = [gaze_other_angle, gaze_tube_angle, gaze_lever_angle, animal_animal_dist, 
-                                     animal_tube_dist,animal_lever_dist, othergaze_self_angle, mass_move_speed,
-                                     gaze_angle_speed, leverpull_prob, socialgaze_prob, juice_prob,
+            data_summary[animal1] = [leverpull_prob, socialgaze_prob, juice_prob,
                                      sync_pull_prob, gaze_lead_pull_prob, social_attention_prob ]
         elif ianimal == 1:
-            data_summary[animal2] = [gaze_other_angle, gaze_tube_angle, gaze_lever_angle, animal_animal_dist, 
-                                     animal_tube_dist,animal_lever_dist, othergaze_self_angle, mass_move_speed,
-                                     gaze_angle_speed, leverpull_prob, socialgaze_prob, juice_prob,
+            data_summary[animal2] = [leverpull_prob, socialgaze_prob, juice_prob,
                                      sync_pull_prob, gaze_lead_pull_prob, social_attention_prob ]
 
 
@@ -745,6 +683,7 @@ def neuralGLM_fitting(animal1, animal2, data_summary_names, data_summary, spiket
                 axs2[nbhvvaris,icluster].plot([xxx_forplot[0],xxx_forplot[-1]],[0,0], '--k')
 
                 axs2[nbhvvaris,icluster].set_xlabel('time (s)')
+                axs2[nbhvvaris,icluster].set_ylabel('spike history')
                 axs2[nbhvvaris,icluster].set_xticks(np.arange(-spikehist_twin*fps, 0,60))
                 axs2[nbhvvaris,icluster].set_xticklabels(list(map(str,np.arange(-spikehist_twin,0,2))))
 

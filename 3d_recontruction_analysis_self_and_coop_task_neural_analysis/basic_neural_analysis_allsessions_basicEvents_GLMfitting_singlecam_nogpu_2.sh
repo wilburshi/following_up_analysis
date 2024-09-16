@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --partition=week
-#SBATCH --job-name=neural_and_ContVariAna_GLMfitting_Aniposelib3d_allsessions_basicEvents_nogpu
+#SBATCH --job-name=basic_neural_analysis_allsessions_basicEvents_GLMfitting_singlecam_nogpu_2
 #SBATCH --out="slurm-%j.out"
 #SBATCH --ntasks=1 --nodes=1
 #SBATCH --mem-per-cpu=60000
@@ -11,4 +11,4 @@
 module purge
 module load miniconda
 conda activate DLC
-python neural_and_ContVariAna_GLMfitting_Aniposelib3d_allsessions_basicEvents.py
+python basic_neural_analysis_allsessions_basicEvents_GLMfitting_singlecam_2.py

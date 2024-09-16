@@ -1,7 +1,6 @@
 #  function - plot spike triggered averge of pulling and social gaze bhv events
 
-def plot_spike_triggered_singlecam_bhvevent(date_tgt,savefig,save_path, animal1, animal2, session_start_time, min_length,trig_twins,time_point_pull1, time_point_pull2, time_point_pulls_succfail,
-                          oneway_gaze1,oneway_gaze2,mutual_gaze1,mutual_gaze2,gaze_thresold,animalnames_videotrack, spike_clusters_data, spike_time_data,spike_channels_data,do_shuffle):
+def plot_spike_triggered_singlecam_bhvevent(date_tgt,savefig,save_path, animal1, animal2, session_start_time, min_length, trig_twins, stg_twins, time_point_pull1, time_point_pull2, time_point_pulls_succfail, oneway_gaze1, oneway_gaze2, mutual_gaze1, mutual_gaze2, gaze_thresold, animalnames_videotrack, spike_clusters_data, spike_time_data, spike_channels_data, do_shuffle):
     
     import pandas as pd
     import numpy as np
@@ -44,6 +43,87 @@ def plot_spike_triggered_singlecam_bhvevent(date_tgt,savefig,save_path, animal1,
     time_point_pull2_fail = np.array(time_point_pulls_succfail['pull2_fail'])
     
     
+    # find the action that below to one of three strategies - pull in sync, social attention, gaze lead pull
+    #
+    # pull2 -> pull1 (no gaze involved)
+    tpoint_pull2_to_pull1 = np.array([])
+    tpoint_pull2_to_pull1_not = np.array([])
+    for itpoint_pull1 in time_point_pull1:
+        itv = itpoint_pull1 - time_point_pull2
+        itv_alt = itpoint_pull1 - oneway_gaze1
+        try:
+            if (np.nanmin(itv[itv>0]) <= stg_twins): # & (np.nanmin(itv_alt[itv_alt>0]) > stg_twins):
+                tpoint_pull2_to_pull1 = np.append(tpoint_pull2_to_pull1,[itpoint_pull1])
+            else:
+                tpoint_pull2_to_pull1_not = np.append(tpoint_pull2_to_pull1_not,[itpoint_pull1])
+        except:
+            tpoint_pull2_to_pull1_not = np.append(tpoint_pull2_to_pull1_not,[itpoint_pull1])
+    # pull1 -> pull2 (no gaze involved)
+    tpoint_pull1_to_pull2 = np.array([])
+    tpoint_pull1_to_pull2_not = np.array([])
+    for itpoint_pull2 in time_point_pull2:
+        itv = itpoint_pull2 - time_point_pull1
+        itv_alt = itpoint_pull2 - oneway_gaze2
+        try:
+            if (np.nanmin(itv[itv>0]) <= stg_twins): # & (np.nanmin(itv_alt[itv_alt>0]) > stg_twins):
+                tpoint_pull1_to_pull2 = np.append(tpoint_pull1_to_pull2,[itpoint_pull2])
+            else:
+                tpoint_pull1_to_pull2_not = np.append(tpoint_pull1_to_pull2_not,[itpoint_pull2])
+        except:
+            tpoint_pull1_to_pull2_not = np.append(tpoint_pull1_to_pull2_not,[itpoint_pull2])
+    # pull2 -> gaze1 (did not translate to own pull)
+    tpoint_pull2_to_gaze1 = np.array([])
+    tpoint_pull2_to_gaze1_not = np.array([])
+    for itpoint_gaze1 in oneway_gaze1:
+        itv = itpoint_gaze1 - time_point_pull2
+        itv_alt = time_point_pull1 - itpoint_gaze1  
+        try:
+            if (np.nanmin(itv[itv>0]) <= stg_twins): # & (np.nanmin(itv_alt[itv_alt>0]) > stg_twins):
+                tpoint_pull2_to_gaze1 = np.append(tpoint_pull2_to_gaze1,[itpoint_gaze1])
+            else:
+                tpoint_pull2_to_gaze1_not = np.append(tpoint_pull2_to_gaze1_not,[itpoint_gaze1])
+        except:
+            tpoint_pull2_to_gaze1_not = np.append(tpoint_pull2_to_gaze1_not,[itpoint_gaze1])
+    # pull1 -> gaze2 (did not translate to own pull)
+    tpoint_pull1_to_gaze2 = np.array([])
+    tpoint_pull1_to_gaze2_not = np.array([])
+    for itpoint_gaze2 in oneway_gaze2:
+        itv = itpoint_gaze2 - time_point_pull1
+        itv_alt = time_point_pull2 - itpoint_gaze2  
+        try:
+            if (np.nanmin(itv[itv>0]) <= stg_twins): # & (np.nanmin(itv_alt[itv_alt>0]) > stg_twins):
+                tpoint_pull1_to_gaze2 = np.append(tpoint_pull1_to_gaze2,[itpoint_gaze2])
+            else:
+                tpoint_pull1_to_gaze2_not = np.append(tpoint_pull1_to_gaze2_not,[itpoint_gaze2])
+        except:
+            tpoint_pull1_to_gaze2_not = np.append(tpoint_pull1_to_gaze2_not,[itpoint_gaze2])       
+    # gaze1 -> pull1 (no sync pull)
+    tpoint_gaze1_to_pull1 = np.array([])
+    tpoint_gaze1_to_pull1_not = np.array([])
+    for itpoint_pull1 in time_point_pull1:
+        itv = itpoint_pull1 - oneway_gaze1
+        itv_alt = itpoint_pull1 - time_point_pull2
+        try:
+            if (np.nanmin(itv[itv>0]) <= stg_twins): # & (np.nanmin(itv_alt[itv_alt>0]) > stg_twins):
+                tpoint_gaze1_to_pull1 = np.append(tpoint_gaze1_to_pull1,[itpoint_pull1])
+            else:
+                tpoint_gaze1_to_pull1_not = np.append(tpoint_gaze1_to_pull1_not,[itpoint_pull1])
+        except:
+            tpoint_gaze1_to_pull1_not = np.append(tpoint_gaze1_to_pull1_not,[itpoint_pull1])        
+    # gaze2 -> pull2
+    tpoint_gaze2_to_pull2 = np.array([])
+    tpoint_gaze2_to_pull2_not = np.array([])
+    for itpoint_pull2 in time_point_pull2:
+        itv = itpoint_pull2 - oneway_gaze2
+        itv_alt = itpoint_pull2 - time_point_pull1
+        try:
+            if (np.nanmin(itv[itv>0]) <= stg_twins): # & (np.nanmin(itv_alt[itv_alt>0]) > stg_twins):
+                tpoint_gaze2_to_pull2 = np.append(tpoint_gaze2_to_pull2,[itpoint_pull2])
+            else:
+                tpoint_gaze2_to_pull2_not = np.append(tpoint_gaze2_to_pull2_not,[itpoint_pull2])
+        except:
+            tpoint_gaze2_to_pull2_not = np.append(tpoint_gaze2_to_pull2_not,[itpoint_pull2])
+    
     nanimals = np.shape(animalnames_videotrack)[0]
 
     gausKernelsize = 3
@@ -54,13 +134,14 @@ def plot_spike_triggered_singlecam_bhvevent(date_tgt,savefig,save_path, animal1,
 
     # con_vars_plot = ['gaze_other_angle','gaze_tube_angle','gaze_lever_angle','animal_animal_dist','animal_tube_dist','animal_lever_dist',
     #                  'othergaze_self_angle','mass_move_speed','gaze_angle_speed','leverpull_prob','socialgaze_prob']
-    con_vars_plot = ['leverpull_prob','socialgaze_prob','succpull_prob','failpull_prob']
+    con_vars_plot = ['leverpull_prob','socialgaze_prob','succpull_prob','failpull_prob',
+                     'sync_pull_prob','gaze_lead_pull_prob','social_attention_prob']
     nconvarplots = np.shape(con_vars_plot)[0]
 
     # clrs_plot = ['r','y','g','b','c','m','#458B74','#FFC710','#FF1493','#A9A9A9','#8B4513']
     # yaxis_labels = ['degree','degree','degree','dist(a.u.)','dist(a.u.)','dist(a.u.)','degree','pixel/s','degree/s','','']
-    clrs_plot = ['#A9A9A9','#8B4513','#800080','#FF00FF']
-    yaxis_labels = ['','','','']
+    clrs_plot = ['#A9A9A9','#8B4513','#800080','#FF00FF','r','y','g','b','c','m']
+    yaxis_labels = ['','','','','','','','','']
 
     spike_trig_average_all = dict.fromkeys([animal1,animal2],[])
 
@@ -143,10 +224,68 @@ def plot_spike_triggered_singlecam_bhvevent(date_tgt,savefig,save_path, animal1,
         socialgaze_prob = scipy.ndimage.gaussian_filter1d(timeseries_gaze,gausKernelsize)
 
 
+        #
+        # get the self sync pull 
+        # align to the start of the video recording
+        if ianimal == 0:
+            timepoint_syncpull = tpoint_pull2_to_pull1+session_start_time
+        elif ianimal == 1:
+            timepoint_syncpull = tpoint_pull1_to_pull2+session_start_time
+        #
+        try:
+            timeseries_syncpull = np.zeros((min_length,))
+            timeseries_syncpull[list(map(int,list(np.round((timepoint_syncpull))*fps)))]=1
+        except: # some videos are shorter than the task 
+            timeseries_syncpull = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_syncpull*fps))))+1,))
+            timeseries_syncpull[list(map(int,list(np.round(timepoint_syncpull*fps))))]=1
+        sync_pull_prob = scipy.ndimage.gaussian_filter1d(timeseries_syncpull,gausKernelsize)
+        # sync_pull_prob = timeseries_syncpull
+        # 
+        
+        #
+        # get the gaze lead pull
+        # align to the start of the video recording
+        if ianimal == 0:
+            timepoint_gazepull = tpoint_gaze1_to_pull1+session_start_time
+        elif ianimal == 1:
+            timepoint_gazepull = tpoint_gaze2_to_pull2+session_start_time
+        #
+        try:
+            timeseries_gazepull = np.zeros((min_length,))
+            timeseries_gazepull[list(map(int,list(np.round((timepoint_gazepull))*fps)))]=1
+        except: # some videos are shorter than the task 
+            timeseries_gazepull = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_gazepull*fps))))+1,))
+            timeseries_gazepull[list(map(int,list(np.round(timepoint_gazepull*fps))))]=1
+        gaze_lead_pull_prob = scipy.ndimage.gaussian_filter1d(timeseries_gazepull,gausKernelsize)
+        # gaze_lead_pull_prob = timeseries_gazepull
+        # 
+        
+        #
+        # get the social attention
+        # align to the start of the video recording
+        if ianimal == 0:
+            timepoint_pullgaze = tpoint_pull2_to_gaze1+session_start_time
+        elif ianimal == 1:
+            timepoint_pullgaze = tpoint_pull1_to_gaze2+session_start_time
+        #
+        try:
+            timeseries_pullgaze = np.zeros((min_length,))
+            timeseries_pullgaze[list(map(int,list(np.round((timepoint_pullgaze))*fps)))]=1
+        except: # some videos are shorter than the task 
+            timeseries_pullgaze = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_pullgaze*fps))))+1,))
+            timeseries_pullgaze[list(map(int,list(np.round(timepoint_pullgaze*fps))))]=1
+        social_attention_prob = scipy.ndimage.gaussian_filter1d(timeseries_pullgaze,gausKernelsize)
+        # social_attention_prob = timeseries_pullgaze
+        # 
+        
+        
+        
+        
         # put all the data together in the same order as the con_vars_plot
         # data_summary = [gaze_other_angle,gaze_tube_angle,gaze_lever_angle,animal_animal_dist,animal_tube_dist,animal_lever_dist,
         #                 othergaze_self_angle,mass_move_speed,gaze_angle_speed,leverpull_prob,socialgaze_prob]
-        data_summary = [leverpull_prob,socialgaze_prob,succpull_prob,failpull_prob]
+        data_summary = [leverpull_prob, socialgaze_prob, succpull_prob, failpull_prob,
+                        sync_pull_prob, gaze_lead_pull_prob, social_attention_prob]
 
         # get the spike related data
         spike_clusters_unique = np.unique(spike_clusters_data)
