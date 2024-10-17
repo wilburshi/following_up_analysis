@@ -10,10 +10,10 @@
 #SBATCH --gpus=1
 
 module purge
-module load cuDNN/8.2.1.32-CUDA-11.3.1
-module load Xvfb/1.20.9-GCCcore-10.2.0
+module load cuDNN
+module load Xvfb
 
 module load miniconda
-conda activate DEEPLABCUT_YCRC
+conda activate DLC
 
 xvfb-run python aniposelib_3d_reconstruction.py

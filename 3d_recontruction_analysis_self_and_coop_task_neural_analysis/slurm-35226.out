@@ -2,3 +2,83 @@ The following modules were not unloaded:
   (Use "module --force purge" to unload all):
 
   1) StdEnv
+/gpfs/radev/home/ws523/marmoset_tracking_DLCv2/following_up_analysis/3d_recontruction_analysis_self_and_coop_task_neural_analysis/ana_functions/body_part_locs_singlecam.py:111: RuntimeWarning: Mean of empty slice
+  mass_loc_a1 = np.nanmean(np.vstack((lefteye_loc_a1,righteye_loc_a1,lefteye_loc_a1,righteye_loc_a1,whiblz_loc_a1,mouth_loc_a1)),axis=0)
+/gpfs/radev/home/ws523/marmoset_tracking_DLCv2/following_up_analysis/3d_recontruction_analysis_self_and_coop_task_neural_analysis/ana_functions/body_part_locs_singlecam.py:123: RuntimeWarning: Mean of empty slice
+  mass_loc_a2 = np.nanmean(np.vstack((lefteye_loc_a2,righteye_loc_a2,lefteye_loc_a2,righteye_loc_a2,whiblz_loc_a2,mouth_loc_a2)),axis=0)
+analyze all dates
+load social gaze with camera-2 only of 20240531
+load spike data for 20240531_Dodson_MC
+get 20240531_Dodson_MC data for single camera GLM fitting
+do single camera GLM fitting (behavioral events) for 20240531_Dodson_MC
+do single camera GLM fitting (strategies) for 20240531_Dodson_MC
+load social gaze with camera-2 only of 20240603_MC
+load spike data for 20240603_Dodson_MC_and_SR
+get 20240603_Dodson_MC_and_SR data for single camera GLM fitting
+do single camera GLM fitting (behavioral events) for 20240603_Dodson_MC_and_SR
+do single camera GLM fitting (strategies) for 20240603_Dodson_MC_and_SR
+load social gaze with camera-2 only of 20240603_SR
+load spike data for 20240603_Dodson_MC_and_SR
+get 20240603_Dodson_MC_and_SR data for single camera GLM fitting
+do single camera GLM fitting (behavioral events) for 20240603_Dodson_MC_and_SR
+do single camera GLM fitting (strategies) for 20240603_Dodson_MC_and_SR
+load social gaze with camera-2 only of 20240604
+load spike data for 20240604_Dodson_MC
+get 20240604_Dodson_MC data for single camera GLM fitting
+do single camera GLM fitting (behavioral events) for 20240604_Dodson_MC
+do single camera GLM fitting (strategies) for 20240604_Dodson_MC
+load social gaze with camera-2 only of 20240605_MC
+load spike data for 20240605_Dodson_MC_and_SR
+get 20240605_Dodson_MC_and_SR data for single camera GLM fitting
+do single camera GLM fitting (behavioral events) for 20240605_Dodson_MC_and_SR
+do single camera GLM fitting (strategies) for 20240605_Dodson_MC_and_SR
+load social gaze with camera-2 only of 20240605_SR
+load spike data for 20240605_Dodson_MC_and_SR
+get 20240605_Dodson_MC_and_SR data for single camera GLM fitting
+do single camera GLM fitting (behavioral events) for 20240605_Dodson_MC_and_SR
+do single camera GLM fitting (strategies) for 20240605_Dodson_MC_and_SR
+load social gaze with camera-2 only of 20240606_MC
+load spike data for 20240606_Dodson_MC_and_SR
+get 20240606_Dodson_MC_and_SR data for single camera GLM fitting
+do single camera GLM fitting (behavioral events) for 20240606_Dodson_MC_and_SR
+do single camera GLM fitting (strategies) for 20240606_Dodson_MC_and_SR
+load social gaze with camera-2 only of 20240606_SR
+load spike data for 20240606_Dodson_MC_and_SR
+get 20240606_Dodson_MC_and_SR data for single camera GLM fitting
+do single camera GLM fitting (behavioral events) for 20240606_Dodson_MC_and_SR
+do single camera GLM fitting (strategies) for 20240606_Dodson_MC_and_SR
+load social gaze with camera-2 only of 20240607
+load spike data for 20240607_Dodson_SR
+get 20240607_Dodson_SR data for single camera GLM fitting
+do single camera GLM fitting (behavioral events) for 20240607_Dodson_SR
+do single camera GLM fitting (strategies) for 20240607_Dodson_SR
+load social gaze with camera-2 only of 20240610_MC
+load spike data for 20240610_Dodson_MC
+get 20240610_Dodson_MC data for single camera GLM fitting
+do single camera GLM fitting (behavioral events) for 20240610_Dodson_MC
+do single camera GLM fitting (strategies) for 20240610_Dodson_MC
+load social gaze with camera-2 only of 20240611
+load spike data for 20240611_Dodson_SR
+get 20240611_Dodson_SR data for single camera GLM fitting
+do single camera GLM fitting (behavioral events) for 20240611_Dodson_SR
+do single camera GLM fitting (strategies) for 20240611_Dodson_SR
+load social gaze with camera-2 only of 20240612
+load spike data for 20240612_Dodson_MC
+get 20240612_Dodson_MC data for single camera GLM fitting
+do single camera GLM fitting (behavioral events) for 20240612_Dodson_MC
+do single camera GLM fitting (strategies) for 20240612_Dodson_MC
+load social gaze with camera-2 only of 20240613
+load spike data for 20240613_Dodson_SR
+get 20240613_Dodson_SR data for single camera GLM fitting
+do single camera GLM fitting (behavioral events) for 20240613_Dodson_SR
+do single camera GLM fitting (strategies) for 20240613_Dodson_SR
+load social gaze with camera-2 only of 20240620
+load spike data for 20240620_Dodson_SR
+get 20240620_Dodson_SR data for single camera GLM fitting
+do single camera GLM fitting (behavioral events) for 20240620_Dodson_SR
+do single camera GLM fitting (strategies) for 20240620_Dodson_SR
+load social gaze with camera-2 only of 20240719
+load spike data for 20240719_Dodson_MC
+get 20240719_Dodson_MC data for single camera GLM fitting
+do single camera GLM fitting (behavioral events) for 20240719_Dodson_MC
+do single camera GLM fitting (strategies) for 20240719_Dodson_MC

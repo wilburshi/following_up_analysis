@@ -2,3 +2,103 @@ The following modules were not unloaded:
   (Use "module --force purge" to unload all):
 
   1) StdEnv
+load social gaze with Anipose 3d of 20240508
+load spike data for 20240508_Kanga_SR
+get 20240508_Kanga_SR data for GLM fitting
+do GLM fitting for 20240508_Kanga_SR
+load social gaze with Anipose 3d of 20240509
+load spike data for 20240509_Kanga_MC
+get 20240509_Kanga_MC data for GLM fitting
+do GLM fitting for 20240509_Kanga_MC
+load social gaze with Anipose 3d of 20240513
+load spike data for 20240513_Kanga_MC
+get 20240513_Kanga_MC data for GLM fitting
+do GLM fitting for 20240513_Kanga_MC
+load social gaze with Anipose 3d of 20240514
+load spike data for 20240514_Kanga_SR
+get 20240514_Kanga_SR data for GLM fitting
+do GLM fitting for 20240514_Kanga_SR
+load social gaze with Anipose 3d of 20240523
+load spike data for 20240523_Kanga_MC
+get 20240523_Kanga_MC data for GLM fitting
+do GLM fitting for 20240523_Kanga_MC
+load social gaze with Anipose 3d of 20240524
+load spike data for 20240524_Kanga_SR
+get 20240524_Kanga_SR data for GLM fitting
+do GLM fitting for 20240524_Kanga_SR
+load social gaze with Anipose 3d of 20240606
+load spike data for 20240606_Kanga_MC
+get 20240606_Kanga_MC data for GLM fitting
+do GLM fitting for 20240606_Kanga_MC
+load social gaze with Anipose 3d of 20240613
+load spike data for 20240613_Kanga_MC_DannonAuto
+get 20240613_Kanga_MC_DannonAuto data for GLM fitting
+do GLM fitting for 20240613_Kanga_MC_DannonAuto
+load social gaze with Anipose 3d of 20240614
+load spike data for 20240614_Kanga_MC_DannonAuto
+get 20240614_Kanga_MC_DannonAuto data for GLM fitting
+do GLM fitting for 20240614_Kanga_MC_DannonAuto
+load social gaze with Anipose 3d of 20240617
+load spike data for 20240617_Kanga_MC_DannonAuto
+get 20240617_Kanga_MC_DannonAuto data for GLM fitting
+do GLM fitting for 20240617_Kanga_MC_DannonAuto
+load social gaze with Anipose 3d of 20240618
+load spike data for 20240618_Kanga_MC_KangaAuto
+get 20240618_Kanga_MC_KangaAuto data for GLM fitting
+do GLM fitting for 20240618_Kanga_MC_KangaAuto
+load social gaze with Anipose 3d of 20240619
+load spike data for 20240619_Kanga_MC_KangaAuto
+get 20240619_Kanga_MC_KangaAuto data for GLM fitting
+do GLM fitting for 20240619_Kanga_MC_KangaAuto
+load social gaze with Anipose 3d of 20240620
+load spike data for 20240620_Kanga_MC_KangaAuto
+get 20240620_Kanga_MC_KangaAuto data for GLM fitting
+do GLM fitting for 20240620_Kanga_MC_KangaAuto
+load social gaze with Anipose 3d of 20240621_1
+load spike data for 20240621_1_Kanga_NoVis
+get 20240621_1_Kanga_NoVis data for GLM fitting
+do GLM fitting for 20240621_1_Kanga_NoVis
+load social gaze with Anipose 3d of 20240624
+load spike data for 20240624_Kanga_NoVis
+get 20240624_Kanga_NoVis data for GLM fitting
+do GLM fitting for 20240624_Kanga_NoVis
+load social gaze with Anipose 3d of 20240626
+load spike data for 20240626_Kanga_NoVis
+get 20240626_Kanga_NoVis data for GLM fitting
+do GLM fitting for 20240626_Kanga_NoVis
+load social gaze with Anipose 3d of 20240808
+load spike data for 20240808_Kanga_MC_withGinger
+get 20240808_Kanga_MC_withGinger data for GLM fitting
+do GLM fitting for 20240808_Kanga_MC_withGinger
+load social gaze with Anipose 3d of 20240809
+load spike data for 20240809_Kanga_MC_withGinger
+get 20240809_Kanga_MC_withGinger data for GLM fitting
+do GLM fitting for 20240809_Kanga_MC_withGinger
+load social gaze with Anipose 3d of 20240812
+load spike data for 20240812_Kanga_MC_withGinger
+get 20240812_Kanga_MC_withGinger data for GLM fitting
+do GLM fitting for 20240812_Kanga_MC_withGinger
+load social gaze with Anipose 3d of 20240813
+load spike data for 20240813_Kanga_MC_withKoala
+get 20240813_Kanga_MC_withKoala data for GLM fitting
+do GLM fitting for 20240813_Kanga_MC_withKoala
+load social gaze with Anipose 3d of 20240814
+load spike data for 20240814_Kanga_MC_withKoala
+get 20240814_Kanga_MC_withKoala data for GLM fitting
+do GLM fitting for 20240814_Kanga_MC_withKoala
+load social gaze with Anipose 3d of 20240815
+load spike data for 20240815_Kanga_MC_withKoala
+get 20240815_Kanga_MC_withKoala data for GLM fitting
+do GLM fitting for 20240815_Kanga_MC_withKoala
+load social gaze with Anipose 3d of 20240819
+load spike data for 20240819_Kanga_MC_withVermelho
+get 20240819_Kanga_MC_withVermelho data for GLM fitting
+do GLM fitting for 20240819_Kanga_MC_withVermelho
+load social gaze with Anipose 3d of 20240821
+load spike data for 20240821_Kanga_MC_withVermelho
+get 20240821_Kanga_MC_withVermelho data for GLM fitting
+do GLM fitting for 20240821_Kanga_MC_withVermelho
+load social gaze with Anipose 3d of 20240822
+load spike data for 20240822_Kanga_MC_withVermelho
+get 20240822_Kanga_MC_withVermelho data for GLM fitting
+do GLM fitting for 20240822_Kanga_MC_withVermelho

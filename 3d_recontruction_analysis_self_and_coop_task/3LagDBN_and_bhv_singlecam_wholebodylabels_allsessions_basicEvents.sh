@@ -3,7 +3,7 @@
 #SBATCH --job-name=3LagDBN_and_bhv_singlecam_wholebodylabels_allsessions_basicEvents
 #SBATCH --out="slurm-%j.out"
 #SBATCH --ntasks=1 --nodes=1
-#SBATCH --mem-per-cpu=160000
+#SBATCH --mem-per-cpu=60000
 #SBATCH --time=0-48
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=weikang.shi@yale.edu
@@ -14,6 +14,6 @@ module load cuDNN/8.2.1.32-CUDA-11.3.1
 module load Xvfb/1.20.9-GCCcore-10.2.0
 
 module load miniconda
-conda activate DEEPLABCUT_YCRC
+conda activate DLC
 
 xvfb-run python 3LagDBN_and_bhv_singlecam_wholebodylabels_allsessions_basicEvents.py

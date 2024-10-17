@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --partition=pi_jadi
+#SBATCH --partition=week
 #SBATCH --job-name=3LagDBN_and_bhv_singlecam_wholebodylabels_allsessions_basicEvents_nogpu
 #SBATCH --out="slurm-%j.out"
 #SBATCH --ntasks=1 --nodes=1
@@ -10,5 +10,5 @@
 
 module purge
 module load miniconda
-conda activate DEEPLABCUT_YCRC
+conda activate DLC
 python 3LagDBN_and_bhv_singlecam_wholebodylabels_allsessions_basicEvents.py

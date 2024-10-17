@@ -56,19 +56,30 @@ else:
 # dates for Dannon Kanga
 if 1:
     analyzed_dates = [ 
-                      "20230718","20230720","20230914","20230726","20230727","20230809",
-                      "20230810","20230811","20230814","20230816","20230829","20230907","20230915",
-                      "20230918","20230926","20230928","20231002","20231010","20231011",
-                      "20231013","20231020","20231024","20231025", 
+                     
+"20240923",
+"20240925",
+"20240930",
+"20241002",
+"20241004",
+"20230710",
+"20230711",
+"20230712",
+
                      ]
     session_start_times = [ 
-                              0,    0,    0, 32.2, 27.2, 37.5,
-                           21.0, 21.5, 19.8, 32.0,    0,    0,   0, 
-                              0,    0,    0,    0,    0,    0,
-                              0,    0,    0,    0, 
+                          
+                          19,
+0.00,
+26.8,
+35,
+15.4,
+20.8,
+54.5,
+24.7,
                           ] # in second 
 
-    animal1 = "Dannon"
+    animal1 = "Ginger"
     animal2 = "Kanga"
 
 
@@ -98,7 +109,8 @@ boxCorner4_locs_all = {'camera-1':{('dodson'):np.array([1585, 698]),('scorch'):n
 
 ndates = np.shape(analyzed_dates)[0]
 
-singlecam_ana_type = "DLC_dlcrnetms5_marmoset_tracking_with_middle_cameraSep1shuffle1_150000"
+# singlecam_ana_type = "DLC_dlcrnetms5_marmoset_tracking_with_middle_cameraSep1shuffle1_150000"
+singlecam_ana_type = "DLC_dlcrnetms5_marmoset_tracking_with_middle_camera_withHeadchamberFeb28shuffle1_167500"
 animalnames_videotrack = ['dodson','scorch'] # does not really mean dodson and scorch, instead, indicate animal1 and animal2
 bodypartnames_videotrack = ['rightTuft','whiteBlaze','leftTuft','rightEye','leftEye','mouth','lever','tube','boxCorner1','boxCorner2','boxCorner3','boxCorner4']
 
@@ -110,8 +122,8 @@ do_videodemos = 0
 for idate in np.arange(0,ndates,1):
     date_tgt = analyzed_dates[idate]
 
-    twocamera_videos_cam12 = "/gpfs/gibbs/pi/jadi/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera12/"
-    twocamera_videos_cam23 = "/gpfs/gibbs/pi/jadi/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera23/"
+    twocamera_videos_cam12 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera12/"
+    twocamera_videos_cam23 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera23/"
 
     bodyparts_cam1_cam12 = twocamera_videos_cam12+date_tgt+"_"+animal1+"_"+animal2+"_camera-1"+singlecam_ana_type+"_el_filtered.h5"
     bodyparts_cam2_cam12 = twocamera_videos_cam12+date_tgt+"_"+animal1+"_"+animal2+"_camera-2"+singlecam_ana_type+"_el_filtered.h5"

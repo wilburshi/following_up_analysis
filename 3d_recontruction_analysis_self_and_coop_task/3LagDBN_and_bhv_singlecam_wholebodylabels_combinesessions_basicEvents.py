@@ -150,10 +150,14 @@ nframes = 2*30 # second*30fps
 reanalyze_video = 0
 redo_anystep = 0
 
-# only analyze the best (five) sessions for each conditions
-do_bestsession = 1
+# session list options
+do_bestsession = 1 # only analyze the best (five) sessions for each conditions during the training phase
+do_trainedMCs = 1 # the list that only consider trained (1s) MC, together with SR and NV as controls
 if do_bestsession:
-    savefile_sufix = '_bestsessions'
+    if not do_trainedMCs:
+        savefile_sufix = '_bestsessions'
+    elif do_trainedMCs:
+        savefile_sufix = '_trainedMCsessions'
 else:
     savefile_sufix = ''
     
@@ -163,49 +167,52 @@ else:
 # currently the session_start_time will be manually typed in. It can be updated after a better method is used
 
 # dodson scorch
-if 0:
+if 1:
     if not do_bestsession:
         dates_list = [
-                      "20220909","20220912","20220915","20220920","20220922","20220923","20221010",
-                      "20221011","20221013","20221014","20221015","20221017","20230215",     
-                      "20221018","20221019","20221020","20221021","20221022","20221026","20221028","20221030",
-                      "20221107","20221108","20221109","20221110","20221111","20221114","20221115","20221116",
-                      "20221117","20221118","20221121","20221122","20221123","20221125","20221128","20221129",              
-                      "20221205","20221206","20221209","20221212","20221214","20221216","20221219","20221220",
-                      "20221221","20230208","20230209","20230213","20230214","20230111","20230112","20230201",
-
+            
                      ]
         session_start_times = [ 
-                                 6.50, 18.10, 0,      33.03, 549.0, 116.80, 6.50,
-                                 2.80, 27.80, 272.50, 27.90, 27.00,  33.00,
-                                28.70, 45.30, 21.10,  27.10, 51.90,  21.00, 30.80, 17.50,                      
-                                15.70,  2.65, 27.30,   0.00,  0.00,  71.80,  0.00,  0.00, 
-                                75.50, 20.20,  0.00,  24.20, 36.70,  26.40, 22.50, 28.50,                       
-                                 0.00,  0.00, 21.70,  84.70, 17.00,  19.80, 23.50, 25.20,  
-                                 0.00,  0.00,  0.00,   0.00,  0.00, 130.00, 14.20, 24.20, 
+            
                               ] # in second
     elif do_bestsession:
-        # pick only five sessions for each conditions
-        dates_list = [
-                      # "20220912",
-                      "20220915","20220920","20221010","20230208",
-                      "20221011","20221013","20221015","20221017",
-                      "20221022","20221026","20221028","20221030","20230209",
-                      "20221125","20221128","20221129","20230214","20230215",                  
-                      "20221205","20221206","20221209","20221214","20230112",
-                      "20230117","20230118","20230124",
-                      # "20230126",
-                     ]
-        session_start_times = [ 
-                                # 18.10, 
-                                 0.00, 33.03,  6.50,  0.00, 
-                                 2.80, 27.80, 27.90, 27.00,  
-                                51.90, 21.00, 30.80, 17.50,  0.00,                    
-                                26.40, 22.50, 28.50,  0.00, 33.00,                     
-                                 0.00,  0.00, 21.70, 17.00, 14.20, 
-                                 0.00,  0.00,  0.00, 
-                                 # 0.00,  
-                              ] # in second
+        if not do_trainedMCs:
+            # pick only five sessions for each conditions during the training phase
+            dates_list = [
+                          # "20220912",
+                          "20220915","20220920","20221010","20230208",
+                          "20221011","20221013","20221015","20221017",
+                          "20221022","20221026","20221028","20221030","20230209",
+                          "20221125","20221128","20221129","20230214","20230215",                  
+                          "20221205","20221206","20221209","20221214","20230112",
+                          "20230117","20230118","20230124",
+                          # "20230126",
+                         ]
+            session_start_times = [ 
+                                    # 18.10, 
+                                     0.00, 33.03,  6.50,  0.00, 
+                                     2.80, 27.80, 27.90, 27.00,  
+                                    51.90, 21.00, 30.80, 17.50,  0.00,                    
+                                    26.40, 22.50, 28.50,  0.00, 33.00,                     
+                                     0.00,  0.00, 21.70, 17.00, 14.20, 
+                                     0.00,  0.00,  0.00, 
+                                     # 0.00,  
+                                  ] # in second
+        elif do_trainedMCs:
+            dates_list = [
+                          "20220915","20220920","20221010","20230208", # SR
+                          
+                          "20230321","20230322","20230323","20230324","20230412","20230413", # trained MC
+                          
+                          "20230117","20230118","20230124", # NV 
+                         ]
+            session_start_times = [ 
+                                     0.00, 33.03,  6.50,  0.00, 
+                                     
+                                     20.5,  21.4,  21.0,  24.5,  20.5,  26.6,
+                    
+                                     0.00,  0.00,  0.00,  
+                                  ] # in second
     
     animal1_fixedorder = ['dodson']
     animal2_fixedorder = ['scorch']
@@ -213,81 +220,103 @@ if 0:
     animal1_filename = "Dodson"
     animal2_filename = "Scorch"
     
+    
 # eddie sparkle
 if 0:
     if not do_bestsession:
         dates_list = [
-                      "20221122","20221125","20221128","20221129","20221130","20221202","20221206",
-                      "20221207","20221208","20221209","20230126","20230127","20230130","20230201","20230203-1",
-                      "20230206","20230207","20230208-1","20230209","20230222","20230223-1","20230227-1",
-                      "20230228-1","20230302-1","20230307-2","20230313","20230315","20230316","20230317",
-                      "20230321","20230322","20230324","20230327","20230328",
-                      "20230330","20230331","20230403","20230404","20230405","20230406","20230407",
-                      
+                                    
                    ]
         session_start_times = [ 
-                                 8.00,38.00,1.00,3.00,5.00,9.50,1.00,
-                                 4.50,4.50,5.00,38.00,166.00,4.20,3.80,3.60,
-                                 7.50,9.00,7.50,8.50,14.50,7.80,8.00,7.50,
-                                 8.00,8.00,4.00,123.00,14.00,8.80,
-                                 7.00,7.50,5.50,11.00,9.00,
-                                 17.00,4.50,9.30,25.50,20.40,21.30,24.80,
                                  
                               ] # in second
     elif do_bestsession:   
-        dates_list = [
-                      "20221122",  "20221125",  
-                      "20221202",  "20221206",  "20230126",  "20230130",  "20230201",
-                      "20230207",  "20230208-1","20230209",  "20230222",  "20230223-1",
-                      "20230227-1","20230228-1","20230302-1","20230307-2","20230313",
-                      "20230321",  "20230322",  "20230324",  "20230327",  "20230328",
-                      "20230331",  "20230403",  "20230404",  "20230405",  "20230406"
-                   ]
-        session_start_times = [ 
-                                  8.00,  38.00, 
-                                  9.50,   1.00, 38.00,  4.20,  3.80,
-                                  9.00,   7.50,  8.50, 14.50,  7.80,
-                                  8.00,   7.50,  8.00,  8.00,  4.00,
-                                  7.00,   7.50,  5.50, 11.00,  9.00,
-                                  4.50,   9.30, 25.50, 20.40, 21.30,
-                              ] # in second
-    
+        if not do_trainedMCs:
+            # pick only five sessions for each conditions during the training phase
+            dates_list = [
+                          "20221122",  "20221125",  
+                          "20221202",  "20221206",  "20230126",  "20230130",  "20230201",
+                          "20230207",  "20230208-1","20230209",  "20230222",  "20230223-1",
+                          "20230227-1","20230228-1","20230302-1","20230307-2","20230313",
+                          "20230321",  "20230322",  "20230324",  "20230327",  "20230328",
+                          "20230331",  "20230403",  "20230404",  "20230405",  "20230406"
+                       ]
+            session_start_times = [ 
+                                      8.00,  38.00, 
+                                      9.50,   1.00, 38.00,  4.20,  3.80,
+                                      9.00,   7.50,  8.50, 14.50,  7.80,
+                                      8.00,   7.50,  8.00,  8.00,  4.00,
+                                      7.00,   7.50,  5.50, 11.00,  9.00,
+                                      4.50,   9.30, 25.50, 20.40, 21.30,
+                                  ] # in second
+        elif do_trainedMCs:
+            dates_list = [
+                          "20221122",  "20221125",  # sr
+                
+                          "20230410",  "20230411",  "20230412",  "20230413",  "20230616", # trained MC
+                
+                          "20230331",  "20230403",  "20230404",  "20230405",  "20230406", # nv
+                       ]
+            session_start_times = [ 
+                                      8.00, 38.00, 
+                
+                                      23.2,  23.0,  21.2,  25.0,  23.0,   
+                
+                                      4.50,  9.30, 25.50, 20.40, 21.30,
+                
+                                  ] # in second
     animal1_fixedorder = ['eddie']
     animal2_fixedorder = ['sparkle']
 
     animal1_filename = "Eddie"
     animal2_filename = "Sparkle"
     
+    
 # ginger kanga
 if 0:
     if not do_bestsession:
         dates_list = [
-                      "20230209","20230213","20230214","20230216","20230222","20230223","20230228","20230302",
-                      "20230303","20230307","20230314","20230315","20230316","20230317"         
+                      
                    ]
         session_start_times = [ 
-                                 0.00,  0.00,  0.00, 48.00, 26.20, 18.00, 23.00, 28.50,
-                                34.00, 25.50, 25.50, 31.50, 28.00, 30.50
+                                
                               ] # in second 
-    elif do_bestsession:   
-        dates_list = [
-                      #"20230213",
-                      "20230214","20230216",
-                      "20230228","20230302","20230303","20230307",          
-                      "20230314","20230315","20230316","20230317",
-                      "20230301","20230320","20230321","20230322",
-                      "20230323","20230412","20230413","20230517","20230614","20230615",
-                      "20230522_ws","20230524","20230605_1","20230606","20230607"
-                   ]
-        session_start_times = [ 
-                                # 0.00, 
-                                 0.00, 48.00, 
-                                23.00, 28.50, 34.00, 25.50, 
-                                25.50, 31.50, 28.00, 30.50,
-                                33.50, 22.20, 50.00,  0.00, 
-                                33.00, 18.20, 22.80, 31.00, 24.00, 21.00,
-                                 0.00,  0.00,  0.00,  0.00,  0.00,
-                              ] # in second 
+    elif do_bestsession:
+        if not do_trainedMCs:
+            # pick only five sessions for each conditions during the training phase
+            dates_list = [
+                          #"20230213",
+                          "20230214","20230216",
+                          "20230228","20230302","20230303","20230307",          
+                          "20230314","20230315","20230316","20230317",
+                          "20230301","20230320","20230321","20230322",
+                          "20230323","20230412","20230413","20230517",
+                          "20230522_ws","20230524","20230605_1","20230606","20230607"
+                       ]
+            session_start_times = [ 
+                                    # 0.00, 
+                                     0.00, 48.00, 
+                                    23.00, 28.50, 34.00, 25.50, 
+                                    25.50, 31.50, 28.00, 30.50,
+                                     0.00,  0.00,  0.00,  0.00, 
+                                     0.00,  0.00,  0.00,  0.00, 
+                                     0.00,  0.00,  0.00,  0.00,  0.00,
+                                  ] # in second 
+        elif do_trainedMCs:
+            dates_list = [
+                          "20230214",   "20230216",  # SR
+                          
+                          "20230614",   "20230615",  "20230711","20230712", # trained MC
+                
+                          "20230522_ws","20230524","20230605_1","20230606","20230607", # nv  
+                       ]
+            session_start_times = [ 
+                                     0.00, 48.00, 
+                                    
+                                     0.00,  0.00,  54.5,  24.7,
+                
+                                     0.00,  0.00,  0.00,  0.00,  0.00,
+                                  ] # in second 
     
     animal1_fixedorder = ['ginger']
     animal2_fixedorder = ['kanga']
@@ -300,70 +329,90 @@ if 0:
 if 0:
     if not do_bestsession:
         dates_list = [
-                      "20230718","20230720","20230914","20230829","20230907","20230915",
-                      "20230918","20230926","20230928","20231002","20231010","20231011",
-                      "20231013",
+                    
                    ]
         session_start_times = [ 
-                                 0, 0, 0, 0, 0, 0, 
-                                 0, 0, 0, 0, 0, 0,
-                                 0, 0, 0, 0, 
+                              
                               ] # in second 
-    elif do_bestsession:   
-        dates_list = [
-                      "20230718","20230720","20230914","20230726","20230727","20230809",
-                      "20230810","20230811","20230814","20230816","20230829","20230907","20230915",
-                      "20230918","20230926","20230928","20231002","20231010","20231011",
-                      "20231013","20231020","20231024","20231025",
-                   ]
-        session_start_times = [ 
-                                    0,    0,    0, 32.2, 27.2, 37.5,
-                                 21.0, 21.5, 19.8, 32.0,    0,    0,   0, 
-                                    0,    0,    0,    0,    0,    0,
-                                    0,    0,    0,    0, 
-                              ] # in second 
+    elif do_bestsession: 
+        if not do_trainedMCs:
+            # pick only five sessions for each conditions during the training phase
+            dates_list = [
+                          "20230718","20230720","20230914","20230726","20230727","20230809",
+                          "20230810","20230811","20230814","20230816","20230829","20230907","20230915",
+                          "20230918","20230926","20230928","20231002","20231010","20231011",
+                          "20231013","20231020","20231024","20231025",
+                       ]
+            session_start_times = [ 
+                                        0,    0,    0, 32.2, 27.2, 37.5,
+                                     21.0, 21.5, 19.8, 32.0,    0,    0,   0, 
+                                        0,    0,    0,    0,    0,    0,
+                                        0,    0,    0,    0, 
+                                  ] # in second 
+        elif do_trainedMCs:
+            dates_list = [
+                          "20230718","20230720","20230914", # sr
+                
+                          "20231030","20231031","20231101","20231102","20240304","20240305", # trained MC
+                
+                          "20231011","20231013","20231020","20231024","20231025", # nv
+                       ]
+            session_start_times = [ 
+                                       0,    0,    0,
+                
+                                    18.2, 14.0, 15.8, 15.2, 16.3, 37.9,
+                
+                                       0,    0,    0,    0,    0, 
+                                  ] # in second 
     
     animal1_fixedorder = ['dannon']
     animal2_fixedorder = ['kanga']
 
     animal1_filename = "Dannon"
     animal2_filename = "Kanga"
-    
-    
+
 # Koala Vermelho
-if 1:
+if 0:
     if not do_bestsession:
         dates_list = [
-                      "20231221","20231222","20231226","20231227",  "20231229","20231230",
-                      "20231231","20240102","20240104","20240104-2","20240105","20240108",
-                      "20240109","20240115","20240116","20240117",  "20240118","20240119",
-                      "20240122","20240123","20240124","20240125",  "20240126","20240129",
-                      "20240130","20240131","20240201","20240202",
+                     
                      ]
         session_start_times = [ 
-                                0.00,  0.00,  0.00,  0.00,  0.00,  0.00, 
-                                0.00,  0.00,  0.00,  0.00,  0.00,  0.00, 
-                                0.00,  0.00,  0.00,  0.00,  0.00,  0.00,
-                                0.00,  0.00,  0.00,  0.00,  0.00,  0.00,
-                                0.00,  0.00,  0.00,  0.00,
+                               
                               ] # in second
     elif do_bestsession:
-        # pick only five sessions for each conditions
-        dates_list = [
-                      "20231222","20231226","20231227",  "20231229","20231230",
-                      "20231231","20240102","20240104-2","20240105","20240108",
-                      "20240109","20240115","20240116",  "20240117","20240118","20240119",
-                      "20240207","20240208","20240209",  "20240212","20240213",
-                      "20240214","20240215","20240216",  "20240220","20240222","20240223",
-                     ]
-        session_start_times = [ 
-                                21.5,  0.00,  0.00,  0.00,  0.00, 
-                                0.00,  12.2,  0.00,  18.8,  31.2,  
-                                32.5,  0.00,  50.0,  0.00,  37.5,  29.5,
-                                58.5,  72.0,  0.00,  71.5,  70.5,
-                                86.8,  94.0,  65.0,  68.8,  43.8,  13.2,
-                              ] # in second
-    
+        if not do_trainedMCs:
+            # pick only five sessions for each conditions during the training phase
+            dates_list = [
+                          "20231222","20231226","20231227",  "20231229","20231230",
+                          "20231231","20240102","20240104-2","20240105","20240108",
+                          "20240109","20240115","20240116",  "20240117","20240118","20240119",
+                          "20240207","20240208","20240209",  "20240212","20240213",
+                          "20240214","20240215","20240216",  
+                         ]
+            session_start_times = [ 
+                                    21.5,  0.00,  0.00,  0.00,  0.00, 
+                                    0.00,  12.2,  0.00,  18.8,  31.2,  
+                                    32.5,  0.00,  50.0,  0.00,  37.5,  29.5,
+                                    58.5,  72.0,  0.00,  71.5,  70.5,
+                                    86.8,  94.0,  65.0, 
+                                  ] # in second
+        elif do_trainedMCs:
+            dates_list = [
+                          "20231222","20231226","20231227", # SR
+                          
+                          "20240220","20240222","20240223","20240226", # trained MC
+                 
+                          "20240214","20240215","20240216",  # NV
+                         ]
+            session_start_times = [ 
+                                    21.5,  0.00,  0.00, 
+                                    
+                                    68.8,  43.8,  13.2,  47.5,
+                
+                                    86.8,  94.0,  65.0, 
+                                  ] # in second
+
     animal1_fixedorder = ['koala']
     animal2_fixedorder = ['vermelho']
 
@@ -433,7 +482,7 @@ pull_edges_intv_all_dates = dict.fromkeys(dates_list, [])
 
 
 # where to save the summarizing data
-data_saved_folder = '/gpfs/gibbs/pi/jadi/VideoTracker_SocialInter/3d_recontruction_analysis_self_and_coop_task_data_saved/'
+data_saved_folder = '/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/3d_recontruction_analysis_self_and_coop_task_data_saved/'
 
 
     
@@ -490,26 +539,39 @@ except:
         session_start_time = session_start_times[idate]
 
         # folder and file path
-        camera12_analyzed_path = "/gpfs/gibbs/pi/jadi/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_camera12/"
-        camera23_analyzed_path = "/gpfs/gibbs/pi/jadi/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_camera23/"
+        camera12_analyzed_path = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_camera12/"
+        camera23_analyzed_path = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_camera23/"
         
-        singlecam_ana_type = "DLC_dlcrnetms5_marmoset_tracking_with_middle_cameraSep1shuffle1_150000"
-        try: 
-            bodyparts_camI_camIJ = camera12_analyzed_path+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_"+cameraID+singlecam_ana_type+"_el_filtered.h5"
-            # get the bodypart data from files
-            bodyparts_locs_camI = body_part_locs_singlecam(bodyparts_camI_camIJ,singlecam_ana_type,animalnames_videotrack,bodypartnames_videotrack,date_tgt)
-            video_file_original = camera12_analyzed_path+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_"+cameraID+".mp4"
+        try:
+            singlecam_ana_type = "DLC_dlcrnetms5_marmoset_tracking_with_middle_cameraSep1shuffle1_150000"
+            try: 
+                bodyparts_camI_camIJ = camera12_analyzed_path+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_"+cameraID+singlecam_ana_type+"_el_filtered.h5"
+                # get the bodypart data from files
+                bodyparts_locs_camI = body_part_locs_singlecam(bodyparts_camI_camIJ,singlecam_ana_type,animalnames_videotrack,bodypartnames_videotrack,date_tgt)
+                video_file_original = camera12_analyzed_path+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_"+cameraID+".mp4"
+            except:
+                bodyparts_camI_camIJ = camera23_analyzed_path+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_"+cameraID+singlecam_ana_type+"_el_filtered.h5"
+                # get the bodypart data from files
+                bodyparts_locs_camI = body_part_locs_singlecam(bodyparts_camI_camIJ,singlecam_ana_type,animalnames_videotrack,bodypartnames_videotrack,date_tgt)
+                video_file_original = camera23_analyzed_path+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_"+cameraID+".mp4"        
         except:
-            bodyparts_camI_camIJ = camera23_analyzed_path+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_"+cameraID+singlecam_ana_type+"_el_filtered.h5"
-            # get the bodypart data from files
-            bodyparts_locs_camI = body_part_locs_singlecam(bodyparts_camI_camIJ,singlecam_ana_type,animalnames_videotrack,bodypartnames_videotrack,date_tgt)
-            video_file_original = camera23_analyzed_path+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_"+cameraID+".mp4"        
+            singlecam_ana_type = "DLC_dlcrnetms5_marmoset_tracking_with_middle_camera_withHeadchamberFeb28shuffle1_167500"
+            try: 
+                bodyparts_camI_camIJ = camera12_analyzed_path+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_"+cameraID+singlecam_ana_type+"_el_filtered.h5"
+                # get the bodypart data from files
+                bodyparts_locs_camI = body_part_locs_singlecam(bodyparts_camI_camIJ,singlecam_ana_type,animalnames_videotrack,bodypartnames_videotrack,date_tgt)
+                video_file_original = camera12_analyzed_path+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_"+cameraID+".mp4"
+            except:
+                bodyparts_camI_camIJ = camera23_analyzed_path+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_"+cameraID+singlecam_ana_type+"_el_filtered.h5"
+                # get the bodypart data from files
+                bodyparts_locs_camI = body_part_locs_singlecam(bodyparts_camI_camIJ,singlecam_ana_type,animalnames_videotrack,bodypartnames_videotrack,date_tgt)
+                video_file_original = camera23_analyzed_path+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_"+cameraID+".mp4"        
         
         
         # load behavioral results
         try:
             try:
-                bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                bhv_data_path = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
                 trial_record_json = glob.glob(bhv_data_path +date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_TrialRecord_" + "*.json")
                 bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_bhv_data_" + "*.json")
                 session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_session_info_" + "*.json")
@@ -518,7 +580,7 @@ except:
                 bhv_data = pd.read_json(bhv_data_json[0])
                 session_info = pd.read_json(session_info_json[0])
             except:
-                bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                bhv_data_path = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
                 trial_record_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_TrialRecord_" + "*.json")
                 bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_bhv_data_" + "*.json")
                 session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_session_info_" + "*.json")
@@ -528,7 +590,7 @@ except:
                 session_info = pd.read_json(session_info_json[0])
         except:
             try:
-                bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_forceManipulation_task/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                bhv_data_path = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/marmoset_tracking_bhv_data_forceManipulation_task/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
                 trial_record_json = glob.glob(bhv_data_path +date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_TrialRecord_" + "*.json")
                 bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_bhv_data_" + "*.json")
                 session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_session_info_" + "*.json")
@@ -537,7 +599,7 @@ except:
                 bhv_data = pd.read_json(bhv_data_json[0])
                 session_info = pd.read_json(session_info_json[0])
             except:
-                bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_forceManipulation_task/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                bhv_data_path = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/marmoset_tracking_bhv_data_forceManipulation_task/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
                 trial_record_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_TrialRecord_" + "*.json")
                 bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_bhv_data_" + "*.json")
                 session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_session_info_" + "*.json")
@@ -789,7 +851,8 @@ sorting_df = sorting_df.sort_values(by=['coopthres','dates'], ascending = [False
 
 #
 tasktypes = ['self','coop(3s)','coop(2s)','coop(1.5s)','coop(1s)','no-vision']
-# tasktypes = ['self','coop(1s)','no-vision']
+if do_trainedMCs:
+    tasktypes = ['SR','MC','NV']
 #
 # ind=(sorting_df['coopthres']==100)|(sorting_df['coopthres']==1)|(sorting_df['coopthres']==-1)
 # sorting_df = sorting_df[ind]
@@ -864,6 +927,8 @@ sorting_df = sorting_df.sort_values(by=['coopthres','dates'], ascending = [False
 #
 #tasktypes = ['self','coop(3s)','coop(2s)','coop(1.5s)','coop(1s)','no-vision']
 tasktypes = ['self','coop(1s)','no-vision']
+if do_trainedMCs:
+    tasktypes = ['SR','MC','NV']
 #
 ind=(sorting_df['coopthres']==100)|(sorting_df['coopthres']==1)|(sorting_df['coopthres']==-1)
 sorting_df = sorting_df[ind]
@@ -924,6 +989,8 @@ sorting_df = sorting_df.sort_values(by=['coopthres','dates'], ascending = [False
 #
 # tasktypes = ['self','coop(3s)','coop(2s)','coop(1.5s)','coop(1s)','no-vision']
 tasktypes = ['self','coop(1s)','no-vision']
+if do_trainedMCs:
+    tasktypes = ['SR','MC','NV']
 #
 ind=(sorting_df['coopthres']==100)|(sorting_df['coopthres']==1)|(sorting_df['coopthres']==-1)
 sorting_df = sorting_df[ind]
@@ -1026,6 +1093,8 @@ sorting_df = sorting_df.sort_values(by=['coopthres','dates'], ascending = [False
 #
 # tasktypes = ['self','coop(3s)','coop(2s)','coop(1.5s)','coop(1s)','no-vision']
 tasktypes = ['self','coop(1s)','no-vision']
+if do_trainedMCs:
+    tasktypes = ['self','coop(1s)','no-vision']
 #
 ind=(sorting_df['coopthres']==100)|(sorting_df['coopthres']==1)|(sorting_df['coopthres']==-1)
 sorting_df = sorting_df[ind]
@@ -1127,6 +1196,8 @@ fig, ax1 = plt.subplots(figsize=(5, 5))
 
 # grouptypes = ['self reward','3s threshold','2s threshold','1.5s threshold','1s threshold','novision']
 grouptypes = ['self reward','cooperative','no-vision']
+if do_trainedMCs:
+    grouptypes = ['self reward','cooperative','no-vision']
 
 gaze_numbers_groups = [np.transpose(gaze_numbers[np.transpose(coopthres_forsort==100)[0]])[0],
                        # np.transpose(gaze_numbers[np.transpose(coopthres_forsort==3)[0]])[0],
@@ -1160,6 +1231,10 @@ if savefigs:
 DBN_group_typenames = ['self','coop(3s)','coop(2s)','coop(1.5s)','coop(1s)','no-vision']
 DBN_group_typeIDs  =  [1,3,3,  3,3,5]
 DBN_group_coopthres = [0,3,2,1.5,1,0]
+if do_trainedMCs:
+    DBN_group_typenames = ['self','coop(1s)','no-vision']
+    DBN_group_typeIDs  =  [1,3,5]
+    DBN_group_coopthres = [0,1,0]
 nDBN_groups = np.shape(DBN_group_typenames)[0]
 
 prepare_input_data = 1
@@ -1187,7 +1262,7 @@ if prepare_input_data:
         # load behavioral results
         try:
             try:
-                bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                bhv_data_path = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
                 trial_record_json = glob.glob(bhv_data_path +date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_TrialRecord_" + "*.json")
                 bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_bhv_data_" + "*.json")
                 session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_session_info_" + "*.json")
@@ -1196,7 +1271,7 @@ if prepare_input_data:
                 bhv_data = pd.read_json(bhv_data_json[0])
                 session_info = pd.read_json(session_info_json[0])
             except:
-                bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                bhv_data_path = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
                 trial_record_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_TrialRecord_" + "*.json")
                 bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_bhv_data_" + "*.json")
                 session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_session_info_" + "*.json")
@@ -1206,7 +1281,7 @@ if prepare_input_data:
                 session_info = pd.read_json(session_info_json[0])
         except:
             try:
-                bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_forceManipulation_task/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                bhv_data_path = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/marmoset_tracking_bhv_data_forceManipulation_task/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
                 trial_record_json = glob.glob(bhv_data_path +date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_TrialRecord_" + "*.json")
                 bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_bhv_data_" + "*.json")
                 session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_session_info_" + "*.json")
@@ -1215,7 +1290,7 @@ if prepare_input_data:
                 bhv_data = pd.read_json(bhv_data_json[0])
                 session_info = pd.read_json(session_info_json[0])
             except:
-                bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_forceManipulation_task/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                bhv_data_path = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/marmoset_tracking_bhv_data_forceManipulation_task/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
                 trial_record_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_TrialRecord_" + "*.json")
                 bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_bhv_data_" + "*.json")
                 session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_session_info_" + "*.json")
@@ -1272,6 +1347,9 @@ if prepare_input_data:
         look_at_lever_or_not_merge['time_in_second'] = np.arange(0,np.shape(look_at_lever_or_not_merge['dodson'])[0],1)/fps - session_start_time
         look_at_tube_or_not_merge['time_in_second'] = np.arange(0,np.shape(look_at_tube_or_not_merge['dodson'])[0],1)/fps - session_start_time 
 
+        # redefine the totalsess_time for the length of each recording (NOT! remove the session_start_time)
+        totalsess_time = int(np.ceil(np.shape(look_at_other_or_not_merge['dodson'])[0]/fps))
+        
         # find time point of behavioral events
         output_time_points_socialgaze ,output_time_points_levertube = bhv_events_timepoint_singlecam(bhv_data,look_at_other_or_not_merge,look_at_lever_or_not_merge,look_at_tube_or_not_merge)
         time_point_pull1 = output_time_points_socialgaze['time_point_pull1']
@@ -1342,7 +1420,7 @@ if prepare_input_data:
 # In[ ]:
 
 
-DBN_input_data_alltypes['coop(1s)']
+DBN_input_data_alltypes
 
 
 # ### run the DBN model on the combined session data set
@@ -1391,7 +1469,7 @@ if 0:
             with open(data_saved_subfolder+'/DBN_input_data_alltypes_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'sReSo.pkl', 'rb') as f:
                 DBN_input_data_alltypes = pickle.load(f)
         else:
-            with open(data_saved_subfolder+'//DBN_input_data_alltypes_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_mergeTempsReSo.pkl', 'rb') as f:
+            with open(data_saved_subfolder+'/DBN_input_data_alltypes_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_mergeTempsReSo.pkl', 'rb') as f:
                 DBN_input_data_alltypes = pickle.load(f)
 
                 
@@ -1542,7 +1620,7 @@ num_starting_points = 100 # number of random starting points/graphs
 nbootstraps = 95
 
 try:
-    dumpy
+    # dumpy
     data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
     if not os.path.exists(data_saved_subfolder):
         os.makedirs(data_saved_subfolder)
@@ -1730,32 +1808,34 @@ except:
 
             
     # save data
-    data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
-    if not os.path.exists(data_saved_subfolder):
-        os.makedirs(data_saved_subfolder)
-    if moreSampSize:  
-        with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
-            pickle.dump(DAGscores_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
-            pickle.dump(DAGscores_shuffled_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
-            pickle.dump(weighted_graphs_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
-            pickle.dump(weighted_graphs_shuffled_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
-            pickle.dump(sig_edges_diffTempRo_diffSampSize, f)
+    savedata = 1
+    if savedata:
+        data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
+        if not os.path.exists(data_saved_subfolder):
+            os.makedirs(data_saved_subfolder)
+        if moreSampSize:  
+            with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
+                pickle.dump(DAGscores_diffTempRo_diffSampSize, f)
+            with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
+                pickle.dump(DAGscores_shuffled_diffTempRo_diffSampSize, f)
+            with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
+                pickle.dump(weighted_graphs_diffTempRo_diffSampSize, f)
+            with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
+                pickle.dump(weighted_graphs_shuffled_diffTempRo_diffSampSize, f)
+            with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
+                pickle.dump(sig_edges_diffTempRo_diffSampSize, f)
 
-    else:
-        with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
-            pickle.dump(DAGscores_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
-            pickle.dump(DAGscores_shuffled_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
-            pickle.dump(weighted_graphs_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
-            pickle.dump(weighted_graphs_shuffled_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
-            pickle.dump(sig_edges_diffTempRo_diffSampSize, f)
+        else:
+            with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
+                pickle.dump(DAGscores_diffTempRo_diffSampSize, f)
+            with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
+                pickle.dump(DAGscores_shuffled_diffTempRo_diffSampSize, f)
+            with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
+                pickle.dump(weighted_graphs_diffTempRo_diffSampSize, f)
+            with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
+                pickle.dump(weighted_graphs_shuffled_diffTempRo_diffSampSize, f)
+            with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
+                pickle.dump(sig_edges_diffTempRo_diffSampSize, f)
 
 
 # ### plot graphs - show the edge with arrows; show the best time bin and row number; show the three time lag separately
@@ -1841,9 +1921,9 @@ for ilag in np.arange(0,ntime_lags,1):
             weighted_graphs_shuffled_tgt = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][iDBN_group_typename]
             # sig_edges_tgt = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][iDBN_group_typename]
             sig_edges_tgt = get_significant_edges(weighted_graphs_tgt,weighted_graphs_shuffled_tgt)
-           
+
             #sig_edges_tgt = sig_edges_tgt*((weighted_graphs_tgt.mean(axis=0)>0.5)*1)
-            
+
             sig_avg_dags = weighted_graphs_tgt.mean(axis = 0) * sig_edges_tgt
             sig_avg_dags = sig_avg_dags[fromRowID,:]
 
@@ -1861,7 +1941,7 @@ for ilag in np.arange(0,ntime_lags,1):
             axs[ilag*2+0,iDBN_group].spines['left'].set_visible(False)
             # axs[ilag*2+0,iDBN_group].axis('equal')
 
-            
+
             for ieventnode in np.arange(0,nevents,1):
                 # plot the event nodes
                 axs[ilag*2+0,iDBN_group].plot(eventnode_locations[ieventnode][0],eventnode_locations[ieventnode][1],
@@ -1869,9 +1949,9 @@ for ilag in np.arange(0,ntime_lags,1):
                                               markeredgecolor='none')              
                 #axs[ilag*2+0,iDBN_group].text(eventname_locations[ieventnode][0],eventname_locations[ieventnode][1],
                 #                       eventnames[ieventnode],fontsize=15)
-                
+
                 clmap = mpl.cm.get_cmap('Greens')
-                
+
                 # plot the event edges
                 for ifromNode in np.arange(0,nevents,1):
                     for itoNode in np.arange(0,nevents,1):
@@ -1922,7 +2002,7 @@ for ilag in np.arange(0,ntime_lags,1):
             sig_avg_dags_df.columns = eventnames
             sig_avg_dags_df.index = eventnames
             vmin,vmax = 0,1
-            import matplotlib as mpl
+
             norm = mpl.colors.Normalize(vmin=vmin, vmax=vmax)
             im = axs[ilag*2+1,iDBN_group].pcolormesh(sig_avg_dags_df,cmap="Greens",norm=norm)
             #
@@ -1989,7 +2069,7 @@ else:
     samplingsizes_name = ['min_row_number']   
 nsamplings = np.shape(samplingsizes_name)[0]
 
-basecondition = 'coop(1s)' # 'self', 'coop(1s)'
+basecondition = 'self' # 'self', 'coop(1s)'
 
 # make sure these variables are consistent with the train_DBN_alec.py settings
 # eventnames = ["pull1","pull2","gaze1","gaze2"]
@@ -2234,7 +2314,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
         with open(data_saved_subfolder+'/DBN_input_data_alltypes_'+animal1_fixedorder+animal2_fixedorder+'_'+str(temp_resolu)+'sReSo.pkl', 'rb') as f:
             DBN_input_data_alltypes = pickle.load(f)
     else:
-        with open(data_saved_subfolder+'//DBN_input_data_alltypes_'+animal1_fixedorder+animal2_fixedorder+'_mergeTempsReSo.pkl', 'rb') as f:
+        with open(data_saved_subfolder+'/DBN_input_data_alltypes_'+animal1_fixedorder+animal2_fixedorder+'_mergeTempsReSo.pkl', 'rb') as f:
             DBN_input_data_alltypes = pickle.load(f)
             
     for igroup in np.arange(0,nDBN_groups,1):
@@ -2337,7 +2417,7 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
             axs[igroup,1].legend()
             
     
-    savefig = 1
+    savefig = 0
     if savefig:
         figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'
         if not os.path.exists(figsavefolder):
@@ -2345,6 +2425,12 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
         plt.savefig(figsavefolder+'eventpair_appearanceDensity_Resolu'+str(temp_resolu)+'s_1stimelag_'+animal1_fixedorder+animal2_fixedorder+'.pdf')
            
             
+
+
+# In[ ]:
+
+
+
 
 
 # In[ ]:
@@ -5015,10 +5101,11 @@ animal_pooled_list = ['E','SP','DO','SC','DA','KwDA','G','KwG','KO','V']
 nanimalpairs = np.shape(animal1_fixedorders)[0]
 nanimalpooled = np.shape(animal_pooled_list)[0]
 
-timelag = 1 # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag 1 and 2)
-timelagname = '1second' # '1/2/3second' or 'merged' or '12merged'
+# timelag = 1 # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag 1 and 2)
+timelag = 12 # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag 1 and 2)
+# timelagname = '1second' # '1/2/3second' or 'merged' or '12merged'
 # timelagname = 'merged' # together with timelag = 0
-# timelagname = '12merged' # together with timelag = 12
+timelagname = '12merged' # together with timelag = 12
 
 nMIbootstraps = 150
 
@@ -5251,32 +5338,32 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
         # coop self modulation
         # pull-pull
         a1 = MI_coop_self_all[:,pull_pull_fromNodes_all[ianimal],pull_pull_toNodes_all[ianimal]].flatten()
-        xxx1 = np.mean(a1)
+        xxx1 = np.nanmean(a1)
         MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,0] = a1
         MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,0] = xxx1
         # gaze-gaze
         a2 = (MI_coop_self_all[:,gaze_gaze_fromNodes_all[ianimal],gaze_gaze_toNodes_all[ianimal]]).flatten()
-        xxx2 = np.mean(a2)
+        xxx2 = np.nanmean(a2)
         MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,1] = a2
         MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,1] = xxx2
         # within animal gazepull
         a3 = (MI_coop_self_all[:,within_gazepull_fromNodes_all[ianimal],within_gazepull_toNodes_all[ianimal]]).flatten()
-        xxx3 = np.mean(a3)
+        xxx3 = np.nanmean(a3)
         MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,2] = a3
         MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,2] = xxx3
         # across animal gazepull
         a4 = (MI_coop_self_all[:,across_gazepull_fromNodes_all[ianimal],across_gazepull_toNodes_all[ianimal]]).flatten()
-        xxx4 = np.mean(a4)
+        xxx4 = np.nanmean(a4)
         MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,3] = a4
         MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,3] = xxx4
         # within animal pullgaze
         a5 = (MI_coop_self_all[:,within_pullgaze_fromNodes_all[ianimal],within_pullgaze_toNodes_all[ianimal]]).flatten()
-        xxx5 = np.mean(a5)
+        xxx5 = np.nanmean(a5)
         MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,4] = a5
         MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,4] = xxx5
         # across animal pullgaze
         a6 = (MI_coop_self_all[:,across_pullgaze_fromNodes_all[ianimal],across_pullgaze_toNodes_all[ianimal]]).flatten()
-        xxx6 = np.mean(a6)
+        xxx6 = np.nanmean(a6)
         MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,5] = a6
         MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,5] = xxx6
         
@@ -5284,32 +5371,32 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
         # novision coop modulation
         # pull-pull
         a1 = MI_nov_coop_all[:,pull_pull_fromNodes_all[ianimal],pull_pull_toNodes_all[ianimal]].flatten()
-        xxx1 = np.mean(a1)
+        xxx1 = np.nanmean(a1)
         MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,0] = a1
         MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,0] = xxx1
         # gaze-gaze
         a2 = (MI_nov_coop_all[:,gaze_gaze_fromNodes_all[ianimal],gaze_gaze_toNodes_all[ianimal]]).flatten()
-        xxx2 = np.mean(a2)
+        xxx2 = np.nanmean(a2)
         MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,1] = a2
         MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,1] = xxx2
         # within animal gazepull
         a3 = (MI_nov_coop_all[:,within_gazepull_fromNodes_all[ianimal],within_gazepull_toNodes_all[ianimal]]).flatten()
-        xxx3 = np.mean(a3)
+        xxx3 = np.nanmean(a3)
         MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,2] = a3
         MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,2] = xxx3
         # across animal gazepull
         a4 = (MI_nov_coop_all[:,across_gazepull_fromNodes_all[ianimal],across_gazepull_toNodes_all[ianimal]]).flatten()
-        xxx4 = np.mean(a4)
+        xxx4 = np.nanmean(a4)
         MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,3] = a4
         MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,3] = xxx4
         # within animal pullgaze
         a5 = (MI_nov_coop_all[:,within_pullgaze_fromNodes_all[ianimal],within_pullgaze_toNodes_all[ianimal]]).flatten()
-        xxx5 = np.mean(a5)
+        xxx5 = np.nanmean(a5)
         MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,4] = a5
         MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,4] = xxx5
         # across animal pullgaze
         a6 = (MI_nov_coop_all[:,across_pullgaze_fromNodes_all[ianimal],across_pullgaze_toNodes_all[ianimal]]).flatten()
-        xxx6 = np.mean(a6)
+        xxx6 = np.nanmean(a6)
         MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,5] = a6
         MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,5] = xxx6
         
@@ -5460,18 +5547,20 @@ animal1_fixedorders = ['eddie','dodson','dannon','ginger','koala']
 animal2_fixedorders = ['sparkle','scorch','kanga','kanga','vermelho']
 animal_pooled_list = ['E','SP','DO','SC','DA','KwDA','G','KwG','KO','V']
 
+
 nanimalpairs = np.shape(animal1_fixedorders)[0]
 nanimalpooled = np.shape(animal_pooled_list)[0]
 
-timelag = 1 # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag 1 and 2)
-timelagname = '1second' # '1/2/3second' or 'merged' or '12merged'
+# timelag = 2 # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag 1 and 2)
+timelag = 12 # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag 1 and 2)
+# timelagname = '2second' # '1/2/3second' or 'merged' or '12merged'
 # timelagname = 'merged' # together with timelag = 0
-# timelagname = '12merged' # together with timelag = 12
+timelagname = '12merged' # together with timelag = 12
 
 nMIbootstraps = 150
 
 MI_basetype = 'self' # 'self'; other options: 'coop(2s)', 'coop(1.5s)'
-MI_comptype = 'coop(1s)' # coop(1s)'; other options: 'coop(2s)', 'coop(1.5s)'
+MI_comptype = 'coop(1.5s)' # coop(1s)'; other options: 'coop(2s)', 'coop(1.5s)'
 MI_conttype = 'no-vision' # 'no-vision'; other options: 'coop(2s)', 'coop(1.5s)'
 
 # 
@@ -5556,6 +5645,12 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
     weighted_graphs_sf_nov = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_conttype]
     sig_edges_nov = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_conttype]
 
+    ## mainly for dannon kanga because they dont have coop3s
+    if np.shape(weighted_graphs_coop)[0]==0:
+        weighted_graphs_coop = np.ones((95,12,4))*np.nan
+        weighted_graphs_sf_coop = np.ones((95,12,4))*np.nan
+        sig_edges_coop = np.ones((12,4))*np.nan
+                
     # organize the key edge data
     weighted_graphs_self_mean = weighted_graphs_self.mean(axis=0)
     weighted_graphs_coop_mean = weighted_graphs_coop.mean(axis=0)
@@ -5583,12 +5678,14 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
         #
         MI_coop_self_all,sig_edges_coop_self = Modulation_Index(weighted_graphs_self, weighted_graphs_coop,
                                           sig_edges_self, sig_edges_coop, nMIbootstraps)
+        # MI_coop_self_all[MI_coop_self_all==0] = np.nan
         MI_coop_self = MI_coop_self_all.mean(axis = 0)
-        MI_coop_self = MI_coop_self * sig_edges_coop_self
+        # MI_coop_self = MI_coop_self * sig_edges_coop_self
         MI_nov_coop_all,sig_edges_nov_coop  = Modulation_Index(weighted_graphs_coop, weighted_graphs_nov,
                                           sig_edges_coop, sig_edges_nov, nMIbootstraps)
+        # MI_nov_coop_all[MI_nov_coop_all==0] = np.nan
         MI_nov_coop = MI_nov_coop_all.mean(axis = 0)
-        MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
+        # MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
     
     #
     if timelag == 1:
@@ -6000,25 +6097,72 @@ if savefig:
 # In[ ]:
 
 
-scipy.stats.ttest_1samp(MI_coop_self_mean_IndiAni_sub_df['across_pullgaze'],0)
+scipy.stats.ttest_1samp(MI_coop_self_mean_IndiAni_df['within_gazepull'],0)
 
 
 # In[ ]:
 
 
-scipy.stats.ttest_1samp(MI_nov_coop_mean_IndiAni_dom_df['across_pullgaze'],0)
+scipy.stats.ttest_1samp(MI_coop_self_mean_IndiAni_male_df['within_gazepull'],0)
 
 
 # In[ ]:
 
 
-scipy.stats.ttest_rel(MI_coop_self_mean_IndiAni_sub_df['within_gazepull'],MI_coop_self_mean_IndiAni_dom_df['within_gazepull'])
+scipy.stats.ttest_1samp(MI_coop_self_mean_IndiAni_female_df['within_gazepull'],0)
 
 
 # In[ ]:
 
 
+scipy.stats.ranksums(MI_coop_self_mean_IndiAni_male_df['within_gazepull'],MI_coop_self_mean_IndiAni_female_df['within_gazepull'])
 
+
+# In[ ]:
+
+
+scipy.stats.ranksums(MI_coop_self_mean_IndiAni_male_df['across_pullgaze'],MI_coop_self_mean_IndiAni_female_df['across_pullgaze'])
+
+
+# In[ ]:
+
+
+# perform the anova on male and female
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
+
+MI_coop_self_all_IndiAni_male_df = pd.DataFrame(MI_coop_self_all_IndiAni_pooled['male'])
+MI_coop_self_all_IndiAni_male_df.columns = dependencynames
+MI_coop_self_all_IndiAni_male_df['MItype'] = 'male '+MI_comptype+'-'+MI_basetype
+#
+MI_nov_coop_all_IndiAni_male_df = pd.DataFrame(MI_nov_coop_all_IndiAni_pooled['male'])
+MI_nov_coop_all_IndiAni_male_df.columns = dependencynames
+MI_nov_coop_all_IndiAni_male_df['MItype'] = 'male '+MI_conttype+'-'+MI_comptype
+#
+MI_coop_self_all_IndiAni_female_df = pd.DataFrame(MI_coop_self_all_IndiAni_pooled['female'])
+MI_coop_self_all_IndiAni_female_df.columns = dependencynames
+MI_coop_self_all_IndiAni_female_df['MItype'] = 'female '+MI_comptype+'-'+MI_basetype
+#
+MI_nov_coop_all_IndiAni_female_df = pd.DataFrame(MI_nov_coop_all_IndiAni_pooled['female'])
+MI_nov_coop_all_IndiAni_female_df.columns = dependencynames
+MI_nov_coop_all_IndiAni_female_df['MItype'] = 'female '+MI_conttype+'-'+MI_comptype
+#
+df_long=pd.concat([MI_coop_self_all_IndiAni_male_df,MI_nov_coop_all_IndiAni_male_df,
+                   MI_coop_self_all_IndiAni_female_df,MI_nov_coop_all_IndiAni_female_df])
+df_long2 = df_long.melt(id_vars=['MItype'], value_vars=dependencytargets,var_name='condition', value_name='value')
+df_long2 = df_long2[~np.isnan(df_long2['value'])]
+df_long2 = df_long2[df_long2['condition']=='pull-pull']
+# df_long2 = df_long2[df_long2['condition']=='within_gazepull']
+# df_long2 = df_long2[df_long2['condition']=='across_pullgaze']
+
+# anova
+cw_lm=ols('value ~ MItype', data=df_long2).fit() #Specify C for Categorical
+print(sm.stats.anova_lm(cw_lm, typ=2))
+
+# post hoc test 
+tukey = pairwise_tukeyhsd(endog=df_long2['value'], groups=df_long2['condition']+df_long2['MItype'], alpha=0.05)
+print(tukey)
 
 
 # In[ ]:
@@ -6041,7 +6185,7 @@ scipy.stats.ttest_rel(MI_coop_self_mean_IndiAni_sub_df['within_gazepull'],MI_coo
 
 # ### version 7-2-3-3:
 # #### same as version 7-2-3, but group differently
-# #### show coop1s, 1.5s and 2s in one plot, and show 1s and 2s time lags
+# #### show coop1s, 1.5s, 2s, 3s in one plot, and show 1s, 2s, 3s time lags or merged
 
 # In[ ]:
 
@@ -6053,20 +6197,26 @@ animal1_fixedorders = ['eddie','dodson','dannon','ginger','koala']
 animal2_fixedorders = ['sparkle','scorch','kanga','kanga','vermelho']
 animal_pooled_list = ['E','SP','DO','SC','DA','KwDA','G','KwG','KO','V']
 
+# dannon kanga did not have coop 3s data
+# animal1_fixedorders = ['eddie','dodson','ginger','koala']
+# animal2_fixedorders = ['sparkle','scorch','kanga','vermelho']
+# animal_pooled_list = ['E','SP','DO','SC','G','KwG','KO','V']
+
 nanimalpairs = np.shape(animal1_fixedorders)[0]
 nanimalpooled = np.shape(animal_pooled_list)[0]
 
 nMIbootstraps = 150
 
 timelags = [1,2,3] # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag 1 and 2)
+# timelags = [0]
 timelagnames = ['1second','2second','3second'] # '1/2/3second' or 'merged' or '12merged'
-# timelagname = 'merged' # together with timelag = 0
+# timelagnames = ['merged'] # together with timelag = 0
 # timelagname = '12merged' # together with timelag = 12
 ntimelags_forplot = np.shape(timelags)[0]
 
 MI_basetype = 'self' # 'self'; other options: 'coop(2s)', 'coop(1.5s)'
-MI_comptypes = ['coop(1s)','coop(1.5s)','coop(2s)'] # coop(1s)'; other options: 'coop(2s)', 'coop(1.5s)'
-# MI_comptypes = ['coop(1s)'] # coop(1s)'; other options: 'coop(2s)', 'coop(1.5s)'
+MI_comptypes = ['coop(3s)','coop(2s)','coop(1.5s)','coop(1s)'] # coop(1s)'; other options: 'coop(2s)', 'coop(1.5s)'
+# MI_comptypes = ['coop(3s)','coop(2s)'] # coop(1s)'; other options: 'coop(2s)', 'coop(1.5s)'
 MI_conttype = 'no-vision' # 'no-vision'; other options: 'coop(2s)', 'coop(1.5s)'
 nMI_comptypes = np.shape(MI_comptypes)[0]
 
@@ -6108,9 +6258,8 @@ for iMI_comptype in np.arange(0,nMI_comptypes,1):
             MI_coop_self_mean_IndiAni = np.zeros([nanimalpairs*2,6])
             MI_nov_coop_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps*2,6])
             MI_nov_coop_mean_IndiAni = np.zeros([nanimalpairs*2,6])
-        #
 
-
+            
 
         for ianimalpair in np.arange(0,nanimalpairs,1):
             animal1_fixedorder = animal1_fixedorders[ianimalpair]
@@ -6167,6 +6316,12 @@ for iMI_comptype in np.arange(0,nMI_comptypes,1):
             weighted_graphs_sf_nov = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_conttype]
             sig_edges_nov = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_conttype]
 
+            ## mainly for dannon kanga because they dont have coop3s
+            if np.shape(weighted_graphs_coop)[0]==0:
+                weighted_graphs_coop = np.ones((95,12,4))*np.nan
+                weighted_graphs_sf_coop = np.ones((95,12,4))*np.nan
+                sig_edges_coop = np.ones((12,4))*np.nan
+            
             # organize the key edge data
             weighted_graphs_self_mean = weighted_graphs_self.mean(axis=0)
             weighted_graphs_coop_mean = weighted_graphs_coop.mean(axis=0)
@@ -6194,12 +6349,16 @@ for iMI_comptype in np.arange(0,nMI_comptypes,1):
                 #
                 MI_coop_self_all,sig_edges_coop_self = Modulation_Index(weighted_graphs_self, weighted_graphs_coop,
                                                   sig_edges_self, sig_edges_coop, nMIbootstraps)
+                MI_coop_self_all = MI_coop_self_all * sig_edges_coop_self
+                MI_coop_self_all[MI_coop_self_all==0] = np.nan
                 MI_coop_self = MI_coop_self_all.mean(axis = 0)
-                MI_coop_self = MI_coop_self * sig_edges_coop_self
+                # MI_coop_self = MI_coop_self * sig_edges_coop_self
                 MI_nov_coop_all,sig_edges_nov_coop  = Modulation_Index(weighted_graphs_coop, weighted_graphs_nov,
                                                   sig_edges_coop, sig_edges_nov, nMIbootstraps)
+                MI_nov_coop_all = MI_nov_coop_all * sig_edges_nov_coop
+                MI_nov_coop_all[MI_nov_coop_all==0] = np.nan
                 MI_nov_coop = MI_nov_coop_all.mean(axis = 0)
-                MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
+                # MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
     
             #
             if timelag == 1:
@@ -6314,32 +6473,32 @@ for iMI_comptype in np.arange(0,nMI_comptypes,1):
                 # coop self modulation
                 # pull-pull
                 a1 = MI_coop_self_all[:,pull_pull_fromNodes_all[ianimal],pull_pull_toNodes_all[ianimal]].flatten()
-                xxx1 = np.mean(a1)
+                xxx1 = np.nanmean(a1)
                 MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,0] = a1
                 MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,0] = xxx1
                 # gaze-gaze
                 a2 = (MI_coop_self_all[:,gaze_gaze_fromNodes_all[ianimal],gaze_gaze_toNodes_all[ianimal]]).flatten()
-                xxx2 = np.mean(a2)
+                xxx2 = np.nanmean(a2)
                 MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,1] = a2
                 MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,1] = xxx2
                 # within animal gazepull
                 a3 = (MI_coop_self_all[:,within_gazepull_fromNodes_all[ianimal],within_gazepull_toNodes_all[ianimal]]).flatten()
-                xxx3 = np.mean(a3)
+                xxx3 = np.nanmean(a3)
                 MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,2] = a3
                 MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,2] = xxx3
                 # across animal gazepull
                 a4 = (MI_coop_self_all[:,across_gazepull_fromNodes_all[ianimal],across_gazepull_toNodes_all[ianimal]]).flatten()
-                xxx4 = np.mean(a4)
+                xxx4 = np.nanmean(a4)
                 MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,3] = a4
                 MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,3] = xxx4
                 # within animal pullgaze
                 a5 = (MI_coop_self_all[:,within_pullgaze_fromNodes_all[ianimal],within_pullgaze_toNodes_all[ianimal]]).flatten()
-                xxx5 = np.mean(a5)
+                xxx5 = np.nanmean(a5)
                 MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,4] = a5
                 MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,4] = xxx5
                 # across animal pullgaze
                 a6 = (MI_coop_self_all[:,across_pullgaze_fromNodes_all[ianimal],across_pullgaze_toNodes_all[ianimal]]).flatten()
-                xxx6 = np.mean(a6)
+                xxx6 = np.nanmean(a6)
                 MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,5] = a6
                 MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,5] = xxx6
 
@@ -6347,32 +6506,32 @@ for iMI_comptype in np.arange(0,nMI_comptypes,1):
                 # novision coop modulation
                 # pull-pull
                 a1 = MI_nov_coop_all[:,pull_pull_fromNodes_all[ianimal],pull_pull_toNodes_all[ianimal]].flatten()
-                xxx1 = np.mean(a1)
+                xxx1 = np.nanmean(a1)
                 MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,0] = a1
                 MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,0] = xxx1
                 # gaze-gaze
                 a2 = (MI_nov_coop_all[:,gaze_gaze_fromNodes_all[ianimal],gaze_gaze_toNodes_all[ianimal]]).flatten()
-                xxx2 = np.mean(a2)
+                xxx2 = np.nanmean(a2)
                 MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,1] = a2
                 MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,1] = xxx2
                 # within animal gazepull
                 a3 = (MI_nov_coop_all[:,within_gazepull_fromNodes_all[ianimal],within_gazepull_toNodes_all[ianimal]]).flatten()
-                xxx3 = np.mean(a3)
+                xxx3 = np.nanmean(a3)
                 MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,2] = a3
                 MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,2] = xxx3
                 # across animal gazepull
                 a4 = (MI_nov_coop_all[:,across_gazepull_fromNodes_all[ianimal],across_gazepull_toNodes_all[ianimal]]).flatten()
-                xxx4 = np.mean(a4)
+                xxx4 = np.nanmean(a4)
                 MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,3] = a4
                 MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,3] = xxx4
                 # within animal pullgaze
                 a5 = (MI_nov_coop_all[:,within_pullgaze_fromNodes_all[ianimal],within_pullgaze_toNodes_all[ianimal]]).flatten()
-                xxx5 = np.mean(a5)
+                xxx5 = np.nanmean(a5)
                 MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,4] = a5
                 MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,4] = xxx5
                 # across animal pullgaze
                 a6 = (MI_nov_coop_all[:,across_pullgaze_fromNodes_all[ianimal],across_pullgaze_toNodes_all[ianimal]]).flatten()
-                xxx6 = np.mean(a6)
+                xxx6 = np.nanmean(a6)
                 MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,5] = a6
                 MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,5] = xxx6
 
@@ -6385,7 +6544,6 @@ for iMI_comptype in np.arange(0,nMI_comptypes,1):
         MI_nov_coop_all_IndiAni_allmean = np.nanmean(MI_nov_coop_all_IndiAni_all,axis=0) 
         MI_coop_self_all_IndiAni_allse = np.nanstd(MI_coop_self_all_IndiAni_all,axis=0)/np.sqrt(nanimalpooled*nMIbootstraps*ntimelags) 
         MI_nov_coop_all_IndiAni_allse = np.nanstd(MI_nov_coop_all_IndiAni_all,axis=0)/np.sqrt(nanimalpooled*nMIbootstraps*ntimelags) 
-
 
 
         # pool everything together
@@ -6401,81 +6559,120 @@ for iMI_comptype in np.arange(0,nMI_comptypes,1):
     # dependencytargets = dependencynames
 
     # plot 
-    # average 1s, 1s and female 3s for each dependency
-    # barplot
-    # 1s time lag
-    MI_coop_self_all_IndiAni_1s_df = pd.DataFrame(MI_coop_self_all_IndiAni_pooled['1second'])
-    MI_coop_self_all_IndiAni_1s_df.columns = dependencynames
-    MI_coop_self_all_IndiAni_1s_df['MItype'] = '1sLag '+MI_comptype+'-'+MI_basetype
-    #
-    MI_nov_coop_all_IndiAni_1s_df = pd.DataFrame(MI_nov_coop_all_IndiAni_pooled['1second'])
-    MI_nov_coop_all_IndiAni_1s_df.columns = dependencynames
-    MI_nov_coop_all_IndiAni_1s_df['MItype'] = '1sLag '+MI_conttype+'-'+MI_comptype
-    # 2s time lag
-    MI_coop_self_all_IndiAni_2s_df = pd.DataFrame(MI_coop_self_all_IndiAni_pooled['2second'])
-    MI_coop_self_all_IndiAni_2s_df.columns = dependencynames
-    MI_coop_self_all_IndiAni_2s_df['MItype'] = '2sLag '+MI_comptype+'-'+MI_basetype
-    #
-    MI_nov_coop_all_IndiAni_2s_df = pd.DataFrame(MI_nov_coop_all_IndiAni_pooled['2second'])
-    MI_nov_coop_all_IndiAni_2s_df.columns = dependencynames
-    MI_nov_coop_all_IndiAni_2s_df['MItype'] = '2sLag '+MI_conttype+'-'+MI_comptype
-    # 3s time lag
-    MI_coop_self_all_IndiAni_3s_df = pd.DataFrame(MI_coop_self_all_IndiAni_pooled['3second'])
-    MI_coop_self_all_IndiAni_3s_df.columns = dependencynames
-    MI_coop_self_all_IndiAni_3s_df['MItype'] = '3sLag '+MI_comptype+'-'+MI_basetype
-    #
-    MI_nov_coop_all_IndiAni_3s_df = pd.DataFrame(MI_nov_coop_all_IndiAni_pooled['3second'])
-    MI_nov_coop_all_IndiAni_3s_df.columns = dependencynames
-    MI_nov_coop_all_IndiAni_3s_df['MItype'] = '3sLag '+MI_conttype+'-'+MI_comptype
-    #
-    df_long=pd.concat([MI_coop_self_all_IndiAni_1s_df,MI_nov_coop_all_IndiAni_1s_df,
-                       MI_coop_self_all_IndiAni_2s_df,MI_nov_coop_all_IndiAni_2s_df,
-                       MI_coop_self_all_IndiAni_3s_df,MI_nov_coop_all_IndiAni_3s_df,])
-    df_long2 = df_long.melt(id_vars=['MItype'], value_vars=dependencytargets,var_name='condition', value_name='value')
-    #
-    # barplot based on all bootstrap data point
-    # seaborn.barplot(ax=ax1,data=df_long2,x='condition',y='value',hue='MItype',errorbar='ci',alpha=.5)
-    #
-    # swarmplot
-    # 1s time lag
-    MI_coop_self_mean_IndiAni_1s_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled['1second'])
-    MI_coop_self_mean_IndiAni_1s_df.columns = dependencynames
-    MI_coop_self_mean_IndiAni_1s_df['MItype'] = '1sLag '+MI_comptype+'-'+MI_basetype
-    #
-    MI_nov_coop_mean_IndiAni_1s_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled['1second'])
-    MI_nov_coop_mean_IndiAni_1s_df.columns = dependencynames
-    MI_nov_coop_mean_IndiAni_1s_df['MItype'] = '1sLag '+MI_conttype+'-'+MI_comptype
-    # 2s time lag
-    MI_coop_self_mean_IndiAni_2s_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled['2second'])
-    MI_coop_self_mean_IndiAni_2s_df.columns = dependencynames
-    MI_coop_self_mean_IndiAni_2s_df['MItype'] = '2sLag '+MI_comptype+'-'+MI_basetype
-    #
-    MI_nov_coop_mean_IndiAni_2s_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled['2second'])
-    MI_nov_coop_mean_IndiAni_2s_df.columns = dependencynames
-    MI_nov_coop_mean_IndiAni_2s_df['MItype'] = '2sLag '+MI_conttype+'-'+MI_comptype
-    # 3s time lag
-    MI_coop_self_mean_IndiAni_3s_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled['3second'])
-    MI_coop_self_mean_IndiAni_3s_df.columns = dependencynames
-    MI_coop_self_mean_IndiAni_3s_df['MItype'] = '3sLag '+MI_comptype+'-'+MI_basetype
-    #
-    MI_nov_coop_mean_IndiAni_3s_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled['3second'])
-    MI_nov_coop_mean_IndiAni_3s_df.columns = dependencynames
-    MI_nov_coop_mean_IndiAni_3s_df['MItype'] = '3sLag '+MI_conttype+'-'+MI_comptype
+    try:
+        # barplot
+        # 1s time lag
+        MI_coop_self_all_IndiAni_1s_df = pd.DataFrame(MI_coop_self_all_IndiAni_pooled['1second'])
+        MI_coop_self_all_IndiAni_1s_df.columns = dependencynames
+        MI_coop_self_all_IndiAni_1s_df['MItype'] = '1sLag '+MI_comptype+'-'+MI_basetype
+        #
+        MI_nov_coop_all_IndiAni_1s_df = pd.DataFrame(MI_nov_coop_all_IndiAni_pooled['1second'])
+        MI_nov_coop_all_IndiAni_1s_df.columns = dependencynames
+        MI_nov_coop_all_IndiAni_1s_df['MItype'] = '1sLag '+MI_conttype+'-'+MI_comptype
+        # 2s time lag
+        MI_coop_self_all_IndiAni_2s_df = pd.DataFrame(MI_coop_self_all_IndiAni_pooled['2second'])
+        MI_coop_self_all_IndiAni_2s_df.columns = dependencynames
+        MI_coop_self_all_IndiAni_2s_df['MItype'] = '2sLag '+MI_comptype+'-'+MI_basetype
+        #
+        MI_nov_coop_all_IndiAni_2s_df = pd.DataFrame(MI_nov_coop_all_IndiAni_pooled['2second'])
+        MI_nov_coop_all_IndiAni_2s_df.columns = dependencynames
+        MI_nov_coop_all_IndiAni_2s_df['MItype'] = '2sLag '+MI_conttype+'-'+MI_comptype
+        # 3s time lag
+        MI_coop_self_all_IndiAni_3s_df = pd.DataFrame(MI_coop_self_all_IndiAni_pooled['3second'])
+        MI_coop_self_all_IndiAni_3s_df.columns = dependencynames
+        MI_coop_self_all_IndiAni_3s_df['MItype'] = '3sLag '+MI_comptype+'-'+MI_basetype
+        #
+        MI_nov_coop_all_IndiAni_3s_df = pd.DataFrame(MI_nov_coop_all_IndiAni_pooled['3second'])
+        MI_nov_coop_all_IndiAni_3s_df.columns = dependencynames
+        MI_nov_coop_all_IndiAni_3s_df['MItype'] = '3sLag '+MI_conttype+'-'+MI_comptype
+        #
+        df_long=pd.concat([MI_coop_self_all_IndiAni_1s_df,MI_nov_coop_all_IndiAni_1s_df,
+                           MI_coop_self_all_IndiAni_2s_df,MI_nov_coop_all_IndiAni_2s_df,
+                           MI_coop_self_all_IndiAni_3s_df,MI_nov_coop_all_IndiAni_3s_df,])
+        df_long2 = df_long.melt(id_vars=['MItype'], value_vars=dependencytargets,var_name='condition', value_name='value')
+        #
+        # barplot based on all bootstrap data point
+        # seaborn.barplot(ax=ax1,data=df_long2,x='condition',y='value',hue='MItype',errorbar='ci',alpha=.5)
+        #
+        # swarmplot
+        # 1s time lag
+        MI_coop_self_mean_IndiAni_1s_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled['1second'])
+        MI_coop_self_mean_IndiAni_1s_df.columns = dependencynames
+        MI_coop_self_mean_IndiAni_1s_df['MItype'] = '1sLag '+MI_comptype+'-'+MI_basetype
+        #
+        MI_nov_coop_mean_IndiAni_1s_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled['1second'])
+        MI_nov_coop_mean_IndiAni_1s_df.columns = dependencynames
+        MI_nov_coop_mean_IndiAni_1s_df['MItype'] = '1sLag '+MI_conttype+'-'+MI_comptype
+        # 2s time lag
+        MI_coop_self_mean_IndiAni_2s_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled['2second'])
+        MI_coop_self_mean_IndiAni_2s_df.columns = dependencynames
+        MI_coop_self_mean_IndiAni_2s_df['MItype'] = '2sLag '+MI_comptype+'-'+MI_basetype
+        #
+        MI_nov_coop_mean_IndiAni_2s_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled['2second'])
+        MI_nov_coop_mean_IndiAni_2s_df.columns = dependencynames
+        MI_nov_coop_mean_IndiAni_2s_df['MItype'] = '2sLag '+MI_conttype+'-'+MI_comptype
+        # 3s time lag
+        MI_coop_self_mean_IndiAni_3s_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled['3second'])
+        MI_coop_self_mean_IndiAni_3s_df.columns = dependencynames
+        MI_coop_self_mean_IndiAni_3s_df['MItype'] = '3sLag '+MI_comptype+'-'+MI_basetype
+        #
+        MI_nov_coop_mean_IndiAni_3s_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled['3second'])
+        MI_nov_coop_mean_IndiAni_3s_df.columns = dependencynames
+        MI_nov_coop_mean_IndiAni_3s_df['MItype'] = '3sLag '+MI_conttype+'-'+MI_comptype
+
+        df_long=pd.concat([MI_coop_self_mean_IndiAni_1s_df,MI_nov_coop_mean_IndiAni_1s_df,
+                           MI_coop_self_mean_IndiAni_2s_df,MI_nov_coop_mean_IndiAni_2s_df,
+                           MI_coop_self_mean_IndiAni_3s_df,MI_nov_coop_mean_IndiAni_3s_df,])
+        df_long2 = df_long.melt(id_vars=['MItype'], value_vars=dependencytargets,var_name='condition', value_name='value')
+        #
+        # barplot based on mean value for each animal
+        seaborn.barplot(ax=axs.ravel()[iMI_comptype],data=df_long2,x='condition',y='value',hue='MItype',errorbar='se',alpha=.5,capsize=0.1)
+        seaborn.swarmplot(ax=axs.ravel()[iMI_comptype],data=df_long2,x='condition',y='value',hue='MItype',alpha=.9,size= 9,dodge=True,legend=False)
+        axs.ravel()[iMI_comptype].set_xlabel('')
+        axs.ravel()[iMI_comptype].set_ylabel('Modulation Index',fontsize=20)
+        axs.ravel()[iMI_comptype].set_title(MI_comptype,fontsize=24)
+        axs.ravel()[iMI_comptype].set_ylim([-1.02,1.02])
+
+        
+    except:
+        # barplot
+        # 1s time lag
+        MI_coop_self_all_IndiAni_1s_df = pd.DataFrame(MI_coop_self_all_IndiAni_pooled[timelagnames[0]])
+        MI_coop_self_all_IndiAni_1s_df.columns = dependencynames
+        MI_coop_self_all_IndiAni_1s_df['MItype'] = timelagnames[0]+' '+MI_comptype+'-'+MI_basetype
+        #
+        MI_nov_coop_all_IndiAni_1s_df = pd.DataFrame(MI_nov_coop_all_IndiAni_pooled[timelagnames[0]])
+        MI_nov_coop_all_IndiAni_1s_df.columns = dependencynames
+        MI_nov_coop_all_IndiAni_1s_df['MItype'] = timelagnames[0]+' '+MI_conttype+'-'+MI_comptype
+        #
+        df_long=pd.concat([MI_coop_self_all_IndiAni_1s_df,MI_nov_coop_all_IndiAni_1s_df,])
+        df_long2 = df_long.melt(id_vars=['MItype'], value_vars=dependencytargets,var_name='condition', value_name='value')
+        #
+        # barplot based on all bootstrap data point
+        # seaborn.barplot(ax=ax1,data=df_long2,x='condition',y='value',hue='MItype',errorbar='ci',alpha=.5)
+        #
+        # swarmplot
+        # 1s time lag
+        MI_coop_self_mean_IndiAni_1s_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled[timelagnames[0]])
+        MI_coop_self_mean_IndiAni_1s_df.columns = dependencynames
+        MI_coop_self_mean_IndiAni_1s_df['MItype'] = timelagnames[0]+' '+MI_comptype+'-'+MI_basetype
+        #
+        MI_nov_coop_mean_IndiAni_1s_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled[timelagnames[0]])
+        MI_nov_coop_mean_IndiAni_1s_df.columns = dependencynames
+        MI_nov_coop_mean_IndiAni_1s_df['MItype'] = timelagnames[0]+' '+MI_conttype+'-'+MI_comptype
+        #
+        df_long=pd.concat([MI_coop_self_mean_IndiAni_1s_df,MI_nov_coop_mean_IndiAni_1s_df,])
+        df_long2 = df_long.melt(id_vars=['MItype'], value_vars=dependencytargets,var_name='condition', value_name='value')
+        #
+        # barplot based on mean value for each animal
+        seaborn.barplot(ax=axs.ravel()[iMI_comptype],data=df_long2,x='condition',y='value',hue='MItype',errorbar='se',alpha=.5,capsize=0.1)
+        seaborn.swarmplot(ax=axs.ravel()[iMI_comptype],data=df_long2,x='condition',y='value',hue='MItype',alpha=.9,size= 9,dodge=True,legend=False)
+        axs.ravel()[iMI_comptype].set_xlabel('')
+        axs.ravel()[iMI_comptype].set_ylabel('Modulation Index',fontsize=20)
+        axs.ravel()[iMI_comptype].set_title(MI_comptype,fontsize=24)
+        axs.ravel()[iMI_comptype].set_ylim([-1.02,1.02])
     
-    df_long=pd.concat([MI_coop_self_mean_IndiAni_1s_df,MI_nov_coop_mean_IndiAni_1s_df,
-                       MI_coop_self_mean_IndiAni_2s_df,MI_nov_coop_mean_IndiAni_2s_df,
-                       MI_coop_self_mean_IndiAni_3s_df,MI_nov_coop_mean_IndiAni_3s_df,])
-    df_long2 = df_long.melt(id_vars=['MItype'], value_vars=dependencytargets,var_name='condition', value_name='value')
-    #
-    # barplot based on mean value for each animal
-    seaborn.barplot(ax=axs.ravel()[iMI_comptype],data=df_long2,x='condition',y='value',hue='MItype',errorbar='se',alpha=.5,capsize=0.1)
-    seaborn.swarmplot(ax=axs.ravel()[iMI_comptype],data=df_long2,x='condition',y='value',hue='MItype',alpha=.9,size= 9,dodge=True,legend=False)
-    axs.ravel()[iMI_comptype].set_xlabel('')
-    axs.ravel()[iMI_comptype].set_ylabel('Modulation Index',fontsize=20)
-    axs.ravel()[iMI_comptype].set_title(MI_comptype,fontsize=24)
-    axs.ravel()[iMI_comptype].set_ylim([-1.02,1.02])
-
-
+        
 
 savefig = 1
 if savefig:
@@ -6496,49 +6693,1154 @@ if savefig:
 # In[ ]:
 
 
-scipy.stats.ttest_1samp(MI_coop_self_mean_IndiAni_1s_df['across_pullgaze'],0)
+scipy.stats.wilcoxon(MI_coop_self_mean_IndiAni_1s_df['pull-pull'])
 
 
 # In[ ]:
 
 
-scipy.stats.ttest_1samp(MI_nov_coop_mean_IndiAni_1s_df['across_pullgaze'],0)
+scipy.stats.wilcoxon(MI_coop_self_all_IndiAni_1s_df['across_gazepull'])
+
+
+# ### version 7-2-3-4:
+# #### similar as version 7-2-3, but group and plot differently
+# #### show coop1s, 1.5s, 2s, 3s in one plot, and show 1s, 2s, 3s time lags or merged
+
+# In[ ]:
+
+
+# PLOT multiple pairs in one plot, so need to load data seperately
+moreSampSize = 0
+#
+animal1_fixedorders = ['eddie','dodson','dannon','ginger','koala']
+animal2_fixedorders = ['sparkle','scorch','kanga','kanga','vermelho']
+animal_pooled_list = ['E','SP','DO','SC','DA','KwDA','G','KwG','KO','V']
+
+# dannon kanga did not have coop 3s data
+# animal1_fixedorders = ['eddie','dodson','ginger','koala']
+# animal2_fixedorders = ['sparkle','scorch','kanga','vermelho']
+# animal_pooled_list = ['E','SP','DO','SC','G','KwG','KO','V']
+
+nanimalpairs = np.shape(animal1_fixedorders)[0]
+nanimalpooled = np.shape(animal_pooled_list)[0]
+
+nMIbootstraps = 150
+
+# timelags = [1,2,3] # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag 1 and 2)
+# timelags = [0]
+timelags = [12]
+# timelagnames = ['1secondlag','2secondlag','3secondlag'] # '1/2/3second' or 'merged' or '12merged'
+# timelagnames = ['merged'] # together with timelag = 0
+timelagnames = ['12merged'] # together with timelag = 12
+ntimelags_forplot = np.shape(timelags)[0]
+
+
+MI_basetype = 'self' # 'self'; other options: 'coop(2s)', 'coop(1.5s)'
+MI_comptypes = ['coop(3s)','coop(2s)','coop(1.5s)','coop(1s)'] # coop(1s)'; other options: 'coop(2s)', 'coop(1.5s)'
+# MI_comptypes = ['coop(3s)','coop(2s)'] # coop(1s)'; other options: 'coop(2s)', 'coop(1.5s)'
+MI_conttype = 'no-vision' # 'no-vision'; other options: 'coop(2s)', 'coop(1.5s)'
+nMI_comptypes = np.shape(MI_comptypes)[0]
+
+# for plot
+dependencynames = ['pull-pull','gaze-gaze','within_gazepull','across_gazepull','within_pullgaze','across_pullgaze']
+dependencytargets = dependencynames
+# dependencytargets = ['pull-pull','within_gazepull','across_pullgaze']
+# dependencytargets = ['pull-pull','within_gazepull','across_pullgaze','pullgaze_merged']
+ndeptargets = np.shape(dependencytargets)[0]
+    
+#
+fig, axs = plt.subplots(ntimelags_forplot, ndeptargets)
+fig.set_figheight(10*ntimelags_forplot)
+fig.set_figwidth(10*ndeptargets)
+
+#
+for itimelag in np.arange(0,ntimelags_forplot,1):
+    timelag = timelags[itimelag]
+    timelagname = timelagnames[itimelag]
+    
+    MI_coop_self_all_IndiAni_pooled = dict.fromkeys(MI_comptypes,[])
+    MI_nov_coop_all_IndiAni_pooled =  dict.fromkeys(MI_comptypes,[])
+    MI_coop_self_mean_IndiAni_pooled =dict.fromkeys(MI_comptypes,[])
+    MI_nov_coop_mean_IndiAni_pooled = dict.fromkeys(MI_comptypes,[])
+    
+    for iMI_comptype in np.arange(0,nMI_comptypes,1):
+        MI_comptype = MI_comptypes[iMI_comptype]
+        
+        # 
+        MI_coop_self_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps,6])
+        MI_coop_self_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+        MI_nov_coop_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps,6])
+        MI_nov_coop_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+        
+        ntimelags = 1
+        if timelag == 0:
+            ntimelags = 3
+            MI_coop_self_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps*3,6])
+            MI_coop_self_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+            MI_nov_coop_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps*3,6])
+            MI_nov_coop_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+        if timelag == 12:
+            ntimelags = 2
+            MI_coop_self_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps*2,6])
+            MI_coop_self_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+            MI_nov_coop_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps*2,6])
+            MI_nov_coop_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+
+            
+
+        for ianimalpair in np.arange(0,nanimalpairs,1):
+            animal1_fixedorder = animal1_fixedorders[ianimalpair]
+            animal2_fixedorder = animal2_fixedorders[ianimalpair]
+            #
+            data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'
+            #
+            if moreSampSize:
+                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+                    weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+                    weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+                    sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+            else:
+                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+                    weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+                    weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+                    sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+
+            # make sure these variables are the same as in the previous steps
+            # temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+            temp_resolus = [1] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+            ntemp_reses = np.shape(temp_resolus)[0]
+            #
+            if moreSampSize:
+                # different data (down/re)sampling numbers
+                # samplingsizes = np.arange(1100,3000,100)
+                samplingsizes = [1100]
+                # samplingsizes = [100,500,1000,1500,2000,2500,3000]        
+                # samplingsizes = [100,500]
+                # samplingsizes_name = ['100','500','1000','1500','2000','2500','3000']
+                samplingsizes_name = list(map(str, samplingsizes))
+            else:
+                samplingsizes_name = ['min_row_number']   
+            nsamplings = np.shape(samplingsizes_name)[0]
+
+            #
+            temp_resolu = temp_resolus[0]
+            j_sampsize_name = samplingsizes_name[0]    
+
+            # load edge weight data    
+            weighted_graphs_self = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_basetype]
+            weighted_graphs_sf_self = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_basetype]
+            sig_edges_self = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_basetype]
+            #
+            weighted_graphs_coop = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_comptype]
+            weighted_graphs_sf_coop = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_comptype]
+            sig_edges_coop = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_comptype]
+            #
+            weighted_graphs_nov = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_conttype]
+            weighted_graphs_sf_nov = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_conttype]
+            sig_edges_nov = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_conttype]
+
+            ## mainly for dannon kanga because they dont have coop3s
+            if np.shape(weighted_graphs_coop)[0]==0:
+                weighted_graphs_coop = np.ones((95,12,4))*np.nan
+                weighted_graphs_sf_coop = np.ones((95,12,4))*np.nan
+                sig_edges_coop = np.ones((12,4))*np.nan
+            
+            # organize the key edge data
+            weighted_graphs_self_mean = weighted_graphs_self.mean(axis=0)
+            weighted_graphs_coop_mean = weighted_graphs_coop.mean(axis=0)
+            weighted_graphs_nov_mean = weighted_graphs_nov.mean(axis=0)
+            # MI_coop_self = (weighted_graphs_coop_mean-weighted_graphs_self_mean)/(weighted_graphs_coop_mean+weighted_graphs_self_mean)
+            # MI_nov_coop = (weighted_graphs_nov_mean-weighted_graphs_coop_mean)/(weighted_graphs_nov_mean+weighted_graphs_coop_mean)
+            # MI_coop_self = ((weighted_graphs_coop-weighted_graphs_self)/(weighted_graphs_coop+weighted_graphs_self)).mean(axis=0)
+            # MI_nov_coop = ((weighted_graphs_nov-weighted_graphs_coop)/(weighted_graphs_nov+weighted_graphs_coop)).mean(axis=0)
+            #
+            if 0:
+                MI_coop_self_all = weighted_graphs_coop-weighted_graphs_self
+                MI_nov_coop_all = weighted_graphs_nov-weighted_graphs_coop  
+                MI_coop_self = (weighted_graphs_coop-weighted_graphs_self).mean(axis=0)
+                MI_nov_coop = (weighted_graphs_nov-weighted_graphs_coop).mean(axis=0)
+                #
+                sig_edges_coop_self = ((sig_edges_coop+sig_edges_self)>0)*1
+                sig_edges_nov_coop = ((sig_edges_coop+sig_edges_nov)>0)*1
+                #
+                MI_coop_self = MI_coop_self * sig_edges_coop_self
+                MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
+                #
+                nMIbootstraps = 1
+            else:
+                nMIbootstraps = 150
+                #
+                MI_coop_self_all,sig_edges_coop_self = Modulation_Index(weighted_graphs_self, weighted_graphs_coop,
+                                                  sig_edges_self, sig_edges_coop, nMIbootstraps)
+                # MI_coop_self_all = MI_coop_self_all * sig_edges_coop_self
+                # MI_coop_self_all[MI_coop_self_all==0] = np.nan
+                MI_coop_self = np.nanmean(MI_coop_self_all,axis = 0)
+                # MI_coop_self = MI_coop_self * sig_edges_coop_self
+                
+                MI_nov_coop_all,sig_edges_nov_coop  = Modulation_Index(weighted_graphs_coop, weighted_graphs_nov,
+                                                  sig_edges_coop, sig_edges_nov, nMIbootstraps)
+                # MI_nov_coop_all = MI_nov_coop_all * sig_edges_nov_coop
+                # MI_nov_coop_all[MI_nov_coop_all==0] = np.nan
+                MI_nov_coop = np.nanmean(MI_nov_coop_all,axis = 0)
+                # MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
+    
+            #
+            if timelag == 1:
+                pull_pull_fromNodes_all = [9,8]
+                pull_pull_toNodes_all = [0,1]
+                #
+                gaze_gaze_fromNodes_all = [11,10]
+                gaze_gaze_toNodes_all = [2,3]
+                #
+                within_pullgaze_fromNodes_all = [8,9]
+                within_pullgaze_toNodes_all = [2,3]
+                #
+                across_pullgaze_fromNodes_all = [9,8]
+                across_pullgaze_toNodes_all = [2,3]
+                #
+                within_gazepull_fromNodes_all = [10,11]
+                within_gazepull_toNodes_all = [0,1]
+                #
+                across_gazepull_fromNodes_all = [11,10]
+                across_gazepull_toNodes_all = [0,1]
+                #
+                ntimelags = 1
+                #
+            elif timelag == 2:
+                pull_pull_fromNodes_all = [5,4]
+                pull_pull_toNodes_all = [0,1]
+                #
+                gaze_gaze_fromNodes_all = [7,6]
+                gaze_gaze_toNodes_all = [2,3]
+                #
+                within_pullgaze_fromNodes_all = [4,5]
+                within_pullgaze_toNodes_all = [2,3]
+                #
+                across_pullgaze_fromNodes_all = [5,4]
+                across_pullgaze_toNodes_all = [2,3]
+                #
+                within_gazepull_fromNodes_all = [6,7]
+                within_gazepull_toNodes_all = [0,1]
+                #
+                across_gazepull_fromNodes_all = [7,6]
+                across_gazepull_toNodes_all = [0,1]
+                #
+                ntimelags = 1
+                #
+            elif timelag == 3:
+                pull_pull_fromNodes_all = [1,0]
+                pull_pull_toNodes_all = [0,1]
+                #
+                gaze_gaze_fromNodes_all = [3,2]
+                gaze_gaze_toNodes_all = [2,3]
+                #
+                within_pullgaze_fromNodes_all = [0,1]
+                within_pullgaze_toNodes_all = [2,3]
+                #
+                across_pullgaze_fromNodes_all = [1,0]
+                across_pullgaze_toNodes_all = [2,3]
+                #
+                within_gazepull_fromNodes_all = [2,3]
+                within_gazepull_toNodes_all = [0,1]
+                #
+                across_gazepull_fromNodes_all = [3,2]
+                across_gazepull_toNodes_all = [0,1]
+                #
+                ntimelags = 1
+                #
+            elif timelag == 0:
+                pull_pull_fromNodes_all = [[1,5,9],[0,4,8]]
+                pull_pull_toNodes_all = [[0,0,0],[1,1,1]]
+                #
+                gaze_gaze_fromNodes_all = [[3,7,11],[2,6,10]]
+                gaze_gaze_toNodes_all = [[2,2,2],[3,3,3]]
+                #
+                within_pullgaze_fromNodes_all = [[0,4,8],[1,5,9]]
+                within_pullgaze_toNodes_all = [[2,2,2],[3,3,3]]
+                #
+                across_pullgaze_fromNodes_all = [[1,5,9],[0,4,8]]
+                across_pullgaze_toNodes_all = [[2,2,2],[3,3,3]]
+                #
+                within_gazepull_fromNodes_all = [[2,6,10],[3,7,11]]
+                within_gazepull_toNodes_all = [[0,0,0],[1,1,1]]
+                #
+                across_gazepull_fromNodes_all = [[3,7,11],[2,6,10]]
+                across_gazepull_toNodes_all = [[0,0,0],[1,1,1]]
+                #
+                ntimelags = 3
+                #
+            elif timelag == 12:
+                pull_pull_fromNodes_all = [[5,9],[4,8]]
+                pull_pull_toNodes_all = [[0,0],[1,1]]
+                #
+                gaze_gaze_fromNodes_all = [[7,11],[6,10]]
+                gaze_gaze_toNodes_all = [[2,2],[3,3]]
+                #
+                within_pullgaze_fromNodes_all = [[4,8],[5,9]]
+                within_pullgaze_toNodes_all = [[2,2],[3,3]]
+                #
+                across_pullgaze_fromNodes_all = [[5,9],[4,8]]
+                across_pullgaze_toNodes_all = [[2,2],[3,3]]
+                #
+                within_gazepull_fromNodes_all = [[6,10],[7,11]]
+                within_gazepull_toNodes_all = [[0,0],[1,1]]
+                #
+                across_gazepull_fromNodes_all = [[7,11],[6,10]]
+                across_gazepull_toNodes_all = [[0,0],[1,1]]
+                #
+                ntimelags = 2
+                #
+    
+    
+            for ianimal in np.arange(0,2,1):
+
+                # coop self modulation
+                # pull-pull
+                a1 = MI_coop_self_all[:,pull_pull_fromNodes_all[ianimal],pull_pull_toNodes_all[ianimal]].flatten()
+                xxx1 = np.nanmean(a1)
+                MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,0] = a1
+                MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,0] = xxx1
+                # gaze-gaze
+                a2 = (MI_coop_self_all[:,gaze_gaze_fromNodes_all[ianimal],gaze_gaze_toNodes_all[ianimal]]).flatten()
+                xxx2 = np.nanmean(a2)
+                MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,1] = a2
+                MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,1] = xxx2
+                # within animal gazepull
+                a3 = (MI_coop_self_all[:,within_gazepull_fromNodes_all[ianimal],within_gazepull_toNodes_all[ianimal]]).flatten()
+                xxx3 = np.nanmean(a3)
+                MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,2] = a3
+                MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,2] = xxx3
+                # across animal gazepull
+                a4 = (MI_coop_self_all[:,across_gazepull_fromNodes_all[ianimal],across_gazepull_toNodes_all[ianimal]]).flatten()
+                xxx4 = np.nanmean(a4)
+                MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,3] = a4
+                MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,3] = xxx4
+                # within animal pullgaze
+                a5 = (MI_coop_self_all[:,within_pullgaze_fromNodes_all[ianimal],within_pullgaze_toNodes_all[ianimal]]).flatten()
+                xxx5 = np.nanmean(a5)
+                MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,4] = a5
+                MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,4] = xxx5
+                # across animal pullgaze
+                a6 = (MI_coop_self_all[:,across_pullgaze_fromNodes_all[ianimal],across_pullgaze_toNodes_all[ianimal]]).flatten()
+                xxx6 = np.nanmean(a6)
+                MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,5] = a6
+                MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,5] = xxx6
+
+
+                # novision coop modulation
+                # pull-pull
+                a1 = MI_nov_coop_all[:,pull_pull_fromNodes_all[ianimal],pull_pull_toNodes_all[ianimal]].flatten()
+                xxx1 = np.nanmean(a1)
+                MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,0] = a1
+                MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,0] = xxx1
+                # gaze-gaze
+                a2 = (MI_nov_coop_all[:,gaze_gaze_fromNodes_all[ianimal],gaze_gaze_toNodes_all[ianimal]]).flatten()
+                xxx2 = np.nanmean(a2)
+                MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,1] = a2
+                MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,1] = xxx2
+                # within animal gazepull
+                a3 = (MI_nov_coop_all[:,within_gazepull_fromNodes_all[ianimal],within_gazepull_toNodes_all[ianimal]]).flatten()
+                xxx3 = np.nanmean(a3)
+                MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,2] = a3
+                MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,2] = xxx3
+                # across animal gazepull
+                a4 = (MI_nov_coop_all[:,across_gazepull_fromNodes_all[ianimal],across_gazepull_toNodes_all[ianimal]]).flatten()
+                xxx4 = np.nanmean(a4)
+                MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,3] = a4
+                MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,3] = xxx4
+                # within animal pullgaze
+                a5 = (MI_nov_coop_all[:,within_pullgaze_fromNodes_all[ianimal],within_pullgaze_toNodes_all[ianimal]]).flatten()
+                xxx5 = np.nanmean(a5)
+                MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,4] = a5
+                MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,4] = xxx5
+                # across animal pullgaze
+                a6 = (MI_nov_coop_all[:,across_pullgaze_fromNodes_all[ianimal],across_pullgaze_toNodes_all[ianimal]]).flatten()
+                xxx6 = np.nanmean(a6)
+                MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,5] = a6
+                MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,5] = xxx6
+
+
+        # prepare the data
+        # average all animals for each dependency
+        MI_coop_self_all_IndiAni_all = MI_coop_self_all_IndiAni.reshape(nanimalpooled*nMIbootstraps*ntimelags,6)
+        MI_nov_coop_all_IndiAni_all = MI_nov_coop_all_IndiAni.reshape(nanimalpooled*nMIbootstraps*ntimelags,6)
+        MI_coop_self_all_IndiAni_allmean = np.nanmean(MI_coop_self_all_IndiAni_all,axis=0)
+        MI_nov_coop_all_IndiAni_allmean = np.nanmean(MI_nov_coop_all_IndiAni_all,axis=0) 
+        MI_coop_self_all_IndiAni_allse = np.nanstd(MI_coop_self_all_IndiAni_all,axis=0)/np.sqrt(nanimalpooled*nMIbootstraps*ntimelags) 
+        MI_nov_coop_all_IndiAni_allse = np.nanstd(MI_nov_coop_all_IndiAni_all,axis=0)/np.sqrt(nanimalpooled*nMIbootstraps*ntimelags) 
+
+
+        # pool everything together
+        MI_coop_self_all_IndiAni_pooled[MI_comptype] = MI_coop_self_all_IndiAni_all
+        MI_nov_coop_all_IndiAni_pooled[MI_comptype] = MI_nov_coop_all_IndiAni_all
+        MI_coop_self_mean_IndiAni_pooled[MI_comptype] = MI_coop_self_mean_IndiAni
+        MI_nov_coop_mean_IndiAni_pooled[MI_comptype] = MI_nov_coop_mean_IndiAni
+    
+
+    
+
+    # plot 
+
+    # all bootstraps
+    # coop (1s)
+    MI_coop_self_all_IndiAni_MC1s_df = pd.DataFrame(MI_coop_self_all_IndiAni_pooled['coop(1s)'])
+    MI_coop_self_all_IndiAni_MC1s_df.columns = dependencynames
+    MI_coop_self_all_IndiAni_MC1s_df['MItype'] = 'coop(1s)'
+    MI_coop_self_all_IndiAni_MC1s_df['CTtype'] = MI_basetype
+    MI_coop_self_all_IndiAni_MC1s_df['pullgaze_merged'] = (MI_coop_self_all_IndiAni_MC1s_df['within_gazepull']+MI_coop_self_all_IndiAni_MC1s_df['across_pullgaze'])/2
+    #
+    MI_nov_coop_all_IndiAni_MC1s_df = pd.DataFrame(MI_nov_coop_all_IndiAni_pooled['coop(1s)'])
+    MI_nov_coop_all_IndiAni_MC1s_df.columns = dependencynames
+    MI_nov_coop_all_IndiAni_MC1s_df['MItype'] = 'coop(1s)'
+    MI_nov_coop_all_IndiAni_MC1s_df['CTtype'] = MI_conttype
+    MI_nov_coop_all_IndiAni_MC1s_df['pullgaze_merged'] = (MI_nov_coop_all_IndiAni_MC1s_df['within_gazepull']+MI_nov_coop_all_IndiAni_MC1s_df['across_pullgaze'])/2
+
+    # coop (1.5s)
+    MI_coop_self_all_IndiAni_MC15s_df = pd.DataFrame(MI_coop_self_all_IndiAni_pooled['coop(1.5s)'])
+    MI_coop_self_all_IndiAni_MC15s_df.columns = dependencynames
+    MI_coop_self_all_IndiAni_MC15s_df['MItype'] = 'coop(1.5s)'
+    MI_coop_self_all_IndiAni_MC15s_df['CTtype'] = MI_basetype
+    MI_coop_self_all_IndiAni_MC15s_df['pullgaze_merged'] = (MI_coop_self_all_IndiAni_MC15s_df['within_gazepull']+MI_coop_self_all_IndiAni_MC15s_df['across_pullgaze'])/2
+    #
+    MI_nov_coop_all_IndiAni_MC15s_df = pd.DataFrame(MI_nov_coop_all_IndiAni_pooled['coop(1.5s)'])
+    MI_nov_coop_all_IndiAni_MC15s_df.columns = dependencynames
+    MI_nov_coop_all_IndiAni_MC15s_df['MItype'] = 'coop(1.5s)'
+    MI_nov_coop_all_IndiAni_MC15s_df['CTtype'] = MI_conttype
+    MI_nov_coop_all_IndiAni_MC15s_df['pullgaze_merged'] = (MI_nov_coop_all_IndiAni_MC15s_df['within_gazepull']+MI_nov_coop_all_IndiAni_MC15s_df['across_pullgaze'])/2
+    
+    # coop (2s)
+    MI_coop_self_all_IndiAni_MC2s_df = pd.DataFrame(MI_coop_self_all_IndiAni_pooled['coop(2s)'])
+    MI_coop_self_all_IndiAni_MC2s_df.columns = dependencynames
+    MI_coop_self_all_IndiAni_MC2s_df['MItype'] = 'coop(2s)'
+    MI_coop_self_all_IndiAni_MC2s_df['CTtype'] = MI_basetype
+    MI_coop_self_all_IndiAni_MC2s_df['pullgaze_merged'] = (MI_coop_self_all_IndiAni_MC2s_df['within_gazepull']+MI_coop_self_all_IndiAni_MC2s_df['across_pullgaze'])/2
+    #
+    MI_nov_coop_all_IndiAni_MC2s_df = pd.DataFrame(MI_nov_coop_all_IndiAni_pooled['coop(2s)'])
+    MI_nov_coop_all_IndiAni_MC2s_df.columns = dependencynames
+    MI_nov_coop_all_IndiAni_MC2s_df['MItype'] = 'coop(2s)'
+    MI_nov_coop_all_IndiAni_MC2s_df['CTtype'] = MI_conttype
+    MI_nov_coop_all_IndiAni_MC2s_df['pullgaze_merged'] = (MI_nov_coop_all_IndiAni_MC2s_df['within_gazepull']+MI_nov_coop_all_IndiAni_MC2s_df['across_pullgaze'])/2
+    
+    # coop (3s)
+    MI_coop_self_all_IndiAni_MC3s_df = pd.DataFrame(MI_coop_self_all_IndiAni_pooled['coop(3s)'])
+    MI_coop_self_all_IndiAni_MC3s_df.columns = dependencynames
+    MI_coop_self_all_IndiAni_MC3s_df['MItype'] = 'coop(3s)'
+    MI_coop_self_all_IndiAni_MC3s_df['CTtype'] = MI_basetype
+    MI_coop_self_all_IndiAni_MC3s_df['pullgaze_merged'] = (MI_coop_self_all_IndiAni_MC3s_df['within_gazepull']+MI_coop_self_all_IndiAni_MC3s_df['across_pullgaze'])/2
+    #
+    MI_nov_coop_all_IndiAni_MC3s_df = pd.DataFrame(MI_nov_coop_all_IndiAni_pooled['coop(3s)'])
+    MI_nov_coop_all_IndiAni_MC3s_df.columns = dependencynames
+    MI_nov_coop_all_IndiAni_MC3s_df['MItype'] = 'coop(3s)'
+    MI_nov_coop_all_IndiAni_MC3s_df['CTtype'] = MI_conttype
+    MI_nov_coop_all_IndiAni_MC3s_df['pullgaze_merged'] = (MI_nov_coop_all_IndiAni_MC3s_df['within_gazepull']+MI_nov_coop_all_IndiAni_MC3s_df['across_pullgaze'])/2
+    
+    #
+    df_long_bt =pd.concat([MI_coop_self_all_IndiAni_MC3s_df,MI_nov_coop_all_IndiAni_MC3s_df,
+                           MI_coop_self_all_IndiAni_MC2s_df,MI_nov_coop_all_IndiAni_MC2s_df,
+                           MI_coop_self_all_IndiAni_MC15s_df,MI_nov_coop_all_IndiAni_MC15s_df,
+                           MI_coop_self_all_IndiAni_MC1s_df,MI_nov_coop_all_IndiAni_MC1s_df,])
+    df_long2_bt = df_long_bt.melt(id_vars=['MItype','CTtype'], value_vars=dependencytargets,
+                                  var_name='condition', value_name='value')
+
+    #
+    # average for each animal individuals
+    # coop (1s)
+    MI_coop_self_mean_IndiAni_MC1s_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled['coop(1s)'])
+    MI_coop_self_mean_IndiAni_MC1s_df.columns = dependencynames
+    MI_coop_self_mean_IndiAni_MC1s_df['MItype'] = 'coop(1s)'
+    MI_coop_self_mean_IndiAni_MC1s_df['CTtype'] = MI_basetype
+    MI_coop_self_mean_IndiAni_MC1s_df['pullgaze_merged'] = (MI_coop_self_mean_IndiAni_MC1s_df['within_gazepull']+MI_coop_self_mean_IndiAni_MC1s_df['across_pullgaze'])/2
+    #
+    MI_nov_coop_mean_IndiAni_MC1s_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled['coop(1s)'])
+    MI_nov_coop_mean_IndiAni_MC1s_df.columns = dependencynames
+    MI_nov_coop_mean_IndiAni_MC1s_df['MItype'] = 'coop(1s)'
+    MI_nov_coop_mean_IndiAni_MC1s_df['CTtype'] = MI_conttype
+    MI_nov_coop_mean_IndiAni_MC1s_df['pullgaze_merged'] = (MI_nov_coop_mean_IndiAni_MC1s_df['within_gazepull']+MI_nov_coop_mean_IndiAni_MC1s_df['across_pullgaze'])/2
+
+    # coop (1.5s)
+    MI_coop_self_mean_IndiAni_MC15s_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled['coop(1.5s)'])
+    MI_coop_self_mean_IndiAni_MC15s_df.columns = dependencynames
+    MI_coop_self_mean_IndiAni_MC15s_df['MItype'] = 'coop(1.5s)'
+    MI_coop_self_mean_IndiAni_MC15s_df['CTtype'] = MI_basetype
+    MI_coop_self_mean_IndiAni_MC15s_df['pullgaze_merged'] = (MI_coop_self_mean_IndiAni_MC15s_df['within_gazepull']+MI_coop_self_mean_IndiAni_MC15s_df['across_pullgaze'])/2
+    #
+    MI_nov_coop_mean_IndiAni_MC15s_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled['coop(1.5s)'])
+    MI_nov_coop_mean_IndiAni_MC15s_df.columns = dependencynames
+    MI_nov_coop_mean_IndiAni_MC15s_df['MItype'] = 'coop(1.5s)'
+    MI_nov_coop_mean_IndiAni_MC15s_df['CTtype'] = MI_conttype
+    MI_nov_coop_mean_IndiAni_MC15s_df['pullgaze_merged'] = (MI_nov_coop_mean_IndiAni_MC15s_df['within_gazepull']+MI_nov_coop_mean_IndiAni_MC15s_df['across_pullgaze'])/2
+    
+    # coop (2s)
+    MI_coop_self_mean_IndiAni_MC2s_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled['coop(2s)'])
+    MI_coop_self_mean_IndiAni_MC2s_df.columns = dependencynames
+    MI_coop_self_mean_IndiAni_MC2s_df['MItype'] = 'coop(2s)'
+    MI_coop_self_mean_IndiAni_MC2s_df['CTtype'] = MI_basetype
+    MI_coop_self_mean_IndiAni_MC2s_df['pullgaze_merged'] = (MI_coop_self_mean_IndiAni_MC2s_df['within_gazepull']+MI_coop_self_mean_IndiAni_MC2s_df['across_pullgaze'])/2
+    #
+    MI_nov_coop_mean_IndiAni_MC2s_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled['coop(2s)'])
+    MI_nov_coop_mean_IndiAni_MC2s_df.columns = dependencynames
+    MI_nov_coop_mean_IndiAni_MC2s_df['MItype'] = 'coop(2s)'
+    MI_nov_coop_mean_IndiAni_MC2s_df['CTtype'] = MI_conttype
+    MI_nov_coop_mean_IndiAni_MC2s_df['pullgaze_merged'] = (MI_nov_coop_mean_IndiAni_MC2s_df['within_gazepull']+MI_nov_coop_mean_IndiAni_MC2s_df['across_pullgaze'])/2
+
+    # coop (3s)
+    MI_coop_self_mean_IndiAni_MC3s_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled['coop(3s)'])
+    MI_coop_self_mean_IndiAni_MC3s_df.columns = dependencynames
+    MI_coop_self_mean_IndiAni_MC3s_df['MItype'] = 'coop(3s)'
+    MI_coop_self_mean_IndiAni_MC3s_df['CTtype'] = MI_basetype
+    MI_coop_self_mean_IndiAni_MC3s_df['pullgaze_merged'] = (MI_coop_self_mean_IndiAni_MC3s_df['within_gazepull']+MI_coop_self_mean_IndiAni_MC3s_df['across_pullgaze'])/2
+    #
+    MI_nov_coop_mean_IndiAni_MC3s_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled['coop(3s)'])
+    MI_nov_coop_mean_IndiAni_MC3s_df.columns = dependencynames
+    MI_nov_coop_mean_IndiAni_MC3s_df['MItype'] = 'coop(3s)'
+    MI_nov_coop_mean_IndiAni_MC3s_df['CTtype'] = MI_conttype
+    MI_nov_coop_mean_IndiAni_MC3s_df['pullgaze_merged'] = (MI_nov_coop_mean_IndiAni_MC3s_df['within_gazepull']+MI_nov_coop_mean_IndiAni_MC3s_df['across_pullgaze'])/2
+    
+    df_long=pd.concat([MI_coop_self_mean_IndiAni_MC3s_df,MI_nov_coop_mean_IndiAni_MC3s_df,
+                       MI_coop_self_mean_IndiAni_MC2s_df,MI_nov_coop_mean_IndiAni_MC2s_df,
+                       MI_coop_self_mean_IndiAni_MC15s_df,MI_nov_coop_mean_IndiAni_MC15s_df,
+                       MI_coop_self_mean_IndiAni_MC1s_df,MI_nov_coop_mean_IndiAni_MC1s_df,])
+    df_long2 = df_long.melt(id_vars=['MItype','CTtype'], value_vars=dependencytargets,
+                        var_name='condition', value_name='value')
+    
+    # for plot
+    for idep in np.arange(0,ndeptargets,1):
+        ind = df_long2.condition==dependencytargets[idep]
+        # ind = df_long2_bt.condition==dependencytargets[idep]
+        #
+        if ntimelags_forplot == 1:
+            seaborn.lineplot(ax=axs[idep],data=df_long2[ind],x='MItype',y='value',hue='CTtype')
+            # seaborn.lineplot(ax=axs[idep],data=df_long2_bt[ind],x='MItype',y='value',hue='CTtype')
+            axs[idep].plot([0,3],[0,0],'k--')
+            axs[idep].set_ylabel('Modulation Index',fontsize=20)
+            axs[idep].set_title(timelagname+' '+dependencytargets[idep],fontsize=24)
+            axs[idep].set_ylim([-1.02,1.02])
+            #
+            # add statistics
+            CTtypes = [MI_basetype,MI_conttype]
+            CTtype_plotlocs = [.75,-.75]
+            nCTtypes = np.shape(CTtypes)[0]
+            for iMItype in np.arange(0,nMI_comptypes,1):
+                MItype_totest = MI_comptypes[iMItype]
+                #
+                for iCTtype in np.arange(0,nCTtypes,1):
+                    CTtype_totest = CTtypes[iCTtype]
+                    # 
+                    ind_totest = (df_long2['condition']==dependencytargets[idep])&(df_long2['MItype']==MItype_totest)&(df_long2['CTtype']==CTtype_totest)
+                    data_totest = np.array(df_long2[ind_totest]['value'])
+                    pp = st.ttest_1samp(data_totest[~np.isnan(data_totest)],0).pvalue
+                    # pp = st.wilcoxon(data_totest[~np.isnan(data_totest)]).pvalue
+                    # 
+                    if pp<=0.001:
+                        axs[idep].text(iMItype,CTtype_plotlocs[iCTtype],'***',fontsize=20)
+                    elif pp<=0.01:
+                        axs[idep].text(iMItype,CTtype_plotlocs[iCTtype],'**',fontsize=20)
+                    elif pp<=0.05:
+                        axs[idep].text(iMItype,CTtype_plotlocs[iCTtype],'*',fontsize=20)
+                    
+                    
+        else:
+            seaborn.lineplot(ax=axs[itimelag,idep],data=df_long2[ind],x='MItype',y='value',hue='CTtype')
+            # seaborn.lineplot(ax=axs[itimelag,idep],data=df_long2_bt[ind],x='MItype',y='value',hue='CTtype')
+            axs[itimelag,idep].plot([0,3],[0,0],'k--')
+            axs[itimelag,idep].set_ylabel('Modulation Index',fontsize=20)
+            axs[itimelag,idep].set_title(timelagname+' '+dependencytargets[idep],fontsize=24)
+            axs[itimelag,idep].set_ylim([-1.02,1.02])
+            #
+            # add statistics
+            CTtypes = [MI_basetype,MI_conttype]
+            CTtype_plotlocs = [.75,-.75]
+            nCTtypes = np.shape(CTtypes)[0]
+            for iMItype in np.arange(0,nMI_comptypes,1):
+                MItype_totest = MI_comptypes[iMItype]
+                #
+                for iCTtype in np.arange(0,nCTtypes,1):
+                    CTtype_totest = CTtypes[iCTtype]
+                    # 
+                    ind_totest = (df_long2['condition']==dependencytargets[idep])&(df_long2['MItype']==MItype_totest)&(df_long2['CTtype']==CTtype_totest)
+                    data_totest = np.array(df_long2[ind_totest]['value'])
+                    pp = st.ttest_1samp(data_totest[~np.isnan(data_totest)],0).pvalue
+                    # pp = st.wilcoxon(data_totest[~np.isnan(data_totest)]).pvalue
+                    # 
+                    if pp<=0.001:
+                        axs[itimelag,idep].text(iMItype,CTtype_plotlocs[iCTtype],'***',fontsize=20)
+                    elif pp<=0.01:
+                        axs[itimelag,idep].text(iMItype,CTtype_plotlocs[iCTtype],'**',fontsize=20)
+                    elif pp<=0.05:
+                        axs[itimelag,idep].text(iMItype,CTtype_plotlocs[iCTtype],'*',fontsize=20)
+        
+
+savefig = 1
+if savefig:
+    if moreSampSize:
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'
+        if not os.path.exists(figsavefolder):
+            os.makedirs(figsavefolder)
+        plt.savefig(figsavefolder+'threeTimeLag_Edge_ModulationIndex_'+timelagname+'Lag_IndiAnimal_summarized_'+str(temp_resolu)+'_'+str(j_sampsize_name)+'_rows_subset_basedonToNodes_multiTimeLag_multiCoopsOnePanel.pdf')
+    else:
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'
+        if not os.path.exists(figsavefolder):
+            os.makedirs(figsavefolder)
+        plt.savefig(figsavefolder+'threeTimeLag_Edge_ModulationIndex_'+timelagname+'Lag_IndiAnimal_summarized_'+str(temp_resolu)+'_'+j_sampsize_name+'_subset_basedonToNodes_multiTimeLag_multiCoopsOnePanel.pdf')
+           
+    
 
 
 # In[ ]:
 
 
-scipy.stats.wilcoxon(MI_coop_self_mean_IndiAni_3s_df['pull-pull'])
+scipy.stats.ranksums(np.array(MI_coop_self_mean_IndiAni_MC3s_df['within_gazepull']),np.array(MI_coop_self_mean_IndiAni_MC2s_df['within_gazepull']))
 
 
 # In[ ]:
 
 
-scipy.stats.wilcoxon(MI_coop_self_all_IndiAni_3s_df['across_gazepull'])
+df_long[df_long['CTtype']=='self']
+
+
+# ##### same as the previous plot, but plot based on male, female, dom, or sub
+
+# In[ ]:
+
+
+# PLOT multiple pairs in one plot, so need to load data seperately
+moreSampSize = 0
+#
+animal1_fixedorders = ['eddie','dodson','dannon','ginger','koala']
+animal2_fixedorders = ['sparkle','scorch','kanga','kanga','vermelho']
+animal_pooled_list = ['E','SP','DO','SC','DA','KwDA','G','KwG','KO','V']
+
+animalgrouptype = 'female' # male, female, dom, sub
+if animalgrouptype == 'male':
+    anigroupID = [0,2,4,9]
+elif animalgrouptype == 'female':
+    anigroupID = [1,3,5,6,7,8]
+elif animalgrouptype == 'sub':
+    anigroupID = [0,2,4,6,8]
+elif animalgrouptype == 'dom':
+    anigroupID = [1,3,5,7,9]    
+    
+# dannon kanga did not have coop 3s data
+# animal1_fixedorders = ['eddie','dodson','ginger','koala']
+# animal2_fixedorders = ['sparkle','scorch','kanga','vermelho']
+# animal_pooled_list = ['E','SP','DO','SC','G','KwG','KO','V']
+
+nanimalpairs = np.shape(animal1_fixedorders)[0]
+nanimalpooled = np.shape(animal_pooled_list)[0]
+
+nMIbootstraps = 150
+
+# timelags = [1,2,3] # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag 1 and 2)
+timelags = [0]
+# timelags = [12]
+# timelagnames = ['1secondlag','2secondlag','3secondlag'] # '1/2/3second' or 'merged' or '12merged'
+timelagnames = ['merged'] # together with timelag = 0
+# timelagnames = ['12merged'] # together with timelag = 12
+ntimelags_forplot = np.shape(timelags)[0]
+
+
+MI_basetype = 'self' # 'self'; other options: 'coop(2s)', 'coop(1.5s)'
+MI_comptypes = ['coop(3s)','coop(2s)','coop(1.5s)','coop(1s)'] # coop(1s)'; other options: 'coop(2s)', 'coop(1.5s)'
+# MI_comptypes = ['coop(3s)','coop(2s)'] # coop(1s)'; other options: 'coop(2s)', 'coop(1.5s)'
+MI_conttype = 'no-vision' # 'no-vision'; other options: 'coop(2s)', 'coop(1.5s)'
+nMI_comptypes = np.shape(MI_comptypes)[0]
+
+# for plot
+dependencynames = ['pull-pull','gaze-gaze','within_gazepull','across_gazepull','within_pullgaze','across_pullgaze']
+dependencytargets = dependencynames
+# dependencytargets = ['pull-pull','within_gazepull','across_pullgaze']
+# dependencytargets = ['pull-pull','within_gazepull','across_pullgaze','pullgaze_merged']
+ndeptargets = np.shape(dependencytargets)[0]
+    
+#
+fig, axs = plt.subplots(ntimelags_forplot, ndeptargets)
+fig.set_figheight(10*ntimelags_forplot)
+fig.set_figwidth(10*ndeptargets)
+
+#
+for itimelag in np.arange(0,ntimelags_forplot,1):
+    timelag = timelags[itimelag]
+    timelagname = timelagnames[itimelag]
+    
+    MI_coop_self_all_IndiAni_pooled = dict.fromkeys(MI_comptypes,[])
+    MI_nov_coop_all_IndiAni_pooled =  dict.fromkeys(MI_comptypes,[])
+    MI_coop_self_mean_IndiAni_pooled =dict.fromkeys(MI_comptypes,[])
+    MI_nov_coop_mean_IndiAni_pooled = dict.fromkeys(MI_comptypes,[])
+    
+    for iMI_comptype in np.arange(0,nMI_comptypes,1):
+        MI_comptype = MI_comptypes[iMI_comptype]
+        
+        # 
+        MI_coop_self_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps,6])
+        MI_coop_self_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+        MI_nov_coop_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps,6])
+        MI_nov_coop_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+        
+        ntimelags = 1
+        if timelag == 0:
+            ntimelags = 3
+            MI_coop_self_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps*3,6])
+            MI_coop_self_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+            MI_nov_coop_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps*3,6])
+            MI_nov_coop_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+        if timelag == 12:
+            ntimelags = 2
+            MI_coop_self_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps*2,6])
+            MI_coop_self_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+            MI_nov_coop_all_IndiAni = np.zeros([nanimalpairs*2,nMIbootstraps*2,6])
+            MI_nov_coop_mean_IndiAni = np.zeros([nanimalpairs*2,6])
+
+            
+
+        for ianimalpair in np.arange(0,nanimalpairs,1):
+            animal1_fixedorder = animal1_fixedorders[ianimalpair]
+            animal2_fixedorder = animal2_fixedorders[ianimalpair]
+            #
+            data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder+animal2_fixedorder+'/'
+            #
+            if moreSampSize:
+                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+                    weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+                    weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'_moreSampSize.pkl', 'rb') as f:
+                    sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+            else:
+                with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+                    weighted_graphs_diffTempRo_diffSampSize = pickle.load(f)
+                with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+                    weighted_graphs_shuffled_diffTempRo_diffSampSize = pickle.load(f)
+                with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder+animal2_fixedorder+'.pkl', 'rb') as f:
+                    sig_edges_diffTempRo_diffSampSize = pickle.load(f)
+
+            # make sure these variables are the same as in the previous steps
+            # temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+            temp_resolus = [1] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+            ntemp_reses = np.shape(temp_resolus)[0]
+            #
+            if moreSampSize:
+                # different data (down/re)sampling numbers
+                # samplingsizes = np.arange(1100,3000,100)
+                samplingsizes = [1100]
+                # samplingsizes = [100,500,1000,1500,2000,2500,3000]        
+                # samplingsizes = [100,500]
+                # samplingsizes_name = ['100','500','1000','1500','2000','2500','3000']
+                samplingsizes_name = list(map(str, samplingsizes))
+            else:
+                samplingsizes_name = ['min_row_number']   
+            nsamplings = np.shape(samplingsizes_name)[0]
+
+            #
+            temp_resolu = temp_resolus[0]
+            j_sampsize_name = samplingsizes_name[0]    
+
+            # load edge weight data    
+            weighted_graphs_self = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_basetype]
+            weighted_graphs_sf_self = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_basetype]
+            sig_edges_self = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_basetype]
+            #
+            weighted_graphs_coop = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_comptype]
+            weighted_graphs_sf_coop = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_comptype]
+            sig_edges_coop = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_comptype]
+            #
+            weighted_graphs_nov = weighted_graphs_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_conttype]
+            weighted_graphs_sf_nov = weighted_graphs_shuffled_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_conttype]
+            sig_edges_nov = sig_edges_diffTempRo_diffSampSize[(str(temp_resolu),j_sampsize_name)][MI_conttype]
+
+            ## mainly for dannon kanga because they dont have coop3s
+            if np.shape(weighted_graphs_coop)[0]==0:
+                weighted_graphs_coop = np.ones((95,12,4))*np.nan
+                weighted_graphs_sf_coop = np.ones((95,12,4))*np.nan
+                sig_edges_coop = np.ones((12,4))*np.nan
+            
+            # organize the key edge data
+            weighted_graphs_self_mean = weighted_graphs_self.mean(axis=0)
+            weighted_graphs_coop_mean = weighted_graphs_coop.mean(axis=0)
+            weighted_graphs_nov_mean = weighted_graphs_nov.mean(axis=0)
+            # MI_coop_self = (weighted_graphs_coop_mean-weighted_graphs_self_mean)/(weighted_graphs_coop_mean+weighted_graphs_self_mean)
+            # MI_nov_coop = (weighted_graphs_nov_mean-weighted_graphs_coop_mean)/(weighted_graphs_nov_mean+weighted_graphs_coop_mean)
+            # MI_coop_self = ((weighted_graphs_coop-weighted_graphs_self)/(weighted_graphs_coop+weighted_graphs_self)).mean(axis=0)
+            # MI_nov_coop = ((weighted_graphs_nov-weighted_graphs_coop)/(weighted_graphs_nov+weighted_graphs_coop)).mean(axis=0)
+            #
+            if 0:
+                MI_coop_self_all = weighted_graphs_coop-weighted_graphs_self
+                MI_nov_coop_all = weighted_graphs_nov-weighted_graphs_coop  
+                MI_coop_self = (weighted_graphs_coop-weighted_graphs_self).mean(axis=0)
+                MI_nov_coop = (weighted_graphs_nov-weighted_graphs_coop).mean(axis=0)
+                #
+                sig_edges_coop_self = ((sig_edges_coop+sig_edges_self)>0)*1
+                sig_edges_nov_coop = ((sig_edges_coop+sig_edges_nov)>0)*1
+                #
+                MI_coop_self = MI_coop_self * sig_edges_coop_self
+                MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
+                #
+                nMIbootstraps = 1
+            else:
+                nMIbootstraps = 150
+                #
+                MI_coop_self_all,sig_edges_coop_self = Modulation_Index(weighted_graphs_self, weighted_graphs_coop,
+                                                  sig_edges_self, sig_edges_coop, nMIbootstraps)
+                # MI_coop_self_all = MI_coop_self_all * sig_edges_coop_self
+                # MI_coop_self_all[MI_coop_self_all==0] = np.nan
+                MI_coop_self = np.nanmean(MI_coop_self_all,axis = 0)
+                # MI_coop_self = MI_coop_self * sig_edges_coop_self
+                
+                MI_nov_coop_all,sig_edges_nov_coop  = Modulation_Index(weighted_graphs_coop, weighted_graphs_nov,
+                                                  sig_edges_coop, sig_edges_nov, nMIbootstraps)
+                # MI_nov_coop_all = MI_nov_coop_all * sig_edges_nov_coop
+                # MI_nov_coop_all[MI_nov_coop_all==0] = np.nan
+                MI_nov_coop = np.nanmean(MI_nov_coop_all,axis = 0)
+                # MI_nov_coop = MI_nov_coop * sig_edges_nov_coop
+    
+            #
+            if timelag == 1:
+                pull_pull_fromNodes_all = [9,8]
+                pull_pull_toNodes_all = [0,1]
+                #
+                gaze_gaze_fromNodes_all = [11,10]
+                gaze_gaze_toNodes_all = [2,3]
+                #
+                within_pullgaze_fromNodes_all = [8,9]
+                within_pullgaze_toNodes_all = [2,3]
+                #
+                across_pullgaze_fromNodes_all = [9,8]
+                across_pullgaze_toNodes_all = [2,3]
+                #
+                within_gazepull_fromNodes_all = [10,11]
+                within_gazepull_toNodes_all = [0,1]
+                #
+                across_gazepull_fromNodes_all = [11,10]
+                across_gazepull_toNodes_all = [0,1]
+                #
+                ntimelags = 1
+                #
+            elif timelag == 2:
+                pull_pull_fromNodes_all = [5,4]
+                pull_pull_toNodes_all = [0,1]
+                #
+                gaze_gaze_fromNodes_all = [7,6]
+                gaze_gaze_toNodes_all = [2,3]
+                #
+                within_pullgaze_fromNodes_all = [4,5]
+                within_pullgaze_toNodes_all = [2,3]
+                #
+                across_pullgaze_fromNodes_all = [5,4]
+                across_pullgaze_toNodes_all = [2,3]
+                #
+                within_gazepull_fromNodes_all = [6,7]
+                within_gazepull_toNodes_all = [0,1]
+                #
+                across_gazepull_fromNodes_all = [7,6]
+                across_gazepull_toNodes_all = [0,1]
+                #
+                ntimelags = 1
+                #
+            elif timelag == 3:
+                pull_pull_fromNodes_all = [1,0]
+                pull_pull_toNodes_all = [0,1]
+                #
+                gaze_gaze_fromNodes_all = [3,2]
+                gaze_gaze_toNodes_all = [2,3]
+                #
+                within_pullgaze_fromNodes_all = [0,1]
+                within_pullgaze_toNodes_all = [2,3]
+                #
+                across_pullgaze_fromNodes_all = [1,0]
+                across_pullgaze_toNodes_all = [2,3]
+                #
+                within_gazepull_fromNodes_all = [2,3]
+                within_gazepull_toNodes_all = [0,1]
+                #
+                across_gazepull_fromNodes_all = [3,2]
+                across_gazepull_toNodes_all = [0,1]
+                #
+                ntimelags = 1
+                #
+            elif timelag == 0:
+                pull_pull_fromNodes_all = [[1,5,9],[0,4,8]]
+                pull_pull_toNodes_all = [[0,0,0],[1,1,1]]
+                #
+                gaze_gaze_fromNodes_all = [[3,7,11],[2,6,10]]
+                gaze_gaze_toNodes_all = [[2,2,2],[3,3,3]]
+                #
+                within_pullgaze_fromNodes_all = [[0,4,8],[1,5,9]]
+                within_pullgaze_toNodes_all = [[2,2,2],[3,3,3]]
+                #
+                across_pullgaze_fromNodes_all = [[1,5,9],[0,4,8]]
+                across_pullgaze_toNodes_all = [[2,2,2],[3,3,3]]
+                #
+                within_gazepull_fromNodes_all = [[2,6,10],[3,7,11]]
+                within_gazepull_toNodes_all = [[0,0,0],[1,1,1]]
+                #
+                across_gazepull_fromNodes_all = [[3,7,11],[2,6,10]]
+                across_gazepull_toNodes_all = [[0,0,0],[1,1,1]]
+                #
+                ntimelags = 3
+                #
+            elif timelag == 12:
+                pull_pull_fromNodes_all = [[5,9],[4,8]]
+                pull_pull_toNodes_all = [[0,0],[1,1]]
+                #
+                gaze_gaze_fromNodes_all = [[7,11],[6,10]]
+                gaze_gaze_toNodes_all = [[2,2],[3,3]]
+                #
+                within_pullgaze_fromNodes_all = [[4,8],[5,9]]
+                within_pullgaze_toNodes_all = [[2,2],[3,3]]
+                #
+                across_pullgaze_fromNodes_all = [[5,9],[4,8]]
+                across_pullgaze_toNodes_all = [[2,2],[3,3]]
+                #
+                within_gazepull_fromNodes_all = [[6,10],[7,11]]
+                within_gazepull_toNodes_all = [[0,0],[1,1]]
+                #
+                across_gazepull_fromNodes_all = [[7,11],[6,10]]
+                across_gazepull_toNodes_all = [[0,0],[1,1]]
+                #
+                ntimelags = 2
+                #
+    
+    
+            for ianimal in np.arange(0,2,1):
+
+                # coop self modulation
+                # pull-pull
+                a1 = MI_coop_self_all[:,pull_pull_fromNodes_all[ianimal],pull_pull_toNodes_all[ianimal]].flatten()
+                xxx1 = np.nanmean(a1)
+                MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,0] = a1
+                MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,0] = xxx1
+                # gaze-gaze
+                a2 = (MI_coop_self_all[:,gaze_gaze_fromNodes_all[ianimal],gaze_gaze_toNodes_all[ianimal]]).flatten()
+                xxx2 = np.nanmean(a2)
+                MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,1] = a2
+                MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,1] = xxx2
+                # within animal gazepull
+                a3 = (MI_coop_self_all[:,within_gazepull_fromNodes_all[ianimal],within_gazepull_toNodes_all[ianimal]]).flatten()
+                xxx3 = np.nanmean(a3)
+                MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,2] = a3
+                MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,2] = xxx3
+                # across animal gazepull
+                a4 = (MI_coop_self_all[:,across_gazepull_fromNodes_all[ianimal],across_gazepull_toNodes_all[ianimal]]).flatten()
+                xxx4 = np.nanmean(a4)
+                MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,3] = a4
+                MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,3] = xxx4
+                # within animal pullgaze
+                a5 = (MI_coop_self_all[:,within_pullgaze_fromNodes_all[ianimal],within_pullgaze_toNodes_all[ianimal]]).flatten()
+                xxx5 = np.nanmean(a5)
+                MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,4] = a5
+                MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,4] = xxx5
+                # across animal pullgaze
+                a6 = (MI_coop_self_all[:,across_pullgaze_fromNodes_all[ianimal],across_pullgaze_toNodes_all[ianimal]]).flatten()
+                xxx6 = np.nanmean(a6)
+                MI_coop_self_all_IndiAni[2*ianimalpair+ianimal,:,5] = a6
+                MI_coop_self_mean_IndiAni[2*ianimalpair+ianimal,5] = xxx6
+
+
+                # novision coop modulation
+                # pull-pull
+                a1 = MI_nov_coop_all[:,pull_pull_fromNodes_all[ianimal],pull_pull_toNodes_all[ianimal]].flatten()
+                xxx1 = np.nanmean(a1)
+                MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,0] = a1
+                MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,0] = xxx1
+                # gaze-gaze
+                a2 = (MI_nov_coop_all[:,gaze_gaze_fromNodes_all[ianimal],gaze_gaze_toNodes_all[ianimal]]).flatten()
+                xxx2 = np.nanmean(a2)
+                MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,1] = a2
+                MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,1] = xxx2
+                # within animal gazepull
+                a3 = (MI_nov_coop_all[:,within_gazepull_fromNodes_all[ianimal],within_gazepull_toNodes_all[ianimal]]).flatten()
+                xxx3 = np.nanmean(a3)
+                MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,2] = a3
+                MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,2] = xxx3
+                # across animal gazepull
+                a4 = (MI_nov_coop_all[:,across_gazepull_fromNodes_all[ianimal],across_gazepull_toNodes_all[ianimal]]).flatten()
+                xxx4 = np.nanmean(a4)
+                MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,3] = a4
+                MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,3] = xxx4
+                # within animal pullgaze
+                a5 = (MI_nov_coop_all[:,within_pullgaze_fromNodes_all[ianimal],within_pullgaze_toNodes_all[ianimal]]).flatten()
+                xxx5 = np.nanmean(a5)
+                MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,4] = a5
+                MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,4] = xxx5
+                # across animal pullgaze
+                a6 = (MI_nov_coop_all[:,across_pullgaze_fromNodes_all[ianimal],across_pullgaze_toNodes_all[ianimal]]).flatten()
+                xxx6 = np.nanmean(a6)
+                MI_nov_coop_all_IndiAni[2*ianimalpair+ianimal,:,5] = a6
+                MI_nov_coop_mean_IndiAni[2*ianimalpair+ianimal,5] = xxx6
+
+
+        # prepare the data
+        # average all animals for each dependency
+        MI_coop_self_all_IndiAni_all = MI_coop_self_all_IndiAni.reshape(nanimalpooled*nMIbootstraps*ntimelags,6)
+        MI_nov_coop_all_IndiAni_all = MI_nov_coop_all_IndiAni.reshape(nanimalpooled*nMIbootstraps*ntimelags,6)
+        MI_coop_self_all_IndiAni_allmean = np.nanmean(MI_coop_self_all_IndiAni_all,axis=0)
+        MI_nov_coop_all_IndiAni_allmean = np.nanmean(MI_nov_coop_all_IndiAni_all,axis=0) 
+        MI_coop_self_all_IndiAni_allse = np.nanstd(MI_coop_self_all_IndiAni_all,axis=0)/np.sqrt(nanimalpooled*nMIbootstraps*ntimelags) 
+        MI_nov_coop_all_IndiAni_allse = np.nanstd(MI_nov_coop_all_IndiAni_all,axis=0)/np.sqrt(nanimalpooled*nMIbootstraps*ntimelags) 
+
+
+        # pool everything together
+        MI_coop_self_all_IndiAni_pooled[MI_comptype] = MI_coop_self_all_IndiAni_all
+        MI_nov_coop_all_IndiAni_pooled[MI_comptype] = MI_nov_coop_all_IndiAni_all
+        MI_coop_self_mean_IndiAni_pooled[MI_comptype] = MI_coop_self_mean_IndiAni
+        MI_nov_coop_mean_IndiAni_pooled[MI_comptype] = MI_nov_coop_mean_IndiAni
+    
+
+    
+
+    # plot 
+
+    #
+    # average for each animal individuals
+    # coop (1s)
+    MI_coop_self_mean_IndiAni_MC1s_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled['coop(1s)'][anigroupID])
+    MI_coop_self_mean_IndiAni_MC1s_df.columns = dependencynames
+    MI_coop_self_mean_IndiAni_MC1s_df['MItype'] = 'coop(1s)'
+    MI_coop_self_mean_IndiAni_MC1s_df['CTtype'] = MI_basetype
+    MI_coop_self_mean_IndiAni_MC1s_df['pullgaze_merged'] = (MI_coop_self_mean_IndiAni_MC1s_df['within_gazepull']+MI_coop_self_mean_IndiAni_MC1s_df['across_pullgaze'])/2
+    #
+    MI_nov_coop_mean_IndiAni_MC1s_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled['coop(1s)'][anigroupID])
+    MI_nov_coop_mean_IndiAni_MC1s_df.columns = dependencynames
+    MI_nov_coop_mean_IndiAni_MC1s_df['MItype'] = 'coop(1s)'
+    MI_nov_coop_mean_IndiAni_MC1s_df['CTtype'] = MI_conttype
+    MI_nov_coop_mean_IndiAni_MC1s_df['pullgaze_merged'] = (MI_nov_coop_mean_IndiAni_MC1s_df['within_gazepull']+MI_nov_coop_mean_IndiAni_MC1s_df['across_pullgaze'])/2
+
+    # coop (1.5s)
+    MI_coop_self_mean_IndiAni_MC15s_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled['coop(1.5s)'][anigroupID])
+    MI_coop_self_mean_IndiAni_MC15s_df.columns = dependencynames
+    MI_coop_self_mean_IndiAni_MC15s_df['MItype'] = 'coop(1.5s)'
+    MI_coop_self_mean_IndiAni_MC15s_df['CTtype'] = MI_basetype
+    MI_coop_self_mean_IndiAni_MC15s_df['pullgaze_merged'] = (MI_coop_self_mean_IndiAni_MC15s_df['within_gazepull']+MI_coop_self_mean_IndiAni_MC15s_df['across_pullgaze'])/2
+    #
+    MI_nov_coop_mean_IndiAni_MC15s_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled['coop(1.5s)'][anigroupID])
+    MI_nov_coop_mean_IndiAni_MC15s_df.columns = dependencynames
+    MI_nov_coop_mean_IndiAni_MC15s_df['MItype'] = 'coop(1.5s)'
+    MI_nov_coop_mean_IndiAni_MC15s_df['CTtype'] = MI_conttype
+    MI_nov_coop_mean_IndiAni_MC15s_df['pullgaze_merged'] = (MI_nov_coop_mean_IndiAni_MC15s_df['within_gazepull']+MI_nov_coop_mean_IndiAni_MC15s_df['across_pullgaze'])/2
+    
+    # coop (2s)
+    MI_coop_self_mean_IndiAni_MC2s_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled['coop(2s)'][anigroupID])
+    MI_coop_self_mean_IndiAni_MC2s_df.columns = dependencynames
+    MI_coop_self_mean_IndiAni_MC2s_df['MItype'] = 'coop(2s)'
+    MI_coop_self_mean_IndiAni_MC2s_df['CTtype'] = MI_basetype
+    MI_coop_self_mean_IndiAni_MC2s_df['pullgaze_merged'] = (MI_coop_self_mean_IndiAni_MC2s_df['within_gazepull']+MI_coop_self_mean_IndiAni_MC2s_df['across_pullgaze'])/2
+    #
+    MI_nov_coop_mean_IndiAni_MC2s_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled['coop(2s)'][anigroupID])
+    MI_nov_coop_mean_IndiAni_MC2s_df.columns = dependencynames
+    MI_nov_coop_mean_IndiAni_MC2s_df['MItype'] = 'coop(2s)'
+    MI_nov_coop_mean_IndiAni_MC2s_df['CTtype'] = MI_conttype
+    MI_nov_coop_mean_IndiAni_MC2s_df['pullgaze_merged'] = (MI_nov_coop_mean_IndiAni_MC2s_df['within_gazepull']+MI_nov_coop_mean_IndiAni_MC2s_df['across_pullgaze'])/2
+
+    # coop (3s)
+    MI_coop_self_mean_IndiAni_MC3s_df = pd.DataFrame(MI_coop_self_mean_IndiAni_pooled['coop(3s)'][anigroupID])
+    MI_coop_self_mean_IndiAni_MC3s_df.columns = dependencynames
+    MI_coop_self_mean_IndiAni_MC3s_df['MItype'] = 'coop(3s)'
+    MI_coop_self_mean_IndiAni_MC3s_df['CTtype'] = MI_basetype
+    MI_coop_self_mean_IndiAni_MC3s_df['pullgaze_merged'] = (MI_coop_self_mean_IndiAni_MC3s_df['within_gazepull']+MI_coop_self_mean_IndiAni_MC3s_df['across_pullgaze'])/2
+    #
+    MI_nov_coop_mean_IndiAni_MC3s_df = pd.DataFrame(MI_nov_coop_mean_IndiAni_pooled['coop(3s)'][anigroupID])
+    MI_nov_coop_mean_IndiAni_MC3s_df.columns = dependencynames
+    MI_nov_coop_mean_IndiAni_MC3s_df['MItype'] = 'coop(3s)'
+    MI_nov_coop_mean_IndiAni_MC3s_df['CTtype'] = MI_conttype
+    MI_nov_coop_mean_IndiAni_MC3s_df['pullgaze_merged'] = (MI_nov_coop_mean_IndiAni_MC3s_df['within_gazepull']+MI_nov_coop_mean_IndiAni_MC3s_df['across_pullgaze'])/2
+    
+    df_long=pd.concat([MI_coop_self_mean_IndiAni_MC3s_df,MI_nov_coop_mean_IndiAni_MC3s_df,
+                       MI_coop_self_mean_IndiAni_MC2s_df,MI_nov_coop_mean_IndiAni_MC2s_df,
+                       MI_coop_self_mean_IndiAni_MC15s_df,MI_nov_coop_mean_IndiAni_MC15s_df,
+                       MI_coop_self_mean_IndiAni_MC1s_df,MI_nov_coop_mean_IndiAni_MC1s_df,])
+    df_long2 = df_long.melt(id_vars=['MItype','CTtype'], value_vars=dependencytargets,
+                        var_name='condition', value_name='value')
+    
+    # for plot
+    for idep in np.arange(0,ndeptargets,1):
+        ind = df_long2.condition==dependencytargets[idep]
+        # ind = df_long2_bt.condition==dependencytargets[idep]
+        #
+        if ntimelags_forplot == 1:
+            seaborn.lineplot(ax=axs[idep],data=df_long2[ind],x='MItype',y='value',hue='CTtype')
+            # seaborn.lineplot(ax=axs[idep],data=df_long2_bt[ind],x='MItype',y='value',hue='CTtype')
+            axs[idep].plot([0,3],[0,0],'k--')
+            axs[idep].set_ylabel('Modulation Index',fontsize=20)
+            axs[idep].set_title(timelagname+' '+dependencytargets[idep],fontsize=24)
+            axs[idep].set_ylim([-1.02,1.02])
+            #
+            # add statistics
+            CTtypes = [MI_basetype,MI_conttype]
+            CTtype_plotlocs = [.75,-.75]
+            nCTtypes = np.shape(CTtypes)[0]
+            for iMItype in np.arange(0,nMI_comptypes,1):
+                MItype_totest = MI_comptypes[iMItype]
+                #
+                for iCTtype in np.arange(0,nCTtypes,1):
+                    CTtype_totest = CTtypes[iCTtype]
+                    # 
+                    ind_totest = (df_long2['condition']==dependencytargets[idep])&(df_long2['MItype']==MItype_totest)&(df_long2['CTtype']==CTtype_totest)
+                    data_totest = np.array(df_long2[ind_totest]['value'])
+                    pp = st.ttest_1samp(data_totest[~np.isnan(data_totest)],0).pvalue
+                    # pp = st.wilcoxon(data_totest[~np.isnan(data_totest)]).pvalue
+                    # 
+                    if pp<=0.001:
+                        axs[idep].text(iMItype,CTtype_plotlocs[iCTtype],'***',fontsize=20)
+                    elif pp<=0.01:
+                        axs[idep].text(iMItype,CTtype_plotlocs[iCTtype],'**',fontsize=20)
+                    elif pp<=0.05:
+                        axs[idep].text(iMItype,CTtype_plotlocs[iCTtype],'*',fontsize=20)
+                    
+                    
+        else:
+            seaborn.lineplot(ax=axs[itimelag,idep],data=df_long2[ind],x='MItype',y='value',hue='CTtype')
+            # seaborn.lineplot(ax=axs[itimelag,idep],data=df_long2_bt[ind],x='MItype',y='value',hue='CTtype')
+            axs[itimelag,idep].plot([0,3],[0,0],'k--')
+            axs[itimelag,idep].set_ylabel('Modulation Index',fontsize=20)
+            axs[itimelag,idep].set_title(timelagname+' '+dependencytargets[idep],fontsize=24)
+            axs[itimelag,idep].set_ylim([-1.02,1.02])
+            #
+            # add statistics
+            CTtypes = [MI_basetype,MI_conttype]
+            CTtype_plotlocs = [.75,-.75]
+            nCTtypes = np.shape(CTtypes)[0]
+            for iMItype in np.arange(0,nMI_comptypes,1):
+                MItype_totest = MI_comptypes[iMItype]
+                #
+                for iCTtype in np.arange(0,nCTtypes,1):
+                    CTtype_totest = CTtypes[iCTtype]
+                    # 
+                    ind_totest = (df_long2['condition']==dependencytargets[idep])&(df_long2['MItype']==MItype_totest)&(df_long2['CTtype']==CTtype_totest)
+                    data_totest = np.array(df_long2[ind_totest]['value'])
+                    pp = st.ttest_1samp(data_totest[~np.isnan(data_totest)],0).pvalue
+                    # pp = st.wilcoxon(data_totest[~np.isnan(data_totest)]).pvalue
+                    # 
+                    if pp<=0.001:
+                        axs[itimelag,idep].text(iMItype,CTtype_plotlocs[iCTtype],'***',fontsize=20)
+                    elif pp<=0.01:
+                        axs[itimelag,idep].text(iMItype,CTtype_plotlocs[iCTtype],'**',fontsize=20)
+                    elif pp<=0.05:
+                        axs[itimelag,idep].text(iMItype,CTtype_plotlocs[iCTtype],'*',fontsize=20)
+        
+
+savefig = 1
+if savefig:
+    if moreSampSize:
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'
+        if not os.path.exists(figsavefolder):
+            os.makedirs(figsavefolder)
+        plt.savefig(figsavefolder+'threeTimeLag_Edge_ModulationIndex_'+timelagname+'Lag_'+animalgrouptype+'_summarized_'+str(temp_resolu)+'_'+str(j_sampsize_name)+'_rows_subset_basedonToNodes_multiTimeLag_multiCoopsOnePanel.pdf')
+    else:
+        figsavefolder = data_saved_folder+'figs_for_3LagDBN_and_bhv_singlecam_wholebodylabels_combinesessions_basicEvents/'+savefile_sufix+'/'+cameraID+'/'
+        if not os.path.exists(figsavefolder):
+            os.makedirs(figsavefolder)
+        plt.savefig(figsavefolder+'threeTimeLag_Edge_ModulationIndex_'+timelagname+'Lag_'+animalgrouptype+'_summarized_'+str(temp_resolu)+'_'+j_sampsize_name+'_subset_basedonToNodes_multiTimeLag_multiCoopsOnePanel.pdf')
+           
+    
 
 
 # In[ ]:
 
 
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
+MI_coop_self_mean_IndiAni_pooled['coop(1s)'][anigroupID]
 
 
 # ### version 7-2-4: 
@@ -6976,6 +8278,24 @@ if savefig:
         plt.savefig(figsavefolder+'threeTimeLag_Edge_ModulationIndex_'+timelagname+'Lag_IndiAnimal_'+str(temp_resolu)+'_'+j_sampsize_name+'_clustering.pdf')
            
     
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
 
 # In[ ]:

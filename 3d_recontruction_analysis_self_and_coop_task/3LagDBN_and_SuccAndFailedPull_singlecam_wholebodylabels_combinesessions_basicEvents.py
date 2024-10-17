@@ -6,7 +6,7 @@
 # ### In this script, DBN is run with sucessful and failed pulls seperately
 # ### In this script, the animal tracking is done with only one camera - camera 2 (middle) 
 
-# In[46]:
+# In[12]:
 
 
 import pandas as pd
@@ -35,7 +35,7 @@ import networkx as nx
 
 # ### function - get body part location for each pair of cameras
 
-# In[47]:
+# In[13]:
 
 
 from ana_functions.body_part_locs_eachpair import body_part_locs_eachpair
@@ -44,7 +44,7 @@ from ana_functions.body_part_locs_singlecam import body_part_locs_singlecam
 
 # ### function - align the two cameras
 
-# In[48]:
+# In[14]:
 
 
 from ana_functions.camera_align import camera_align       
@@ -52,7 +52,7 @@ from ana_functions.camera_align import camera_align
 
 # ### function - merge the two pairs of cameras
 
-# In[49]:
+# In[15]:
 
 
 from ana_functions.camera_merge import camera_merge
@@ -60,7 +60,7 @@ from ana_functions.camera_merge import camera_merge
 
 # ### function - find social gaze time point
 
-# In[50]:
+# In[16]:
 
 
 from ana_functions.find_socialgaze_timepoint import find_socialgaze_timepoint
@@ -70,7 +70,7 @@ from ana_functions.find_socialgaze_timepoint_singlecam_wholebody import find_soc
 
 # ### function - define time point of behavioral events
 
-# In[51]:
+# In[17]:
 
 
 from ana_functions.bhv_events_timepoint import bhv_events_timepoint
@@ -79,7 +79,7 @@ from ana_functions.bhv_events_timepoint_singlecam import bhv_events_timepoint_si
 
 # ### function - plot behavioral events
 
-# In[52]:
+# In[18]:
 
 
 from ana_functions.plot_bhv_events import plot_bhv_events
@@ -91,7 +91,7 @@ from matplotlib.collections import PatchCollection
 
 # ### function - plot inter-pull interval
 
-# In[53]:
+# In[19]:
 
 
 from ana_functions.plot_interpull_interval import plot_interpull_interval
@@ -99,7 +99,7 @@ from ana_functions.plot_interpull_interval import plot_interpull_interval
 
 # ### function - make demo videos with skeleton and inportant vectors
 
-# In[54]:
+# In[20]:
 
 
 from ana_functions.tracking_video_singlecam_demo import tracking_video_singlecam_demo
@@ -108,7 +108,7 @@ from ana_functions.tracking_video_singlecam_wholebody_demo import tracking_video
 
 # ### function - interval between all behavioral events
 
-# In[55]:
+# In[21]:
 
 
 from ana_functions.bhv_events_interval import bhv_events_interval
@@ -116,7 +116,7 @@ from ana_functions.bhv_events_interval import bhv_events_interval
 
 # ### function - train the dynamic bayesian network - multi time lag (3 lags)
 
-# In[56]:
+# In[22]:
 
 
 from ana_functions.train_DBN_multiLag import train_DBN_multiLag
@@ -135,7 +135,7 @@ from ana_functions.AicScore import AicScore
 
 # ### prepare the basic behavioral data (especially the time stamps for each bhv events)
 
-# In[57]:
+# In[23]:
 
 
 # instead of using gaze angle threshold, use the target rectagon to deside gaze info
@@ -156,10 +156,14 @@ nframes = 5*30 # second*30fps
 reanalyze_video = 0
 redo_anystep = 0
 
-# only analyze the best (five) sessions for each conditions
-do_bestsession = 1
+# session list options
+do_bestsession = 1 # only analyze the best (five) sessions for each conditions during the training phase
+do_trainedMCs = 1 # the list that only consider trained (1s) MC, together with SR and NV as controls
 if do_bestsession:
-    savefile_sufix = '_bestsessions'
+    if not do_trainedMCs:
+        savefile_sufix = '_bestsessions'
+    elif do_trainedMCs:
+        savefile_sufix = '_trainedMCsessions'
 else:
     savefile_sufix = ''
     
@@ -172,42 +176,49 @@ else:
 if 0:
     if not do_bestsession:
         dates_list = [
-                      "20220909","20220912","20220915","20220920","20220922","20220923","20221010",
-                      "20221011","20221013","20221014","20221015","20221017","20230215",     
-                      "20221018","20221019","20221020","20221021","20221022","20221026","20221028","20221030",
-                      "20221107","20221108","20221109","20221110","20221111","20221114","20221115","20221116",
-                      "20221117","20221118","20221121","20221122","20221123","20221125","20221128","20221129",              
-                      "20221205","20221206","20221209","20221212","20221214","20221216","20221219","20221220",
-                      "20221221","20230208","20230209","20230213","20230214","20230111","20230112","20230201",
-
+            
                      ]
         session_start_times = [ 
-                                 6.50, 18.10, 0,      33.03, 549.0, 116.80, 6.50,
-                                 2.80, 27.80, 272.50, 27.90, 27.00,  33.00,
-                                28.70, 45.30, 21.10,  27.10, 51.90,  21.00, 30.80, 17.50,                      
-                                15.70,  2.65, 27.30,   0.00,  0.00,  71.80,  0.00,  0.00, 
-                                75.50, 20.20,  0.00,  24.20, 36.70,  26.40, 22.50, 28.50,                       
-                                 0.00,  0.00, 21.70,  84.70, 17.00,  19.80, 23.50, 25.20,  
-                                 0.00,  0.00,  0.00,   0.00,  0.00, 130.00, 14.20, 24.20, 
+            
                               ] # in second
     elif do_bestsession:
-        # pick only five sessions for each conditions
-        dates_list = [
-                      "20220912","20220915","20220920","20221010","20230208",
-                      "20221011","20221013","20221015","20221017",
-                      "20221022","20221026","20221028","20221030","20230209",
-                      "20221125","20221128","20221129","20230214","20230215",                  
-                      "20221205","20221206","20221209","20221214","20230112",
-                      "20230117","20230118","20230124","20230126",
-                     ]
-        session_start_times = [ 
-                                18.10,  0.00, 33.03,  6.50,  0.00, 
-                                 2.80, 27.80, 27.90, 27.00,  
-                                51.90, 21.00, 30.80, 17.50,  0.00,                    
-                                26.40, 22.50, 28.50,  0.00, 33.00,                     
-                                 0.00,  0.00, 21.70, 17.00, 14.20, 
-                                 0.00,  0.00,  0.00,  0.00,  
-                              ] # in second
+        if not do_trainedMCs:
+            # pick only five sessions for each conditions during the training phase
+            dates_list = [
+                          # "20220912",
+                          "20220915","20220920","20221010","20230208",
+                          "20221011","20221013","20221015","20221017",
+                          "20221022","20221026","20221028","20221030","20230209",
+                          "20221125","20221128","20221129","20230214","20230215",                  
+                          "20221205","20221206","20221209","20221214","20230112",
+                          "20230117","20230118","20230124",
+                          # "20230126",
+                         ]
+            session_start_times = [ 
+                                    # 18.10, 
+                                     0.00, 33.03,  6.50,  0.00, 
+                                     2.80, 27.80, 27.90, 27.00,  
+                                    51.90, 21.00, 30.80, 17.50,  0.00,                    
+                                    26.40, 22.50, 28.50,  0.00, 33.00,                     
+                                     0.00,  0.00, 21.70, 17.00, 14.20, 
+                                     0.00,  0.00,  0.00, 
+                                     # 0.00,  
+                                  ] # in second
+        elif do_trainedMCs:
+            dates_list = [
+                          "20220915","20220920","20221010","20230208", # SR
+                          
+                          "20230321","20230322","20230323","20230324","20230412","20230413", # trained MC
+                          
+                          "20230117","20230118","20230124", # NV 
+                         ]
+            session_start_times = [ 
+                                     0.00, 33.03,  6.50,  0.00, 
+                                     
+                                     20.5,  21.4,  21.0,  24.5,  20.5,  26.6,
+                    
+                                     0.00,  0.00,  0.00,  
+                                  ] # in second
     
     animal1_fixedorder = ['dodson']
     animal2_fixedorder = ['scorch']
@@ -215,79 +226,103 @@ if 0:
     animal1_filename = "Dodson"
     animal2_filename = "Scorch"
     
+    
 # eddie sparkle
-if 0:
+if 1:
     if not do_bestsession:
         dates_list = [
-                      "20221122","20221125","20221128","20221129","20221130","20221202","20221206",
-                      "20221207","20221208","20221209","20230126","20230127","20230130","20230201","20230203-1",
-                      "20230206","20230207","20230208-1","20230209","20230222","20230223-1","20230227-1",
-                      "20230228-1","20230302-1","20230307-2","20230313","20230315","20230316","20230317",
-                      "20230321","20230322","20230324","20230327","20230328",
-                      "20230330","20230331","20230403","20230404","20230405","20230406","20230407",
-                      
+                                    
                    ]
         session_start_times = [ 
-                                 8.00,38.00,1.00,3.00,5.00,9.50,1.00,
-                                 4.50,4.50,5.00,38.00,166.00,4.20,3.80,3.60,
-                                 7.50,9.00,7.50,8.50,14.50,7.80,8.00,7.50,
-                                 8.00,8.00,4.00,123.00,14.00,8.80,
-                                 7.00,7.50,5.50,11.00,9.00,
-                                 17.00,4.50,9.30,25.50,20.40,21.30,24.80,
                                  
                               ] # in second
     elif do_bestsession:   
-        dates_list = [
-                      "20221122",  "20221125",  
-                      "20221202",  "20221206",  "20230126",  "20230130",  "20230201",
-                      "20230207",  "20230208-1","20230209",  "20230222",  "20230223-1",
-                      "20230227-1","20230228-1","20230302-1","20230307-2","20230313",
-                      "20230321",  "20230322",  "20230324",  "20230327",  "20230328",
-                      "20230331",  "20230403",  "20230404",  "20230405",  "20230406"
-                   ]
-        session_start_times = [ 
-                                  8.00,  38.00, 
-                                  9.50,   1.00, 38.00,  4.20,  3.80,
-                                  9.00,   7.50,  8.50, 14.50,  7.80,
-                                  8.00,   7.50,  8.00,  8.00,  4.00,
-                                  7.00,   7.50,  5.50, 11.00,  9.00,
-                                  4.50,   9.30, 25.50, 20.40, 21.30,
-                              ] # in second
-    
+        if not do_trainedMCs:
+            # pick only five sessions for each conditions during the training phase
+            dates_list = [
+                          "20221122",  "20221125",  
+                          "20221202",  "20221206",  "20230126",  "20230130",  "20230201",
+                          "20230207",  "20230208-1","20230209",  "20230222",  "20230223-1",
+                          "20230227-1","20230228-1","20230302-1","20230307-2","20230313",
+                          "20230321",  "20230322",  "20230324",  "20230327",  "20230328",
+                          "20230331",  "20230403",  "20230404",  "20230405",  "20230406"
+                       ]
+            session_start_times = [ 
+                                      8.00,  38.00, 
+                                      9.50,   1.00, 38.00,  4.20,  3.80,
+                                      9.00,   7.50,  8.50, 14.50,  7.80,
+                                      8.00,   7.50,  8.00,  8.00,  4.00,
+                                      7.00,   7.50,  5.50, 11.00,  9.00,
+                                      4.50,   9.30, 25.50, 20.40, 21.30,
+                                  ] # in second
+        elif do_trainedMCs:
+            dates_list = [
+                          "20221122",  "20221125",  # sr
+                
+                          "20230410",  "20230411",  "20230412",  "20230413",  "20230616", # trained MC
+                
+                          "20230331",  "20230403",  "20230404",  "20230405",  "20230406", # nv
+                       ]
+            session_start_times = [ 
+                                      8.00, 38.00, 
+                
+                                      23.2,  23.0,  21.2,  25.0,  23.0,   
+                
+                                      4.50,  9.30, 25.50, 20.40, 21.30,
+                
+                                  ] # in second
     animal1_fixedorder = ['eddie']
     animal2_fixedorder = ['sparkle']
 
     animal1_filename = "Eddie"
     animal2_filename = "Sparkle"
     
+    
 # ginger kanga
-if 0:
+if 1:
     if not do_bestsession:
         dates_list = [
-                      "20230209","20230213","20230214","20230216","20230222","20230223","20230228","20230302",
-                      "20230303","20230307","20230314","20230315","20230316","20230317"         
+                      
                    ]
         session_start_times = [ 
-                                 0.00,  0.00,  0.00, 48.00, 26.20, 18.00, 23.00, 28.50,
-                                34.00, 25.50, 25.50, 31.50, 28.00, 30.50
+                                
                               ] # in second 
-    elif do_bestsession:   
-        dates_list = [
-                      "20230213","20230214","20230216",
-                      "20230228","20230302","20230303","20230307",          
-                      "20230314","20230315","20230316","20230317",
-                      "20230301","20230320","20230321","20230322",
-                      "20230323","20230412","20230413","20230517","20230614","20230615",
-                      "20230522_ws","20230524","20230605_1","20230606","20230607"
-                   ]
-        session_start_times = [ 
-                                 0.00,  0.00, 48.00, 
-                                23.00, 28.50, 34.00, 25.50, 
-                                25.50, 31.50, 28.00, 30.50,
-                                33.50, 22.20, 50.00,  0.00, 
-                                33.00, 18.20, 22.80, 31.00, 24.00, 21.00,
-                                 0.00,  0.00,  0.00,  0.00,  0.00,
-                              ] # in second 
+    elif do_bestsession:
+        if not do_trainedMCs:
+            # pick only five sessions for each conditions during the training phase
+            dates_list = [
+                          #"20230213",
+                          "20230214","20230216",
+                          "20230228","20230302","20230303","20230307",          
+                          "20230314","20230315","20230316","20230317",
+                          "20230301","20230320","20230321","20230322",
+                          "20230323","20230412","20230413","20230517",
+                          "20230522_ws","20230524","20230605_1","20230606","20230607"
+                       ]
+            session_start_times = [ 
+                                    # 0.00, 
+                                     0.00, 48.00, 
+                                    23.00, 28.50, 34.00, 25.50, 
+                                    25.50, 31.50, 28.00, 30.50,
+                                     0.00,  0.00,  0.00,  0.00, 
+                                     0.00,  0.00,  0.00,  0.00, 
+                                     0.00,  0.00,  0.00,  0.00,  0.00,
+                                  ] # in second 
+        elif do_trainedMCs:
+            dates_list = [
+                          "20230214",   "20230216",  # SR
+                          
+                          "20230614",   "20230615",  "20230711","20230712", # trained MC
+                
+                          "20230522_ws","20230524","20230605_1","20230606","20230607", # nv  
+                       ]
+            session_start_times = [ 
+                                     0.00, 48.00, 
+                                    
+                                     0.00,  0.00,  54.5,  24.7,
+                
+                                     0.00,  0.00,  0.00,  0.00,  0.00,
+                                  ] # in second 
     
     animal1_fixedorder = ['ginger']
     animal2_fixedorder = ['kanga']
@@ -295,73 +330,95 @@ if 0:
     animal1_filename = "Ginger"
     animal2_filename = "Kanga"
 
+    
 # dannon kanga
-if 0:
+if 1:
     if not do_bestsession:
         dates_list = [
-                      "20230718","20230720","20230914","20230829","20230907","20230915",
-                      "20230918","20230926","20230928","20231002","20231010","20231011",
-                      "20231013",
+                    
                    ]
         session_start_times = [ 
-                                 0, 0, 0, 0, 0, 0, 
-                                 0, 0, 0, 0, 0, 0,
-                                 0,
+                              
                               ] # in second 
-    elif do_bestsession:   
-        dates_list = [
-                      "20230718","20230720","20230914","20230726","20230727","20230809",
-                      "20230810","20230811","20230814","20230816","20230829","20230907","20230915",
-                      "20230918","20230926","20230928","20231002","20231010","20231011",
-                      "20231013","20231020","20231024","20231025",
-                   ]
-        session_start_times = [ 
-                                    0,    0,    0, 32.2, 27.2, 37.5,
-                                 21.0, 21.5, 19.8, 32.0,    0,    0,   0, 
-                                    0,    0,    0,    0,    0,    0,
-                                    0,    0,    0,    0, 
-                              ] # in second 
+    elif do_bestsession: 
+        if not do_trainedMCs:
+            # pick only five sessions for each conditions during the training phase
+            dates_list = [
+                          "20230718","20230720","20230914","20230726","20230727","20230809",
+                          "20230810","20230811","20230814","20230816","20230829","20230907","20230915",
+                          "20230918","20230926","20230928","20231002","20231010","20231011",
+                          "20231013","20231020","20231024","20231025",
+                       ]
+            session_start_times = [ 
+                                        0,    0,    0, 32.2, 27.2, 37.5,
+                                     21.0, 21.5, 19.8, 32.0,    0,    0,   0, 
+                                        0,    0,    0,    0,    0,    0,
+                                        0,    0,    0,    0, 
+                                  ] # in second 
+        elif do_trainedMCs:
+            dates_list = [
+                          "20230718","20230720","20230914", # sr
+                
+                          "20231030","20231031","20231101","20231102","20240304","20240305", # trained MC
+                
+                          "20231011","20231013","20231020","20231024","20231025", # nv
+                       ]
+            session_start_times = [ 
+                                       0,    0,    0,
+                
+                                    18.2, 14.0, 15.8, 15.2, 16.3, 37.9,
+                
+                                       0,    0,    0,    0,    0, 
+                                  ] # in second 
     
     animal1_fixedorder = ['dannon']
     animal2_fixedorder = ['kanga']
 
     animal1_filename = "Dannon"
     animal2_filename = "Kanga"
-    
+
 # Koala Vermelho
 if 1:
     if not do_bestsession:
         dates_list = [
-                      "20231221","20231222","20231226","20231227",  "20231229","20231230",
-                      "20231231","20240102","20240104","20240104-2","20240105","20240108",
-                      "20240109","20240115","20240116","20240117",  "20240118","20240119",
-                      "20240122","20240123","20240124","20240125",  "20240126","20240129",
-                      "20240130","20240131","20240201","20240202",
+                     
                      ]
         session_start_times = [ 
-                                0.00,  0.00,  0.00,  0.00,  0.00,  0.00, 
-                                0.00,  0.00,  0.00,  0.00,  0.00,  0.00, 
-                                0.00,  0.00,  0.00,  0.00,  0.00,  0.00,
-                                0.00,  0.00,  0.00,  0.00,  0.00,  0.00,
-                                0.00,  0.00,  0.00,  0.00,
+                               
                               ] # in second
     elif do_bestsession:
-        # pick only five sessions for each conditions
-        dates_list = [
-                      "20231222","20231226","20231227",  "20231229","20231230",
-                      "20231231","20240102","20240104-2","20240105","20240108",
-                      "20240109","20240115","20240116",  "20240117","20240118","20240119",
-                      "20240207","20240208","20240209",  "20240212","20240213",
-                      "20240214","20240215","20240216",  "20240220","20240222","20240223",
-                     ]
-        session_start_times = [ 
-                                21.5,  0.00,  0.00,  0.00,  0.00, 
-                                0.00,  12.2,  0.00,  18.8,  31.2,  
-                                32.5,  0.00,  50.0,  0.00,  37.5,  29.5,
-                                58.5,  72.0,  0.00,  71.5,  70.5,
-                                86.8,  94.0,  65.0,  68.8,  43.8,  13.2,
-                              ] # in second
-    
+        if not do_trainedMCs:
+            # pick only five sessions for each conditions during the training phase
+            dates_list = [
+                          "20231222","20231226","20231227",  "20231229","20231230",
+                          "20231231","20240102","20240104-2","20240105","20240108",
+                          "20240109","20240115","20240116",  "20240117","20240118","20240119",
+                          "20240207","20240208","20240209",  "20240212","20240213",
+                          "20240214","20240215","20240216",  
+                         ]
+            session_start_times = [ 
+                                    21.5,  0.00,  0.00,  0.00,  0.00, 
+                                    0.00,  12.2,  0.00,  18.8,  31.2,  
+                                    32.5,  0.00,  50.0,  0.00,  37.5,  29.5,
+                                    58.5,  72.0,  0.00,  71.5,  70.5,
+                                    86.8,  94.0,  65.0, 
+                                  ] # in second
+        elif do_trainedMCs:
+            dates_list = [
+                          "20231222","20231226","20231227", # SR
+                          
+                          "20240220","20240222","20240223","20240226", # trained MC
+                 
+                          "20240214","20240215","20240216",  # NV
+                         ]
+            session_start_times = [ 
+                                    21.5,  0.00,  0.00, 
+                                    
+                                    68.8,  43.8,  13.2,  47.5,
+                
+                                    86.8,  94.0,  65.0, 
+                                  ] # in second
+
     animal1_fixedorder = ['koala']
     animal2_fixedorder = ['vermelho']
 
@@ -428,13 +485,13 @@ bhv_intv_all_dates = dict.fromkeys(dates_list, [])
 
 
 # where to save the summarizing data
-data_saved_folder = '/gpfs/gibbs/pi/jadi/VideoTracker_SocialInter/3d_recontruction_analysis_self_and_coop_task_data_saved/'
+data_saved_folder = '/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/3d_recontruction_analysis_self_and_coop_task_data_saved/'
 
 
     
 
 
-# In[58]:
+# In[24]:
 
 
 # basic behavior analysis (define time stamps for each bhv events, etc)
@@ -727,7 +784,7 @@ except:
 
 # #### redefine the tasktype and cooperation threshold to merge them together
 
-# In[59]:
+# In[25]:
 
 
 # 100: self; 3: 3s coop; 2: 2s coop; 1.5: 1.5s coop; 1: 1s coop; -1: no-vision
@@ -740,7 +797,7 @@ coopthres_forsort[coopthres_forsort==0] = 100 # get the cooperation threshold fo
 # ### plot behavioral events interval to get a sense about time bin
 # #### only focus on pull_to_other_bhv_interval and other_bhv_to_pull_interval
 
-# In[60]:
+# In[26]:
 
 
 fig, ax1 = plt.subplots(figsize=(10, 5))
@@ -802,13 +859,17 @@ if savefigs:
 
 # ### prepare the input data for DBN
 
-# In[61]:
+# In[28]:
 
 
 # define DBN related summarizing variables
 DBN_group_typenames = ['self','coop(3s)','coop(2s)','coop(1.5s)','coop(1s)','no-vision']
 DBN_group_typeIDs  =  [1,3,3,  3,3,5]
 DBN_group_coopthres = [0,3,2,1.5,1,0]
+if do_trainedMCs:
+    DBN_group_typenames = ['self','coop(1s)','no-vision']
+    DBN_group_typeIDs  =  [1,3,5]
+    DBN_group_coopthres = [0,1,0]
 nDBN_groups = np.shape(DBN_group_typenames)[0]
 
 pulltypes = ['succpull','failedpull']
@@ -844,7 +905,7 @@ if prepare_input_data:
             # load behavioral results
             try:
                 try:
-                    bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                    bhv_data_path = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
                     trial_record_json = glob.glob(bhv_data_path +date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_TrialRecord_" + "*.json")
                     bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_bhv_data_" + "*.json")
                     session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_session_info_" + "*.json")
@@ -853,7 +914,7 @@ if prepare_input_data:
                     bhv_data = pd.read_json(bhv_data_json[0])
                     session_info = pd.read_json(session_info_json[0])
                 except:
-                    bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                    bhv_data_path = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/marmoset_tracking_bhv_data_from_task_code/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
                     trial_record_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_TrialRecord_" + "*.json")
                     bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_bhv_data_" + "*.json")
                     session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_session_info_" + "*.json")
@@ -863,7 +924,7 @@ if prepare_input_data:
                     session_info = pd.read_json(session_info_json[0])
             except:
                 try:
-                    bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_forceManipulation_task/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                    bhv_data_path = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/marmoset_tracking_bhv_data_forceManipulation_task/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
                     trial_record_json = glob.glob(bhv_data_path +date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_TrialRecord_" + "*.json")
                     bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_bhv_data_" + "*.json")
                     session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal2_filename+"_"+animal1_filename+"_session_info_" + "*.json")
@@ -872,7 +933,7 @@ if prepare_input_data:
                     bhv_data = pd.read_json(bhv_data_json[0])
                     session_info = pd.read_json(session_info_json[0])
                 except:
-                    bhv_data_path = "/home/ws523/marmoset_tracking_bhv_data_forceManipulation_task/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
+                    bhv_data_path = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/marmoset_tracking_bhv_data_forceManipulation_task/"+date_tgt+"_"+animal1_filename+"_"+animal2_filename+"/"
                     trial_record_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_TrialRecord_" + "*.json")
                     bhv_data_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_bhv_data_" + "*.json")
                     session_info_json = glob.glob(bhv_data_path + date_tgt+"_"+animal1_filename+"_"+animal2_filename+"_session_info_" + "*.json")
@@ -942,6 +1003,9 @@ if prepare_input_data:
             look_at_lever_or_not_merge['time_in_second'] = np.arange(0,np.shape(look_at_lever_or_not_merge['dodson'])[0],1)/fps - session_start_time
             look_at_tube_or_not_merge['time_in_second'] = np.arange(0,np.shape(look_at_tube_or_not_merge['dodson'])[0],1)/fps - session_start_time 
 
+            # redefine the totalsess_time for the length of each recording (NOT! remove the session_start_time)
+            totalsess_time = int(np.ceil(np.shape(look_at_other_or_not_merge['dodson'])[0]/fps))
+            
             # find time point of behavioral events
             output_time_points_socialgaze ,output_time_points_levertube = bhv_events_timepoint_singlecam(bhv_data,look_at_other_or_not_merge,look_at_lever_or_not_merge,look_at_tube_or_not_merge)
             time_point_pull1 = output_time_points_socialgaze['time_point_pull1']
@@ -1009,7 +1073,7 @@ if prepare_input_data:
                 pickle.dump(DBN_input_data_alltypes, f)     
 
 
-# In[62]:
+# In[29]:
 
 
 temp_resolu = 1
@@ -1024,7 +1088,7 @@ plt.plot(DBN_input_data_alltypes['succpull']['coop(1s)']['pull1_t0'].reset_index
 plt.plot(DBN_input_data_alltypes['failedpull']['coop(1s)']['pull1_t0'].reset_index(drop=True))
 
 
-# In[63]:
+# In[30]:
 
 
 temp_resolu = 1
@@ -1040,7 +1104,7 @@ plt.plot(DBN_input_data_alltypes['coop(1s)']['pull1_t0'].reset_index(drop=True))
 
 # ### run the DBN model on the combined session data set
 
-# In[64]:
+# In[31]:
 
 
 # define DBN related summarizing variables
@@ -1055,7 +1119,7 @@ npulltypes = np.shape(pulltypes)[0]
 
 # #### a test run
 
-# In[65]:
+# In[32]:
 
 
 # run DBN on the large table with merged sessions
@@ -1115,8 +1179,8 @@ if 0:
                 min_samplesize = int(min_samplesize/100)*100
                 max_samplesize = np.nanmax(key_to_value_lengths_array)
                 max_samplesize = int(max_samplesize/100)*100
-                samplingsizes = [min_samplesize]
-                samplingsizes_name = ['min_row_number']   
+                samplingsizes = [min_samplesize,max_samplesize]
+                samplingsizes_name = ['min_row_number','max_row_number']   
                 nsamplings = np.shape(samplingsizes)[0]
                 print(samplingsizes)
 
@@ -1240,7 +1304,7 @@ if 0:
 
 # #### run on the entire population
 
-# In[45]:
+# In[ ]:
 
 
 # run DBN on the large table with merged sessions
@@ -1253,7 +1317,7 @@ num_starting_points = 100 # number of random starting points/graphs
 nbootstraps = 95
 
 try:
-    dumpy
+    # dumpy
     data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody_SuccAndFailedPull'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
     if not os.path.exists(data_saved_subfolder):
         os.makedirs(data_saved_subfolder)
@@ -1328,8 +1392,10 @@ except:
                 min_samplesize = int(min_samplesize/100)*100
                 max_samplesize = np.nanmax(key_to_value_lengths_array)
                 max_samplesize = int(max_samplesize/100)*100
+                # samplingsizes = [min_samplesize,max_samplesize]
                 samplingsizes = [min_samplesize]
-                samplingsizes_name = ['min_row_number']   
+                # samplingsizes_name = ['min_row_number','max_row_number'] 
+                samplingsizes_name = ['min_row_number'] 
                 nsamplings = np.shape(samplingsizes)[0]
                 print(samplingsizes)
 
@@ -1446,38 +1512,45 @@ except:
 
             
     # save data
-    data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody_SuccAndFailedPull'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
-    if not os.path.exists(data_saved_subfolder):
-        os.makedirs(data_saved_subfolder)
-    if moreSampSize:  
-        with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
-            pickle.dump(DAGscores_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
-            pickle.dump(DAGscores_shuffled_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
-            pickle.dump(weighted_graphs_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
-            pickle.dump(weighted_graphs_shuffled_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
-            pickle.dump(sig_edges_diffTempRo_diffSampSize, f)
+    savedata = 1
+    if savedata:
+        data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody_SuccAndFailedPull'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
+        if not os.path.exists(data_saved_subfolder):
+            os.makedirs(data_saved_subfolder)
+        if moreSampSize:  
+            with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
+                pickle.dump(DAGscores_diffTempRo_diffSampSize, f)
+            with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
+                pickle.dump(DAGscores_shuffled_diffTempRo_diffSampSize, f)
+            with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
+                pickle.dump(weighted_graphs_diffTempRo_diffSampSize, f)
+            with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
+                pickle.dump(weighted_graphs_shuffled_diffTempRo_diffSampSize, f)
+            with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_moreSampSize.pkl', 'wb') as f:
+                pickle.dump(sig_edges_diffTempRo_diffSampSize, f)
 
-    else:
-        with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
-            pickle.dump(DAGscores_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
-            pickle.dump(DAGscores_shuffled_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
-            pickle.dump(weighted_graphs_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
-            pickle.dump(weighted_graphs_shuffled_diffTempRo_diffSampSize, f)
-        with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
-            pickle.dump(sig_edges_diffTempRo_diffSampSize, f)
+        else:
+            with open(data_saved_subfolder+'/DAGscores_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
+                pickle.dump(DAGscores_diffTempRo_diffSampSize, f)
+            with open(data_saved_subfolder+'/DAGscores_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
+                pickle.dump(DAGscores_shuffled_diffTempRo_diffSampSize, f)
+            with open(data_saved_subfolder+'/weighted_graphs_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
+                pickle.dump(weighted_graphs_diffTempRo_diffSampSize, f)
+            with open(data_saved_subfolder+'/weighted_graphs_shuffled_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
+                pickle.dump(weighted_graphs_shuffled_diffTempRo_diffSampSize, f)
+            with open(data_saved_subfolder+'/sig_edges_diffTempRo_diffSampSize_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'.pkl', 'wb') as f:
+                pickle.dump(sig_edges_diffTempRo_diffSampSize, f)
 
 
-# In[22]:
+# In[ ]:
 
 
 # for self condition, use the same for failed pull and succ pull
+# DAGscores_diffTempRo_diffSampSize[('failedpull', '1', 'max_row_number')]['self']=DAGscores_diffTempRo_diffSampSize[('succpull', '1', 'max_row_number')]['self']
+# DAGscores_shuffled_diffTempRo_diffSampSize[('failedpull', '1', 'max_row_number')]['self']=DAGscores_shuffled_diffTempRo_diffSampSize[('succpull', '1', 'max_row_number')]['self']
+# weighted_graphs_diffTempRo_diffSampSize[('failedpull', '1', 'max_row_number')]['self']=weighted_graphs_diffTempRo_diffSampSize[('succpull', '1', 'max_row_number')]['self']
+# weighted_graphs_shuffled_diffTempRo_diffSampSize[('failedpull', '1', 'max_row_number')]['self']=weighted_graphs_shuffled_diffTempRo_diffSampSize[('succpull', '1', 'max_row_number')]['self']
+# sig_edges_diffTempRo_diffSampSize[('failedpull', '1', 'max_row_number')]['self']=sig_edges_diffTempRo_diffSampSize[('succpull', '1', 'max_row_number')]['self']
 
 DAGscores_diffTempRo_diffSampSize[('failedpull', '1', 'min_row_number')]['self']=DAGscores_diffTempRo_diffSampSize[('succpull', '1', 'min_row_number')]['self']
 DAGscores_shuffled_diffTempRo_diffSampSize[('failedpull', '1', 'min_row_number')]['self']=DAGscores_shuffled_diffTempRo_diffSampSize[('succpull', '1', 'min_row_number')]['self']
@@ -1491,7 +1564,7 @@ sig_edges_diffTempRo_diffSampSize[('failedpull', '1', 'min_row_number')]['self']
 
 # ### plot graphs - show the edge with arrows; show the best time bin and row number; show the three time lag separately
 
-# In[23]:
+# In[ ]:
 
 
 # ONLY FOR PLOT!! 
@@ -1694,7 +1767,7 @@ if savefigs:
 
 # ### plot graphs - show the edge differences, use one condition as the base
 
-# In[24]:
+# In[ ]:
 
 
 # ONLY FOR PLOT!! 
@@ -1930,7 +2003,7 @@ if savefigs:
 
 # ### VERSION 4: plot the key edges' modulation; only show the modulation among coop1s, self, no-vision; x axis shows the pairs. y axis averaged the MI among time lag and show CI
 
-# In[26]:
+# In[ ]:
 
 
 # PLOT multiple pairs in one plot, so need to load data seperately
@@ -2198,7 +2271,7 @@ if savefig:
 
 # ### version 5: plot the key edges' modulation; only show the modulation among coop1s, self, no-vision; x axis shows the pairs. y axis averaged the MI only for 1s
 
-# In[27]:
+# In[ ]:
 
 
 # PLOT multiple pairs in one plot, so need to load data seperately
@@ -2467,7 +2540,7 @@ if savefig:
 
 # ### version 6: plot the key edges' modulation; only show the modulation among coop1s, self, no-vision; x axis shows the pairs. y axis showed the MI; separate animal 1 and 2; merge time lags
 
-# In[28]:
+# In[ ]:
 
 
 # PLOT multiple pairs in one plot, so need to load data seperately
@@ -2744,7 +2817,7 @@ if savefig:
 
 # ### version 7: plot the key edges' modulation; only show the modulation among coop1s, self, no-vision; x axis shows the pairs. y axis showed the MI; separate animal 1 and 2; only for 1s time lag
 
-# In[29]:
+# In[ ]:
 
 
 # PLOT multiple pairs in one plot, so need to load data seperately
@@ -3022,7 +3095,7 @@ if savefig:
 # #### separate animal 1 and 2, plot individual animal; 
 # #### put all animal in one plot - based on the "to Node"; for one time lag or merged all time lags
 
-# In[30]:
+# In[ ]:
 
 
 # PLOT multiple pairs in one plot, so need to load data seperately
@@ -3356,25 +3429,25 @@ if savefig:
 # #### separate animal 1 and 2, plot individual animal; 
 # #### pool 1) all the animals, 2) male and female, 3) subordinate and dominant
 
-# In[31]:
+# In[ ]:
 
 
 # PLOT multiple pairs in one plot, so need to load data seperately
 moreSampSize = 0
 #
-animal1_fixedorders = ['eddie','dodson','dannon','ginger']
-animal2_fixedorders = ['sparkle','scorch','kanga','kanga']
-animal_pooled_list = ['E','SP','DO','SC','DA','KwDA','G','KwG']
+animal1_fixedorders = ['eddie','dodson','dannon','ginger','koala']
+animal2_fixedorders = ['sparkle','scorch','kanga','kanga','vermelho']
+animal_pooled_list = ['E','SP','DO','SC','DA','KwDA','G','KwG','K','V']
 
 nanimalpairs = np.shape(animal1_fixedorders)[0]
 nanimalpooled = np.shape(animal_pooled_list)[0]
 
-timelag = 1 # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag 1 and 2)
-timelagname = '1second' # '1/2/3second' or 'merged' or '12merged'
+timelag = 12 # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag 1 and 2)
+# timelagname = '1second' # '1/2/3second' or 'merged' or '12merged'
 # timelagname = 'merged' # together with timelag = 0
-# timelagname = '12merged' # together with timelag = 12
+timelagname = '12merged' # together with timelag = 12
 
-pulltype_forplot = 'succpull' # 'succpull' or 'failedpull'
+pulltype_forplot = 'failedpull' # 'succpull' or 'failedpull'
 
 nMIbootstraps = 150
 
@@ -3672,38 +3745,38 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
 
 # prepare the data
 # average all animals for each dependency
-MI_coop_self_all_IndiAni_all = MI_coop_self_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)
-MI_nov_coop_all_IndiAni_all = MI_nov_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)
+MI_coop_self_all_IndiAni_all = MI_coop_self_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)
+MI_nov_coop_all_IndiAni_all = MI_nov_coop_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)
 MI_coop_self_all_IndiAni_allmean = np.nanmean(MI_coop_self_all_IndiAni_all,axis=0)
 MI_nov_coop_all_IndiAni_allmean = np.nanmean(MI_nov_coop_all_IndiAni_all,axis=0) 
 MI_coop_self_all_IndiAni_allse = np.nanstd(MI_coop_self_all_IndiAni_all,axis=0)/np.sqrt(8*nMIbootstraps*ntimelags) 
 MI_nov_coop_all_IndiAni_allse = np.nanstd(MI_nov_coop_all_IndiAni_all,axis=0)/np.sqrt(8*nMIbootstraps*ntimelags) 
 
 # average all males and females for each dependency
-MI_coop_self_all_IndiAni_male = MI_coop_self_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1))),:]
-MI_nov_coop_all_IndiAni_male = MI_nov_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1))),:]
+MI_coop_self_all_IndiAni_male = MI_coop_self_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1),np.arange(9*nMIbootstraps*ntimelags,10*nMIbootstraps*ntimelags,1))),:]
+MI_nov_coop_all_IndiAni_male = MI_nov_coop_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1),np.arange(9*nMIbootstraps*ntimelags,10*nMIbootstraps*ntimelags,1))),:]
 MI_coop_self_all_IndiAni_malemean = np.nanmean(MI_coop_self_all_IndiAni_male,axis=0)
 MI_nov_coop_all_IndiAni_malemean = np.nanmean(MI_nov_coop_all_IndiAni_male,axis=0) 
-MI_coop_self_all_IndiAni_malese = np.nanstd(MI_coop_self_all_IndiAni_male,axis=0)/np.sqrt(3*nMIbootstraps*ntimelags) 
-MI_nov_coop_all_IndiAni_malese = np.nanstd(MI_nov_coop_all_IndiAni_male,axis=0)/np.sqrt(3*nMIbootstraps*ntimelags) 
+MI_coop_self_all_IndiAni_malese = np.nanstd(MI_coop_self_all_IndiAni_male,axis=0)/np.sqrt(4*nMIbootstraps*ntimelags) 
+MI_nov_coop_all_IndiAni_malese = np.nanstd(MI_nov_coop_all_IndiAni_male,axis=0)/np.sqrt(4*nMIbootstraps*ntimelags) 
 # average all males and females for each dependency
-MI_coop_self_all_IndiAni_female = MI_coop_self_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
-MI_nov_coop_all_IndiAni_female = MI_nov_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
+MI_coop_self_all_IndiAni_female = MI_coop_self_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,9*nMIbootstraps*ntimelags,1))),:]
+MI_nov_coop_all_IndiAni_female = MI_nov_coop_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,9*nMIbootstraps*ntimelags,1))),:]
 MI_coop_self_all_IndiAni_femalemean = np.nanmean(MI_coop_self_all_IndiAni_female,axis=0)
 MI_nov_coop_all_IndiAni_femalemean = np.nanmean(MI_nov_coop_all_IndiAni_female,axis=0) 
-MI_coop_self_all_IndiAni_femalese = np.nanstd(MI_coop_self_all_IndiAni_female,axis=0)/np.sqrt(5*nMIbootstraps*ntimelags) 
-MI_nov_coop_all_IndiAni_femalese = np.nanstd(MI_nov_coop_all_IndiAni_female,axis=0)/np.sqrt(5*nMIbootstraps*ntimelags) 
+MI_coop_self_all_IndiAni_femalese = np.nanstd(MI_coop_self_all_IndiAni_female,axis=0)/np.sqrt(6*nMIbootstraps*ntimelags) 
+MI_nov_coop_all_IndiAni_femalese = np.nanstd(MI_nov_coop_all_IndiAni_female,axis=0)/np.sqrt(6*nMIbootstraps*ntimelags) 
 
 # average all subordinate and dominant for each dependency
-MI_coop_self_all_IndiAni_sub = MI_coop_self_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1),np.arange(6*nMIbootstraps*ntimelags,7*nMIbootstraps*ntimelags,1))),:]
-MI_nov_coop_all_IndiAni_sub = MI_nov_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1),np.arange(6*nMIbootstraps*ntimelags,7*nMIbootstraps*ntimelags,1))),:]
+MI_coop_self_all_IndiAni_sub = MI_coop_self_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1),np.arange(6*nMIbootstraps*ntimelags,7*nMIbootstraps*ntimelags,1),np.arange(8*nMIbootstraps*ntimelags,9*nMIbootstraps*ntimelags,1))),:]
+MI_nov_coop_all_IndiAni_sub = MI_nov_coop_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1),np.arange(6*nMIbootstraps*ntimelags,7*nMIbootstraps*ntimelags,1),np.arange(8*nMIbootstraps*ntimelags,9*nMIbootstraps*ntimelags,1))),:]
 MI_coop_self_all_IndiAni_submean = np.nanmean(MI_coop_self_all_IndiAni_sub,axis=0)
 MI_nov_coop_all_IndiAni_submean = np.nanmean(MI_nov_coop_all_IndiAni_sub,axis=0) 
 MI_coop_self_all_IndiAni_subse = np.nanstd(MI_coop_self_all_IndiAni_sub,axis=0)/np.sqrt(4*nMIbootstraps*ntimelags) 
 MI_nov_coop_all_IndiAni_subse = np.nanstd(MI_nov_coop_all_IndiAni_sub,axis=0)/np.sqrt(4*nMIbootstraps*ntimelags) 
 # average all subordinate and dominant for each dependency
-MI_coop_self_all_IndiAni_dom = MI_coop_self_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,6*nMIbootstraps*ntimelags,1),np.arange(7*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
-MI_nov_coop_all_IndiAni_dom = MI_nov_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,6*nMIbootstraps*ntimelags,1),np.arange(7*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
+MI_coop_self_all_IndiAni_dom = MI_coop_self_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,6*nMIbootstraps*ntimelags,1),np.arange(7*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1),np.arange(9*nMIbootstraps*ntimelags,10*nMIbootstraps*ntimelags,1))),:]
+MI_nov_coop_all_IndiAni_dom = MI_nov_coop_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,6*nMIbootstraps*ntimelags,1),np.arange(7*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1),np.arange(9*nMIbootstraps*ntimelags,10*nMIbootstraps*ntimelags,1))),:]
 MI_coop_self_all_IndiAni_dommean = np.nanmean(MI_coop_self_all_IndiAni_dom,axis=0)
 MI_nov_coop_all_IndiAni_dommean = np.nanmean(MI_nov_coop_all_IndiAni_dom,axis=0) 
 MI_coop_self_all_IndiAni_domse = np.nanstd(MI_coop_self_all_IndiAni_dom,axis=0)/np.sqrt(4*nMIbootstraps*ntimelags) 
@@ -3721,15 +3794,15 @@ MI_nov_coop_all_IndiAni_pooled =  {'all':MI_nov_coop_all_IndiAni_all,
                                    'subordinate':MI_nov_coop_all_IndiAni_sub,
                                    'dominant':MI_nov_coop_all_IndiAni_dom}
 MI_coop_self_mean_IndiAni_pooled ={'all':MI_coop_self_mean_IndiAni,
-                                   'male':MI_coop_self_mean_IndiAni[[0,2,4],:],
-                                   'female':MI_coop_self_mean_IndiAni[[1,3,5,6,7],:],
-                                   'subordinate':MI_coop_self_mean_IndiAni[[0,2,4,6],:],
-                                   'dominant':MI_coop_self_mean_IndiAni[[1,3,5,7],:]}
+                                   'male':MI_coop_self_mean_IndiAni[[0,2,4,9],:],
+                                   'female':MI_coop_self_mean_IndiAni[[1,3,5,6,7,8],:],
+                                   'subordinate':MI_coop_self_mean_IndiAni[[0,2,4,6,8],:],
+                                   'dominant':MI_coop_self_mean_IndiAni[[1,3,5,7,9],:]}
 MI_nov_coop_mean_IndiAni_pooled = {'all':MI_nov_coop_mean_IndiAni,
-                                   'male':MI_nov_coop_mean_IndiAni[[0,2,4],:],
-                                   'female':MI_nov_coop_mean_IndiAni[[1,3,5,6,7],:],
-                                   'subordinate':MI_nov_coop_mean_IndiAni[[0,2,4,6],:],
-                                   'dominant':MI_nov_coop_mean_IndiAni[[1,3,5,7],:]}
+                                   'male':MI_nov_coop_mean_IndiAni[[0,2,4,9],:],
+                                   'female':MI_nov_coop_mean_IndiAni[[1,3,5,6,7,8],:],
+                                   'subordinate':MI_nov_coop_mean_IndiAni[[0,2,4,6,8],:],
+                                   'dominant':MI_nov_coop_mean_IndiAni[[1,3,5,7,9],:]}
 
 # for plot
 dependencynames = ['pull-pull','gaze-gaze','within_gazepull','across_gazepull','within_pullgaze','across_pullgaze']
@@ -3899,13 +3972,13 @@ if savefig:
     
 
 
-# In[32]:
+# In[ ]:
 
 
 print(MI_coop_self_mean_IndiAni_df.keys())
 
 
-# In[33]:
+# In[ ]:
 
 
 # sts = scipy.stats.wilcoxon(MI_coop_self_mean_IndiAni_sub_df['pull-pull'])
@@ -3914,7 +3987,7 @@ pvalue = sts.pvalue
 pvalue
 
 
-# In[34]:
+# In[ ]:
 
 
 # sts = scipy.stats.wilcoxon(MI_nov_coop_mean_IndiAni_sub_df['within_gazepull'])
@@ -3923,7 +3996,7 @@ pvalue = sts.pvalue
 pvalue
 
 
-# In[35]:
+# In[ ]:
 
 
 sts = scipy.stats.ttest_ind(MI_coop_self_mean_IndiAni_sub_df['pull-pull'],MI_coop_self_mean_IndiAni_dom_df['pull-pull'])
@@ -3938,15 +4011,15 @@ pvalue
 # #### pool 1) all the animals, 2) male and female, 3) subordinate and dominant
 # #### compare successful vs failed
 
-# In[42]:
+# In[ ]:
 
 
 # PLOT multiple pairs in one plot, so need to load data seperately
 moreSampSize = 0
 #
-animal1_fixedorders = ['eddie','dodson','dannon','ginger']
-animal2_fixedorders = ['sparkle','scorch','kanga','kanga']
-animal_pooled_list = ['E','SP','DO','SC','DA','KwDA','G','KwG']
+animal1_fixedorders = ['eddie','dodson','dannon','ginger','koala']
+animal2_fixedorders = ['sparkle','scorch','kanga','kanga','vermelho']
+animal_pooled_list = ['E','SP','DO','SC','DA','KwDA','G','KwG','K','V']
 
 nanimalpairs = np.shape(animal1_fixedorders)[0]
 nanimalpooled = np.shape(animal_pooled_list)[0]
@@ -3956,6 +4029,7 @@ timelag = 12 # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag
 # timelagname = 'merged' # together with timelag = 0
 timelagname = '12merged' # together with timelag = 12
 
+MI_cooptype = 'coop(1s)'  # 'coop(3s)','coop(2s)','coop(1.5s)','coop(1s)'
 
 nMIbootstraps = 150
 
@@ -4030,18 +4104,18 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
 
     # load edge weight data    
     # load successful pulls
-    weighted_graphs_coop_succ = weighted_graphs_diffTempRo_diffSampSize[('succpull',str(temp_resolu),j_sampsize_name)]['coop(1s)']
-    weighted_graphs_sf_coop_succ = weighted_graphs_shuffled_diffTempRo_diffSampSize[('succpull',str(temp_resolu),j_sampsize_name)]['coop(1s)']
-    sig_edges_coop_succ = sig_edges_diffTempRo_diffSampSize[('succpull',str(temp_resolu),j_sampsize_name)]['coop(1s)']
+    weighted_graphs_coop_succ = weighted_graphs_diffTempRo_diffSampSize[('succpull',str(temp_resolu),j_sampsize_name)][MI_cooptype]
+    weighted_graphs_sf_coop_succ = weighted_graphs_shuffled_diffTempRo_diffSampSize[('succpull',str(temp_resolu),j_sampsize_name)][MI_cooptype]
+    sig_edges_coop_succ = sig_edges_diffTempRo_diffSampSize[('succpull',str(temp_resolu),j_sampsize_name)][MI_cooptype]
     #
     weighted_graphs_nov_succ = weighted_graphs_diffTempRo_diffSampSize[('succpull',str(temp_resolu),j_sampsize_name)]['no-vision']
     weighted_graphs_sf_nov_succ = weighted_graphs_shuffled_diffTempRo_diffSampSize[('succpull',str(temp_resolu),j_sampsize_name)]['no-vision']
     sig_edges_nov_succ = sig_edges_diffTempRo_diffSampSize[('succpull',str(temp_resolu),j_sampsize_name)]['no-vision']
     #
     # load failed pulls
-    weighted_graphs_coop_fail = weighted_graphs_diffTempRo_diffSampSize[('failedpull',str(temp_resolu),j_sampsize_name)]['coop(1s)']
-    weighted_graphs_sf_coop_fail = weighted_graphs_shuffled_diffTempRo_diffSampSize[('failedpull',str(temp_resolu),j_sampsize_name)]['coop(1s)']
-    sig_edges_coop_fail = sig_edges_diffTempRo_diffSampSize[('failedpull',str(temp_resolu),j_sampsize_name)]['coop(1s)']
+    weighted_graphs_coop_fail = weighted_graphs_diffTempRo_diffSampSize[('failedpull',str(temp_resolu),j_sampsize_name)][MI_cooptype]
+    weighted_graphs_sf_coop_fail = weighted_graphs_shuffled_diffTempRo_diffSampSize[('failedpull',str(temp_resolu),j_sampsize_name)][MI_cooptype]
+    sig_edges_coop_fail = sig_edges_diffTempRo_diffSampSize[('failedpull',str(temp_resolu),j_sampsize_name)][MI_cooptype]
     #
     weighted_graphs_nov_fail = weighted_graphs_diffTempRo_diffSampSize[('failedpull',str(temp_resolu),j_sampsize_name)]['no-vision']
     weighted_graphs_sf_nov_fail = weighted_graphs_shuffled_diffTempRo_diffSampSize[('failedpull',str(temp_resolu),j_sampsize_name)]['no-vision']
@@ -4054,10 +4128,14 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
     #
     MI_coop_coop_all,sig_edges_coop_coop = Modulation_Index(weighted_graphs_coop_succ, weighted_graphs_coop_fail,
                                       sig_edges_coop_succ, sig_edges_coop_fail, nMIbootstraps)
+    # MI_coop_coop_all = MI_coop_coop_all * sig_edges_coop_coop
+    MI_coop_coop_all[MI_coop_coop_all==0] = np.nan
     MI_coop_coop = MI_coop_coop_all.mean(axis = 0)
     # MI_coop_coop = MI_coop_coop * sig_edges_coop_coop
     MI_nov_nov_all,sig_edges_nov_nov  = Modulation_Index(weighted_graphs_nov_succ, weighted_graphs_nov_fail,
                                       sig_edges_nov_succ, sig_edges_nov_fail, nMIbootstraps)
+    # MI_nov_nov_all = MI_nov_nov_all * sig_edges_nov_nov
+    MI_nov_nov_all[MI_nov_nov_all==0] = np.nan
     MI_nov_nov = MI_nov_nov_all.mean(axis = 0)
     # MI_nov_nov = MI_nov_nov * sig_edges_nov_nov
     
@@ -4174,32 +4252,32 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
         # coop self modulation
         # pull-pull
         a1 = MI_coop_coop_all[:,pull_pull_fromNodes_all[ianimal],pull_pull_toNodes_all[ianimal]].flatten()
-        xxx1 = np.mean(a1)
+        xxx1 = np.nanmean(a1)
         MI_coop_coop_all_IndiAni[2*ianimalpair+ianimal,:,0] = a1
         MI_coop_coop_mean_IndiAni[2*ianimalpair+ianimal,0] = xxx1
         # gaze-gaze
         a2 = (MI_coop_coop_all[:,gaze_gaze_fromNodes_all[ianimal],gaze_gaze_toNodes_all[ianimal]]).flatten()
-        xxx2 = np.mean(a2)
+        xxx2 = np.nanmean(a2)
         MI_coop_coop_all_IndiAni[2*ianimalpair+ianimal,:,1] = a2
         MI_coop_coop_mean_IndiAni[2*ianimalpair+ianimal,1] = xxx2
         # within animal gazepull
         a3 = (MI_coop_coop_all[:,within_gazepull_fromNodes_all[ianimal],within_gazepull_toNodes_all[ianimal]]).flatten()
-        xxx3 = np.mean(a3)
+        xxx3 = np.nanmean(a3)
         MI_coop_coop_all_IndiAni[2*ianimalpair+ianimal,:,2] = a3
         MI_coop_coop_mean_IndiAni[2*ianimalpair+ianimal,2] = xxx3
         # across animal gazepull
         a4 = (MI_coop_coop_all[:,across_gazepull_fromNodes_all[ianimal],across_gazepull_toNodes_all[ianimal]]).flatten()
-        xxx4 = np.mean(a4)
+        xxx4 = np.nanmean(a4)
         MI_coop_coop_all_IndiAni[2*ianimalpair+ianimal,:,3] = a4
         MI_coop_coop_mean_IndiAni[2*ianimalpair+ianimal,3] = xxx4
         # within animal pullgaze
         a5 = (MI_coop_coop_all[:,within_pullgaze_fromNodes_all[ianimal],within_pullgaze_toNodes_all[ianimal]]).flatten()
-        xxx5 = np.mean(a5)
+        xxx5 = np.nanmean(a5)
         MI_coop_coop_all_IndiAni[2*ianimalpair+ianimal,:,4] = a5
         MI_coop_coop_mean_IndiAni[2*ianimalpair+ianimal,4] = xxx5
         # across animal pullgaze
         a6 = (MI_coop_coop_all[:,across_pullgaze_fromNodes_all[ianimal],across_pullgaze_toNodes_all[ianimal]]).flatten()
-        xxx6 = np.mean(a6)
+        xxx6 = np.nanmean(a6)
         MI_coop_coop_all_IndiAni[2*ianimalpair+ianimal,:,5] = a6
         MI_coop_coop_mean_IndiAni[2*ianimalpair+ianimal,5] = xxx6
         
@@ -4207,70 +4285,70 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
         # novision coop modulation
         # pull-pull
         a1 = MI_nov_nov_all[:,pull_pull_fromNodes_all[ianimal],pull_pull_toNodes_all[ianimal]].flatten()
-        xxx1 = np.mean(a1)
+        xxx1 = np.nanmean(a1)
         MI_nov_nov_all_IndiAni[2*ianimalpair+ianimal,:,0] = a1
         MI_nov_nov_mean_IndiAni[2*ianimalpair+ianimal,0] = xxx1
         # gaze-gaze
         a2 = (MI_nov_nov_all[:,gaze_gaze_fromNodes_all[ianimal],gaze_gaze_toNodes_all[ianimal]]).flatten()
-        xxx2 = np.mean(a2)
+        xxx2 = np.nanmean(a2)
         MI_nov_nov_all_IndiAni[2*ianimalpair+ianimal,:,1] = a2
         MI_nov_nov_mean_IndiAni[2*ianimalpair+ianimal,1] = xxx2
         # within animal gazepull
         a3 = (MI_nov_nov_all[:,within_gazepull_fromNodes_all[ianimal],within_gazepull_toNodes_all[ianimal]]).flatten()
-        xxx3 = np.mean(a3)
+        xxx3 = np.nanmean(a3)
         MI_nov_nov_all_IndiAni[2*ianimalpair+ianimal,:,2] = a3
         MI_nov_nov_mean_IndiAni[2*ianimalpair+ianimal,2] = xxx3
         # across animal gazepull
         a4 = (MI_nov_nov_all[:,across_gazepull_fromNodes_all[ianimal],across_gazepull_toNodes_all[ianimal]]).flatten()
-        xxx4 = np.mean(a4)
+        xxx4 = np.nanmean(a4)
         MI_nov_nov_all_IndiAni[2*ianimalpair+ianimal,:,3] = a4
         MI_nov_nov_mean_IndiAni[2*ianimalpair+ianimal,3] = xxx4
         # within animal pullgaze
         a5 = (MI_nov_nov_all[:,within_pullgaze_fromNodes_all[ianimal],within_pullgaze_toNodes_all[ianimal]]).flatten()
-        xxx5 = np.mean(a5)
+        xxx5 = np.nanmean(a5)
         MI_nov_nov_all_IndiAni[2*ianimalpair+ianimal,:,4] = a5
         MI_nov_nov_mean_IndiAni[2*ianimalpair+ianimal,4] = xxx5
         # across animal pullgaze
         a6 = (MI_nov_nov_all[:,across_pullgaze_fromNodes_all[ianimal],across_pullgaze_toNodes_all[ianimal]]).flatten()
-        xxx6 = np.mean(a6)
+        xxx6 = np.nanmean(a6)
         MI_nov_nov_all_IndiAni[2*ianimalpair+ianimal,:,5] = a6
         MI_nov_nov_mean_IndiAni[2*ianimalpair+ianimal,5] = xxx6
         
 
 # prepare the data
 # average all animals for each dependency
-MI_coop_coop_all_IndiAni_all = MI_coop_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)
-MI_nov_nov_all_IndiAni_all = MI_nov_nov_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)
+MI_coop_coop_all_IndiAni_all = MI_coop_coop_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)
+MI_nov_nov_all_IndiAni_all = MI_nov_nov_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)
 MI_coop_coop_all_IndiAni_allmean = np.nanmean(MI_coop_coop_all_IndiAni_all,axis=0)
 MI_nov_nov_all_IndiAni_allmean = np.nanmean(MI_nov_nov_all_IndiAni_all,axis=0) 
 MI_coop_coop_all_IndiAni_allse = np.nanstd(MI_coop_coop_all_IndiAni_all,axis=0)/np.sqrt(8*nMIbootstraps*ntimelags) 
 MI_nov_nov_all_IndiAni_allse = np.nanstd(MI_nov_nov_all_IndiAni_all,axis=0)/np.sqrt(8*nMIbootstraps*ntimelags) 
 
 # average all males and females for each dependency
-MI_coop_coop_all_IndiAni_male = MI_coop_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1))),:]
-MI_nov_nov_all_IndiAni_male = MI_nov_nov_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1))),:]
+MI_coop_coop_all_IndiAni_male = MI_coop_coop_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1))),:]
+MI_nov_nov_all_IndiAni_male = MI_nov_nov_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1))),:]
 MI_coop_coop_all_IndiAni_malemean = np.nanmean(MI_coop_coop_all_IndiAni_male,axis=0)
 MI_nov_nov_all_IndiAni_malemean = np.nanmean(MI_nov_nov_all_IndiAni_male,axis=0) 
 MI_coop_coop_all_IndiAni_malese = np.nanstd(MI_coop_coop_all_IndiAni_male,axis=0)/np.sqrt(3*nMIbootstraps*ntimelags) 
 MI_nov_nov_all_IndiAni_malese = np.nanstd(MI_nov_nov_all_IndiAni_male,axis=0)/np.sqrt(3*nMIbootstraps*ntimelags) 
 # average all males and females for each dependency
-MI_coop_coop_all_IndiAni_female = MI_coop_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
-MI_nov_nov_all_IndiAni_female = MI_nov_nov_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
+MI_coop_coop_all_IndiAni_female = MI_coop_coop_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
+MI_nov_nov_all_IndiAni_female = MI_nov_nov_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
 MI_coop_coop_all_IndiAni_femalemean = np.nanmean(MI_coop_coop_all_IndiAni_female,axis=0)
 MI_nov_nov_all_IndiAni_femalemean = np.nanmean(MI_nov_nov_all_IndiAni_female,axis=0) 
 MI_coop_coop_all_IndiAni_femalese = np.nanstd(MI_coop_coop_all_IndiAni_female,axis=0)/np.sqrt(5*nMIbootstraps*ntimelags) 
 MI_nov_nov_all_IndiAni_femalese = np.nanstd(MI_nov_nov_all_IndiAni_female,axis=0)/np.sqrt(5*nMIbootstraps*ntimelags) 
 
 # average all subordinate and dominant for each dependency
-MI_coop_coop_all_IndiAni_sub = MI_coop_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1),np.arange(6*nMIbootstraps*ntimelags,7*nMIbootstraps*ntimelags,1))),:]
-MI_nov_nov_all_IndiAni_sub = MI_nov_nov_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1),np.arange(6*nMIbootstraps*ntimelags,7*nMIbootstraps*ntimelags,1))),:]
+MI_coop_coop_all_IndiAni_sub = MI_coop_coop_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1),np.arange(6*nMIbootstraps*ntimelags,7*nMIbootstraps*ntimelags,1))),:]
+MI_nov_nov_all_IndiAni_sub = MI_nov_nov_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(0,nMIbootstraps*ntimelags,1),np.arange(2*nMIbootstraps*ntimelags,3*nMIbootstraps*ntimelags,1),np.arange(4*nMIbootstraps*ntimelags,5*nMIbootstraps*ntimelags,1),np.arange(6*nMIbootstraps*ntimelags,7*nMIbootstraps*ntimelags,1))),:]
 MI_coop_coop_all_IndiAni_submean = np.nanmean(MI_coop_coop_all_IndiAni_sub,axis=0)
 MI_nov_nov_all_IndiAni_submean = np.nanmean(MI_nov_nov_all_IndiAni_sub,axis=0) 
 MI_coop_coop_all_IndiAni_subse = np.nanstd(MI_coop_coop_all_IndiAni_sub,axis=0)/np.sqrt(4*nMIbootstraps*ntimelags) 
 MI_nov_nov_all_IndiAni_subse = np.nanstd(MI_nov_nov_all_IndiAni_sub,axis=0)/np.sqrt(4*nMIbootstraps*ntimelags) 
 # average all subordinate and dominant for each dependency
-MI_coop_coop_all_IndiAni_dom = MI_coop_coop_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,6*nMIbootstraps*ntimelags,1),np.arange(7*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
-MI_nov_nov_all_IndiAni_dom = MI_nov_nov_all_IndiAni.reshape(8*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,6*nMIbootstraps*ntimelags,1),np.arange(7*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
+MI_coop_coop_all_IndiAni_dom = MI_coop_coop_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,6*nMIbootstraps*ntimelags,1),np.arange(7*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
+MI_nov_nov_all_IndiAni_dom = MI_nov_nov_all_IndiAni.reshape(nanimalpairs*2*nMIbootstraps*ntimelags,6)[np.concatenate((np.arange(1*nMIbootstraps*ntimelags,2*nMIbootstraps*ntimelags,1),np.arange(3*nMIbootstraps*ntimelags,4*nMIbootstraps*ntimelags,1),np.arange(5*nMIbootstraps*ntimelags,6*nMIbootstraps*ntimelags,1),np.arange(7*nMIbootstraps*ntimelags,8*nMIbootstraps*ntimelags,1))),:]
 MI_coop_coop_all_IndiAni_dommean = np.nanmean(MI_coop_coop_all_IndiAni_dom,axis=0)
 MI_nov_nov_all_IndiAni_dommean = np.nanmean(MI_nov_nov_all_IndiAni_dom,axis=0) 
 MI_coop_coop_all_IndiAni_domse = np.nanstd(MI_coop_coop_all_IndiAni_dom,axis=0)/np.sqrt(4*nMIbootstraps*ntimelags) 
@@ -4300,7 +4378,7 @@ MI_nov_nov_mean_IndiAni_pooled = {'all':MI_nov_nov_mean_IndiAni,
 
 # for plot
 dependencynames = ['pull-pull','gaze-gaze','within_gazepull','across_gazepull','within_pullgaze','across_pullgaze']
-dependencytargets = ['pull-pull','within_gazepull','across_pullgaze']
+dependencytargets = ['pull-pull','within_gazepull','across_pullgaze',]
 # dependencytargets = dependencynames
 
 # plot 1
@@ -4469,19 +4547,21 @@ if savefig:
 # In[ ]:
 
 
-
-
-
-# In[ ]:
-
-
-
+xxx = np.array(MI_coop_coop_mean_IndiAni_df['across_pullgaze'])
 
 
 # In[ ]:
 
 
+yyy = np.array(MI_nov_nov_mean_IndiAni_df['across_pullgaze'])
 
+
+# In[ ]:
+
+
+sts = scipy.stats.ttest_1samp(yyy,0)
+pvalue = sts.pvalue
+pvalue
 
 
 # In[ ]:
