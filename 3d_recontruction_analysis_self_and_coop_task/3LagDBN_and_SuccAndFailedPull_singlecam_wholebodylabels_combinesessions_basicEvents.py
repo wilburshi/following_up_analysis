@@ -6,7 +6,7 @@
 # ### In this script, DBN is run with sucessful and failed pulls seperately
 # ### In this script, the animal tracking is done with only one camera - camera 2 (middle) 
 
-# In[12]:
+# In[104]:
 
 
 import pandas as pd
@@ -35,7 +35,7 @@ import networkx as nx
 
 # ### function - get body part location for each pair of cameras
 
-# In[13]:
+# In[105]:
 
 
 from ana_functions.body_part_locs_eachpair import body_part_locs_eachpair
@@ -44,7 +44,7 @@ from ana_functions.body_part_locs_singlecam import body_part_locs_singlecam
 
 # ### function - align the two cameras
 
-# In[14]:
+# In[106]:
 
 
 from ana_functions.camera_align import camera_align       
@@ -52,7 +52,7 @@ from ana_functions.camera_align import camera_align
 
 # ### function - merge the two pairs of cameras
 
-# In[15]:
+# In[107]:
 
 
 from ana_functions.camera_merge import camera_merge
@@ -60,7 +60,7 @@ from ana_functions.camera_merge import camera_merge
 
 # ### function - find social gaze time point
 
-# In[16]:
+# In[108]:
 
 
 from ana_functions.find_socialgaze_timepoint import find_socialgaze_timepoint
@@ -70,7 +70,7 @@ from ana_functions.find_socialgaze_timepoint_singlecam_wholebody import find_soc
 
 # ### function - define time point of behavioral events
 
-# In[17]:
+# In[109]:
 
 
 from ana_functions.bhv_events_timepoint import bhv_events_timepoint
@@ -79,7 +79,7 @@ from ana_functions.bhv_events_timepoint_singlecam import bhv_events_timepoint_si
 
 # ### function - plot behavioral events
 
-# In[18]:
+# In[110]:
 
 
 from ana_functions.plot_bhv_events import plot_bhv_events
@@ -91,7 +91,7 @@ from matplotlib.collections import PatchCollection
 
 # ### function - plot inter-pull interval
 
-# In[19]:
+# In[111]:
 
 
 from ana_functions.plot_interpull_interval import plot_interpull_interval
@@ -99,7 +99,7 @@ from ana_functions.plot_interpull_interval import plot_interpull_interval
 
 # ### function - make demo videos with skeleton and inportant vectors
 
-# In[20]:
+# In[112]:
 
 
 from ana_functions.tracking_video_singlecam_demo import tracking_video_singlecam_demo
@@ -108,7 +108,7 @@ from ana_functions.tracking_video_singlecam_wholebody_demo import tracking_video
 
 # ### function - interval between all behavioral events
 
-# In[21]:
+# In[113]:
 
 
 from ana_functions.bhv_events_interval import bhv_events_interval
@@ -116,7 +116,7 @@ from ana_functions.bhv_events_interval import bhv_events_interval
 
 # ### function - train the dynamic bayesian network - multi time lag (3 lags)
 
-# In[22]:
+# In[114]:
 
 
 from ana_functions.train_DBN_multiLag import train_DBN_multiLag
@@ -135,7 +135,7 @@ from ana_functions.AicScore import AicScore
 
 # ### prepare the basic behavioral data (especially the time stamps for each bhv events)
 
-# In[23]:
+# In[123]:
 
 
 # instead of using gaze angle threshold, use the target rectagon to deside gaze info
@@ -173,7 +173,7 @@ else:
 # currently the session_start_time will be manually typed in. It can be updated after a better method is used
 
 # dodson scorch
-if 0:
+if 1:
     if not do_bestsession:
         dates_list = [
             
@@ -228,7 +228,7 @@ if 0:
     
     
 # eddie sparkle
-if 1:
+if 0:
     if not do_bestsession:
         dates_list = [
                                     
@@ -279,7 +279,7 @@ if 1:
     
     
 # ginger kanga
-if 1:
+if 0:
     if not do_bestsession:
         dates_list = [
                       
@@ -332,7 +332,7 @@ if 1:
 
     
 # dannon kanga
-if 1:
+if 0:
     if not do_bestsession:
         dates_list = [
                     
@@ -378,7 +378,7 @@ if 1:
     animal2_filename = "Kanga"
 
 # Koala Vermelho
-if 1:
+if 0:
     if not do_bestsession:
         dates_list = [
                      
@@ -491,7 +491,7 @@ data_saved_folder = '/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInt
     
 
 
-# In[24]:
+# In[124]:
 
 
 # basic behavior analysis (define time stamps for each bhv events, etc)
@@ -784,7 +784,7 @@ except:
 
 # #### redefine the tasktype and cooperation threshold to merge them together
 
-# In[25]:
+# In[125]:
 
 
 # 100: self; 3: 3s coop; 2: 2s coop; 1.5: 1.5s coop; 1: 1s coop; -1: no-vision
@@ -797,7 +797,7 @@ coopthres_forsort[coopthres_forsort==0] = 100 # get the cooperation threshold fo
 # ### plot behavioral events interval to get a sense about time bin
 # #### only focus on pull_to_other_bhv_interval and other_bhv_to_pull_interval
 
-# In[26]:
+# In[126]:
 
 
 fig, ax1 = plt.subplots(figsize=(10, 5))
@@ -859,7 +859,7 @@ if savefigs:
 
 # ### prepare the input data for DBN
 
-# In[28]:
+# In[146]:
 
 
 # define DBN related summarizing variables
@@ -882,7 +882,7 @@ DBN_input_data_alltypes = dict.fromkeys(pulltypes, [])
 # DBN resolutions (make sure they are the same as in the later part of the code)
 totalsess_time = 600 # total session time in s
 # temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
-temp_resolus = [1] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+temp_resolus = [0.5] # temporal resolution in the DBN model, eg: 0.5 means 500ms
 ntemp_reses = np.shape(temp_resolus)[0]
 
 mergetempRos = 0
@@ -1073,10 +1073,10 @@ if prepare_input_data:
                 pickle.dump(DBN_input_data_alltypes, f)     
 
 
-# In[29]:
+# In[147]:
 
 
-temp_resolu = 1
+temp_resolu = 0.5
 data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody_SuccAndFailedPull'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
 if not mergetempRos:
     with open(data_saved_subfolder+'/DBN_input_data_alltypes_'+animal1_fixedorder[0]+animal2_fixedorder[0]+'_'+str(temp_resolu)+'sReSo.pkl', 'rb') as f:
@@ -1088,7 +1088,7 @@ plt.plot(DBN_input_data_alltypes['succpull']['coop(1s)']['pull1_t0'].reset_index
 plt.plot(DBN_input_data_alltypes['failedpull']['coop(1s)']['pull1_t0'].reset_index(drop=True))
 
 
-# In[30]:
+# In[148]:
 
 
 temp_resolu = 1
@@ -1104,7 +1104,7 @@ plt.plot(DBN_input_data_alltypes['coop(1s)']['pull1_t0'].reset_index(drop=True))
 
 # ### run the DBN model on the combined session data set
 
-# In[31]:
+# In[149]:
 
 
 # define DBN related summarizing variables
@@ -1119,7 +1119,7 @@ npulltypes = np.shape(pulltypes)[0]
 
 # #### a test run
 
-# In[32]:
+# In[150]:
 
 
 # run DBN on the large table with merged sessions
@@ -1317,7 +1317,7 @@ num_starting_points = 100 # number of random starting points/graphs
 nbootstraps = 95
 
 try:
-    # dumpy
+    dumpy
     data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody_SuccAndFailedPull'+savefile_sufix+'_3lags/'+cameraID+'/'+animal1_fixedorder[0]+animal2_fixedorder[0]+'/'
     if not os.path.exists(data_saved_subfolder):
         os.makedirs(data_saved_subfolder)
@@ -1363,7 +1363,7 @@ except:
 
     totalsess_time = 600 # total session time in s
     # temp_resolus = [0.5,1,1.5,2] # temporal resolution in the DBN model, eg: 0.5 means 500ms
-    temp_resolus = [1] # temporal resolution in the DBN model, eg: 0.5 means 500ms
+    temp_resolus = [0.5,1] # temporal resolution in the DBN model, eg: 0.5 means 500ms
     ntemp_reses = np.shape(temp_resolus)[0]
 
      # analyze successful pull and failed pull separately
@@ -3442,12 +3442,12 @@ animal_pooled_list = ['E','SP','DO','SC','DA','KwDA','G','KwG','K','V']
 nanimalpairs = np.shape(animal1_fixedorders)[0]
 nanimalpooled = np.shape(animal_pooled_list)[0]
 
-timelag = 12 # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag 1 and 2)
+timelag = 0 # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag 1 and 2)
 # timelagname = '1second' # '1/2/3second' or 'merged' or '12merged'
-# timelagname = 'merged' # together with timelag = 0
-timelagname = '12merged' # together with timelag = 12
+timelagname = 'merged' # together with timelag = 0
+# timelagname = '12merged' # together with timelag = 12
 
-pulltype_forplot = 'failedpull' # 'succpull' or 'failedpull'
+pulltype_forplot = 'succpull' # 'succpull' or 'failedpull'
 
 nMIbootstraps = 150
 
@@ -4024,10 +4024,10 @@ animal_pooled_list = ['E','SP','DO','SC','DA','KwDA','G','KwG','K','V']
 nanimalpairs = np.shape(animal1_fixedorders)[0]
 nanimalpooled = np.shape(animal_pooled_list)[0]
 
-timelag = 12 # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag 1 and 2)
+timelag = 0 # 1 or 2 or 3 or 0(merged - merge all three lags) or 12 (merged lag 1 and 2)
 # timelagname = '1second' # '1/2/3second' or 'merged' or '12merged'
-# timelagname = 'merged' # together with timelag = 0
-timelagname = '12merged' # together with timelag = 12
+timelagname = 'merged' # together with timelag = 0
+# timelagname = '12merged' # together with timelag = 12
 
 MI_cooptype = 'coop(1s)'  # 'coop(3s)','coop(2s)','coop(1.5s)','coop(1s)'
 
@@ -4104,6 +4104,10 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
 
     # load edge weight data    
     # load successful pulls
+    weighted_graphs_self_succ = weighted_graphs_diffTempRo_diffSampSize[('succpull',str(temp_resolu),j_sampsize_name)]['self']
+    weighted_graphs_sf_self_succ = weighted_graphs_shuffled_diffTempRo_diffSampSize[('succpull',str(temp_resolu),j_sampsize_name)]['self']
+    sig_edges_self_succ = sig_edges_diffTempRo_diffSampSize[('succpull',str(temp_resolu),j_sampsize_name)]['self']
+    #
     weighted_graphs_coop_succ = weighted_graphs_diffTempRo_diffSampSize[('succpull',str(temp_resolu),j_sampsize_name)][MI_cooptype]
     weighted_graphs_sf_coop_succ = weighted_graphs_shuffled_diffTempRo_diffSampSize[('succpull',str(temp_resolu),j_sampsize_name)][MI_cooptype]
     sig_edges_coop_succ = sig_edges_diffTempRo_diffSampSize[('succpull',str(temp_resolu),j_sampsize_name)][MI_cooptype]
@@ -4113,6 +4117,10 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
     sig_edges_nov_succ = sig_edges_diffTempRo_diffSampSize[('succpull',str(temp_resolu),j_sampsize_name)]['no-vision']
     #
     # load failed pulls
+    weighted_graphs_self_fail = weighted_graphs_diffTempRo_diffSampSize[('failedpull',str(temp_resolu),j_sampsize_name)]['self']
+    weighted_graphs_sf_self_fail = weighted_graphs_shuffled_diffTempRo_diffSampSize[('failedpull',str(temp_resolu),j_sampsize_name)]['self']
+    sig_edges_self_fail = sig_edges_diffTempRo_diffSampSize[('failedpull',str(temp_resolu),j_sampsize_name)]['self']
+    #
     weighted_graphs_coop_fail = weighted_graphs_diffTempRo_diffSampSize[('failedpull',str(temp_resolu),j_sampsize_name)][MI_cooptype]
     weighted_graphs_sf_coop_fail = weighted_graphs_shuffled_diffTempRo_diffSampSize[('failedpull',str(temp_resolu),j_sampsize_name)][MI_cooptype]
     sig_edges_coop_fail = sig_edges_diffTempRo_diffSampSize[('failedpull',str(temp_resolu),j_sampsize_name)][MI_cooptype]
@@ -4121,21 +4129,52 @@ for ianimalpair in np.arange(0,nanimalpairs,1):
     weighted_graphs_sf_nov_fail = weighted_graphs_shuffled_diffTempRo_diffSampSize[('failedpull',str(temp_resolu),j_sampsize_name)]['no-vision']
     sig_edges_nov_fail = sig_edges_diffTempRo_diffSampSize[('failedpull',str(temp_resolu),j_sampsize_name)]['no-vision']
 
-    
-    # organize the key edge data
+
+    # modulation index between MC and SR
     #
     nMIbootstraps = 150
     #
-    MI_coop_coop_all,sig_edges_coop_coop = Modulation_Index(weighted_graphs_coop_succ, weighted_graphs_coop_fail,
-                                      sig_edges_coop_succ, sig_edges_coop_fail, nMIbootstraps)
-    # MI_coop_coop_all = MI_coop_coop_all * sig_edges_coop_coop
-    MI_coop_coop_all[MI_coop_coop_all==0] = np.nan
-    MI_coop_coop = MI_coop_coop_all.mean(axis = 0)
-    # MI_coop_coop = MI_coop_coop * sig_edges_coop_coop
+    MI_coop_self_succ_all,sig_edges_coop_self_succ = Modulation_Index(weighted_graphs_self_succ, 
+                                                                      weighted_graphs_coop_succ,
+                                                                      sig_edges_self_succ, 
+                                                                      sig_edges_coop_succ, nMIbootstraps)
+    #
+    MI_coop_self_fail_all,sig_edges_coop_self_fail = Modulation_Index(weighted_graphs_self_fail, 
+                                                                      weighted_graphs_coop_fail,
+                                                                      sig_edges_self_fail, 
+                                                                      sig_edges_coop_fail, nMIbootstraps)
+    #
+    MI_coop_coop_all,sig_edges_coop_coop = Modulation_Index(MI_coop_self_succ_all, 
+                                                            MI_coop_self_fail_all,
+                                                            sig_edges_coop_self_succ, 
+                                                            sig_edges_coop_self_fail, nMIbootstraps)
+    #
+    # sig_edges_coop_coop = sig_edges_coop_coop.astype('float')
+    # sig_edges_coop_coop[sig_edges_coop_coop==0]=np.nan
+    
+    # modulation index between succ and failed only for MC (and NV)
+    #
+    # nMIbootstraps = 150
+    # #
+    # MI_coop_coop_all,sig_edges_coop_coop = Modulation_Index(weighted_graphs_coop_succ, weighted_graphs_coop_fail,
+    #                                   sig_edges_coop_succ, sig_edges_coop_fail, nMIbootstraps)
+    
+    # sig_edges_coop_coop = sig_edges_coop_coop.astype('float')
+    # sig_edges_coop_coop[sig_edges_coop_coop==0]=np.nan
+    
+    # # MI_coop_coop_all = MI_coop_coop_all * sig_edges_coop_coop
+    # # MI_coop_coop_all[MI_coop_coop_all==0] = np.nan
+    # MI_coop_coop = MI_coop_coop_all.mean(axis = 0)
+    # # MI_coop_coop = MI_coop_coop * sig_edges_coop_coop
+   
     MI_nov_nov_all,sig_edges_nov_nov  = Modulation_Index(weighted_graphs_nov_succ, weighted_graphs_nov_fail,
                                       sig_edges_nov_succ, sig_edges_nov_fail, nMIbootstraps)
+    
+    sig_edges_nov_nov = sig_edges_nov_nov.astype('float')
+    sig_edges_nov_nov[sig_edges_nov_nov==0]=np.nan
+    
     # MI_nov_nov_all = MI_nov_nov_all * sig_edges_nov_nov
-    MI_nov_nov_all[MI_nov_nov_all==0] = np.nan
+    # MI_nov_nov_all[MI_nov_nov_all==0] = np.nan
     MI_nov_nov = MI_nov_nov_all.mean(axis = 0)
     # MI_nov_nov = MI_nov_nov * sig_edges_nov_nov
     
@@ -4411,8 +4450,9 @@ df_long=pd.concat([MI_coop_coop_mean_IndiAni_df,MI_nov_nov_mean_IndiAni_df])
 df_long2 = df_long.melt(id_vars=['MItype'], value_vars=dependencytargets,var_name='condition', value_name='value')
 #
 # barplot based on mean value for each animal
-seaborn.barplot(ax=axs.ravel()[0],data=df_long2,x='condition',y='value',hue='MItype',errorbar='se',alpha=.5,capsize=0.1)
-seaborn.swarmplot(ax=axs.ravel()[0],data=df_long2,x='condition',y='value',hue='MItype',alpha=.9,size= 9,dodge=True,legend=False)
+# seaborn.barplot(ax=axs.ravel()[0],data=df_long2,x='condition',y='value',hue='MItype',errorbar='se',alpha=.5,capsize=0.1)
+seaborn.violinplot(ax=axs.ravel()[0],data=df_long2,x='condition',y='value',hue='MItype',errorbar='se',alpha=.5,capsize=0.1)
+# seaborn.swarmplot(ax=axs.ravel()[0],data=df_long2,x='condition',y='value',hue='MItype',alpha=.9,size= 9,dodge=True,legend=False)
 axs.ravel()[0].set_xlabel('')
 axs.ravel()[0].set_ylabel('Modulation Index',fontsize=20)
 axs.ravel()[0].set_title('all animals',fontsize=24)
@@ -4548,6 +4588,7 @@ if savefig:
 
 
 xxx = np.array(MI_coop_coop_mean_IndiAni_df['across_pullgaze'])
+xxx = xxx[~np.isnan(xxx)]
 
 
 # In[ ]:
@@ -4559,7 +4600,7 @@ yyy = np.array(MI_nov_nov_mean_IndiAni_df['across_pullgaze'])
 # In[ ]:
 
 
-sts = scipy.stats.ttest_1samp(yyy,0)
+sts = scipy.stats.ttest_1samp(xxx,0)
 pvalue = sts.pvalue
 pvalue
 
@@ -4567,31 +4608,31 @@ pvalue
 # In[ ]:
 
 
-
-
-
-# In[ ]:
-
-
-
+MI_coop_coop[[1,5,9],[0,0,0]]
 
 
 # In[ ]:
 
 
-
-
-
-# In[ ]:
-
-
-
+MI_coop_coop[[0,4,8],[1,1,1]]
 
 
 # In[ ]:
 
 
+MI_coop_coop
 
+
+# In[ ]:
+
+
+sig_edges_coop_succ
+
+
+# In[ ]:
+
+
+sig_edges_self_succ
 
 
 # In[ ]:

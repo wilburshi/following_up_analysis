@@ -1,0 +1,11 @@
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) StdEnv
+Anipose 3d triangulate witth camera 1, 2 and 3 for dodson
+Traceback (most recent call last):
+  File "aniposelib_3d_reconstruction.py", line 156, in <module>
+    bodyparts_cam1_cam12_data = pd.read_hdf(bodyparts_cam1_cam12)
+  File "/home/ws523/.conda/envs/DLC/lib/python3.8/site-packages/pandas/io/pytables.py", line 427, in read_hdf
+    raise FileNotFoundError(f"File {path_or_buf} does not exist")
+FileNotFoundError: File /gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_cooperative_task_3d/20241014_Dannon_Kanga_camera12/20241014_Dannon_Kanga_camera-1DLC_dlcrnetms5_marmoset_tracking_with_middle_camera_withHeadchamberFeb28shuffle1_167500_el_filtered.h5 does not exist

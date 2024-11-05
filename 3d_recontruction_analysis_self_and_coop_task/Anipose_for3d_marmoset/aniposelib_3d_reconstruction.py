@@ -55,31 +55,14 @@ else:
 
 # dates for Dannon Kanga
 if 1:
-    analyzed_dates = [ 
-                     
-"20240923",
-"20240925",
-"20240930",
-"20241002",
-"20241004",
-"20230710",
-"20230711",
-"20230712",
-
+    analyzed_dates = [                     
+"20241022"
                      ]
     session_start_times = [ 
-                          
-                          19,
-0.00,
-26.8,
-35,
-15.4,
-20.8,
-54.5,
-24.7,
+0.00,                      
                           ] # in second 
 
-    animal1 = "Ginger"
+    animal1 = "Dannon"
     animal2 = "Kanga"
 
 
@@ -122,8 +105,10 @@ do_videodemos = 0
 for idate in np.arange(0,ndates,1):
     date_tgt = analyzed_dates[idate]
 
-    twocamera_videos_cam12 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera12/"
-    twocamera_videos_cam23 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera23/"
+    # twocamera_videos_cam12 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera12/"
+    # twocamera_videos_cam23 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera23/"
+    twocamera_videos_cam12 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_forceManipulation_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera12/"
+    twocamera_videos_cam23 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_forceManipulation_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera23/"
 
     bodyparts_cam1_cam12 = twocamera_videos_cam12+date_tgt+"_"+animal1+"_"+animal2+"_camera-1"+singlecam_ana_type+"_el_filtered.h5"
     bodyparts_cam2_cam12 = twocamera_videos_cam12+date_tgt+"_"+animal1+"_"+animal2+"_camera-2"+singlecam_ana_type+"_el_filtered.h5"
