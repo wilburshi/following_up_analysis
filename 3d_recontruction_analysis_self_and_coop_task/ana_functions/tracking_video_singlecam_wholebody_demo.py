@@ -5,6 +5,8 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
 
     import pandas as pd
     import numpy as np
+    import matplotlib
+    matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     from matplotlib.gridspec import GridSpec
     import scipy
@@ -31,7 +33,7 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
 
     # Settings
     # video file path for saving
-    video_file = "/gpfs/gibbs/pi/jadi/VideoTracker_SocialInter/3d_recontruction_analysis_self_and_coop_task_data_saved/example_videos_singlecam_wholebody_demo/"+cameraID+"/"+animal1_filename+"_"+animal2_filename+"/"+date_tgt+"_"+animal1_filename+animal2_filename+"_singlecam_wholebody_tracking_demo.mp4"
+    video_file = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/3d_recontruction_analysis_self_and_coop_task_data_saved/example_videos_singlecam_wholebody_demo/"+cameraID+"/"+animal1_filename+"_"+animal2_filename+"/"+date_tgt+"_"+animal1_filename+animal2_filename+"_singlecam_wholebody_tracking_demo.mp4"
     clear_frames = True     # Should it clear the figure between each frame?
     fps = 30 
 
@@ -395,9 +397,9 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
                             # ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = colors[np.absolute(ianimal-1)])
                             ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = colors[np.absolute(ianimal)])
                         # elif (np.isin(bhv_events_iframe,look_at_lever_framenum_plot)): 
-                        #     ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'g')
+                        #    ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'g')
                         # elif (np.isin(bhv_events_iframe,look_at_tube_framenum_plot)): 
-                        #     ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'y')
+                        #    ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'y')
                         if (np.isin(bhv_events_iframe,pull1_framenum_plot)): 
                             ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'k')
                         # else:
@@ -407,9 +409,9 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
                             # ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = colors[np.absolute(ianimal-1)])
                             ax4.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = colors[np.absolute(ianimal)])
                         # elif (np.isin(bhv_events_iframe,look_at_lever_framenum_plot)): 
-                        #     ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'g')
+                        #   ax4.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'g')
                         # elif (np.isin(bhv_events_iframe,look_at_tube_framenum_plot)): 
-                        #     ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'y')
+                        #     ax4.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'y')
                         if (np.isin(bhv_events_iframe,pull2_framenum_plot)): 
                             ax5.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'k')
                         # else:
@@ -417,3 +419,10 @@ session_start_time,fps,nframes,cameraID,video_file_original,sqr_thres_tubelever,
                     
 
             writer.grab_frame()            
+
+
+    do_exampleframe = 0
+    if do_exampleframe:
+        pdf_file = video_file.replace('.mp4', '.pdf')
+        plt.savefig(pdf_file, format="pdf", bbox_inches="tight")
+

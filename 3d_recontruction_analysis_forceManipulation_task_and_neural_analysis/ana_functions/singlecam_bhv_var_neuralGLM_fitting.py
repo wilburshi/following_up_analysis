@@ -1,6 +1,6 @@
 #  function - get singlecam variables and neurons and then do the GLM fitting
 
-def get_singlecam_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_videotrack, session_start_time, starttime, endtime, totalsess_time, stg_twins, time_point_pull1, time_point_pull2, time_point_juice1, time_point_juice2, time_point_pulls_succfail, oneway_gaze1, oneway_gaze2, mutual_gaze1, mutual_gaze2, gaze_thresold, spike_clusters_data, spike_time_data, spike_channels_data):
+def get_singlecam_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_videotrack, session_start_time, starttime, endtime, totalsess_time, blockstarttime_all_idate, blockendtime_all_idate, force1_all_idate, force2_all_idate, stg_twins, time_point_pull1, time_point_pull2, time_point_juice1, time_point_juice2, time_point_pulls_succfail, oneway_gaze1, oneway_gaze2, mutual_gaze1, mutual_gaze2, gaze_thresold, spike_clusters_data, spike_time_data, spike_channels_data):
     
     import pandas as pd
     import numpy as np
@@ -18,8 +18,8 @@ def get_singlecam_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_vi
     oneway_gaze2 = np.sort(np.hstack((oneway_gaze2,mutual_gaze2)))
     #
     # only choose the time between starttime and endtime
-    oneway_gaze1 = oneway_gaze1[(oneway_gaze1<endtime)&(oneway_gaze1>starttime)]
-    oneway_gaze2 = oneway_gaze2[(oneway_gaze2<endtime)&(oneway_gaze2>starttime)]
+    oneway_gaze1 = oneway_gaze1[(oneway_gaze1<=endtime)&(oneway_gaze1>=starttime)]
+    oneway_gaze2 = oneway_gaze2[(oneway_gaze2<=endtime)&(oneway_gaze2>=starttime)]
     #
     time_point_pull1 = np.array(time_point_pull1)
     time_point_pull1 = time_point_pull1[(time_point_pull1<=endtime)&(time_point_pull1>=starttime)]
@@ -148,7 +148,7 @@ def get_singlecam_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_vi
 
 
     con_vars_plot = ['leverpull_prob','socialgaze_prob','juice_prob',
-                     'sync_pull_prob','gaze_lead_pull_prob','social_attention_prob']
+                     'sync_pull_prob','gaze_lead_pull_prob','social_attention_prob','forcelevel']
 
     nconvarplots = np.shape(con_vars_plot)[0]
 
@@ -289,7 +289,20 @@ def get_singlecam_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_vi
         # gaze_lead_pull_prob = scipy.ndimage.gaussian_filter1d(timeseries_pullgaze,gausKernelsize)
         social_attention_prob = timeseries_pullgaze
         # 
-        
+
+        # get the forcelevel information
+        # align to the start of the video recording
+        if ianimal == 0:
+            force_all_idate = force1_all_idate
+        elif ianimal == 1:
+            force_all_idate = force2_all_idate
+        blockstarttime_all_idate = blockstarttime_all_idate + session_start_time
+        blockendtime_all_idate = blockendtime_all_idate + session_start_time      
+        #
+        timeseries_forcelevel = np.zeros((totalsess_nframes,))
+        nforcetypes = np.shape(force_all_idate)[0]
+        for iforcetype in np.arange(0,nforcetypes,1):
+            timeseries_forcelevel[int(np.round(blockstarttime_all_idate[iforcetype]*fps)):int(np.round(blockendtime_all_idate[iforcetype]*fps))] = force_all_idate[iforcetype]
         
         leverpull_prob = leverpull_prob[starttimeframe:endtimeframe]
         juice_prob = juice_prob[starttimeframe:endtimeframe]
@@ -297,14 +310,16 @@ def get_singlecam_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_vi
         sync_pull_prob = sync_pull_prob[starttimeframe:endtimeframe]
         gaze_lead_pull_prob = gaze_lead_pull_prob[starttimeframe:endtimeframe]
         social_attention_prob = social_attention_prob[starttimeframe:endtimeframe]
+        #
+        timeseries_forcelevel = timeseries_forcelevel[starttimeframe:endtimeframe]
 
         # put all the data together in the same order as the con_vars_plot
         if ianimal == 0:
             data_summary[animal1] = [leverpull_prob, socialgaze_prob, juice_prob,
-                                     sync_pull_prob, gaze_lead_pull_prob, social_attention_prob ]
+                                     sync_pull_prob, gaze_lead_pull_prob, social_attention_prob, timeseries_forcelevel ]
         elif ianimal == 1:
             data_summary[animal2] = [leverpull_prob, socialgaze_prob, juice_prob,
-                                     sync_pull_prob, gaze_lead_pull_prob, social_attention_prob ]
+                                     sync_pull_prob, gaze_lead_pull_prob, social_attention_prob, timeseries_forcelevel ]
 
 
 
@@ -350,7 +365,7 @@ def get_singlecam_bhv_var_for_neuralGLM_fitting(animal1, animal2, animalnames_vi
 
 ########################
 
-def neuralGLM_fitting(animal1, animal2, data_summary_names, data_summary, spiketrain_summary, bhvvaris_toGLM, nbootstraps, traintestperc, trig_twin, dospikehist, spikehist_twin, doplots, date_tgt, savefig, save_path, dostrategies, donullshuffle):
+def neuralGLM_fitting(animal1, animal2, data_summary_names, data_summary, spiketrain_summary, bhvvaris_toGLM, nbootstraps, traintestperc, trig_twin, dospikehist, spikehist_twin, doplots, date_tgt, savefig, save_path, dostrategies, donullshuffle, doforcelevel):
 
     
     # nbootstraps: how many repreat of the GLM fitting
@@ -364,6 +379,7 @@ def neuralGLM_fitting(animal1, animal2, data_summary_names, data_summary, spiket
     import warnings
     import pickle    
     import random as random
+    import seaborn
 
     import statsmodels.api as sm
 
@@ -400,6 +416,17 @@ def neuralGLM_fitting(animal1, animal2, data_summary_names, data_summary, spiket
         max_val = np.nanmax(bhvtimeseries)  # Maximum ignoring NaN
         # 
         bhvtimeseries = (bhvtimeseries - min_val) / (max_val - min_val)
+
+        # get the force level
+        if (animal1 == 'kanga') | (animal2 == 'kanga'):
+            selfanimal = 'kanga'
+            partneranimal = 'dannon'
+        elif (animal1 == 'dodson') | (animal2 == 'dodson'):
+            actanimal = 'dodson'
+            partneranimal = 'ginger'
+        #
+        selfforce_timeseries = data_summary[selfanimal][-1]
+        partnerforce_timeseries = data_summary[partneranimal][-1]
 
         # 
         if ibhvvari == 0:
@@ -444,28 +471,46 @@ def neuralGLM_fitting(animal1, animal2, data_summary_names, data_summary, spiket
     #
     Kernel_coefs_allboots_allcells = dict.fromkeys(neuron_clusters,[])
     Kernel_spikehist_allboots_allcells  = dict.fromkeys(neuron_clusters,[])
+    Kernel_selfforce_allboots_allcells = dict.fromkeys(neuron_clusters,[])
+    Kernel_partnerforce_allboots_allcells = dict.fromkeys(neuron_clusters,[])
 
     Kernel_coefs_allboots_allcells_shf = dict.fromkeys(neuron_clusters,[])
     Kernel_spikehist_allboots_allcells_shf  = dict.fromkeys(neuron_clusters,[])
+    Kernel_selfforce_allboots_allcells_shf = dict.fromkeys(neuron_clusters,[])
+    Kernel_partnerforce_allboots_allcells_shf = dict.fromkeys(neuron_clusters,[])
 
     # initialize the figure
     if doplots:
         if dospikehist:
-            fig2, axs2 = plt.subplots(nbhvvaris+1,nclusters)
-            fig2.set_figheight(3*(nbhvvaris+1))
-            fig2.set_figwidth(4*nclusters)
-        else:      
-            fig2, axs2 = plt.subplots(nbhvvaris,nclusters)
-            fig2.set_figheight(3*nbhvvaris)
-            fig2.set_figwidth(4*nclusters)
+            if not doforcelevel:
+                fig2, axs2 = plt.subplots(nbhvvaris+1,nclusters)
+                fig2.set_figheight(3*(nbhvvaris+1))
+                fig2.set_figwidth(4*nclusters)
+            elif doforcelevel:
+                fig2, axs2 = plt.subplots(nbhvvaris+3,nclusters)
+                fig2.set_figheight(3*(nbhvvaris+3))
+                fig2.set_figwidth(4*nclusters)
+        else: 
+            if not doforcelevel:     
+                fig2, axs2 = plt.subplots(nbhvvaris,nclusters)
+                fig2.set_figheight(3*nbhvvaris)
+                fig2.set_figwidth(4*nclusters)
+            elif doforcelevel:
+                fig2, axs2 = plt.subplots(nbhvvaris+2,nclusters)
+                fig2.set_figheight(3*(nbhvvaris+2))
+                fig2.set_figwidth(4*nclusters)
 
     #    
+    # for icluster in np.arange(0,1,1):
     for icluster in np.arange(0,nclusters,1):
         iclusterID = neuron_clusters[icluster]
 
         spiketrain = spiketrain_summary[iclusterID]
 
         y_all = spiketrain[-trig_startframe:(nframesall-trig_endframe)]
+
+        x_selfforce = selfforce_timeseries[-trig_startframe:(nframesall-trig_endframe)]
+        x_partnerforce = partnerforce_timeseries[-trig_startframe:(nframesall-trig_endframe)]
 
         x_ones = np.ones((np.shape(y_all)[0],1))
 
@@ -493,7 +538,7 @@ def neuralGLM_fitting(animal1, animal2, data_summary_names, data_summary, spiket
             y_all_shf = y_all.copy() 
             random.shuffle(y_all_shf)
 
-        # y_all: spike count train; x_ones: noise term; x_bhvall: the targeted behavioral variables; y_spikehist: spike count history
+        # y_all: spike count train; x_ones: noise term; x_bhvall: the targeted behavioral variables; x_selfforce and x_partnerforce; y_spikehist: spike count history
 
         # repeat in the bootstraps
         for ibtstrps in np.arange(0,nbootstraps,1):
@@ -507,6 +552,10 @@ def neuralGLM_fitting(animal1, animal2, data_summary_names, data_summary, spiket
 
             # training data set
             y_train = y_all[trainsampleID]
+            x_selfforce_train = x_selfforce[trainsampleID]
+            x_selfforce_train = x_selfforce_train.reshape(-1, 1)  # Convert to 2D
+            x_partnerforce_train = x_partnerforce[trainsampleID]
+            x_partnerforce_train = x_partnerforce_train.reshape(-1, 1)  # Convert to 2D
             x_ones_train = x_ones[trainsampleID]
             x_bhvall_train = x_bhvall[trainsampleID]
             if dospikehist:
@@ -523,9 +572,11 @@ def neuralGLM_fitting(animal1, animal2, data_summary_names, data_summary, spiket
                 else:
                     X_train = np.hstack((X_train,x_bhvall_train[:,ibhvtype,:]))
             #
-            X_train = np.hstack((X_train,x_ones_train))
+            # X_train = np.hstack((X_train,x_ones_train))
             if dospikehist:
                 X_train = np.hstack((X_train,x_spikehist_train))
+            if doforcelevel:
+                X_train = np.hstack((X_train,x_selfforce_train,x_partnerforce_train))
 
             # remove nan in y and x
             ind_nan = np.isnan(np.sum(X_train,axis=1)) | np.isnan(y_train)
@@ -559,16 +610,31 @@ def neuralGLM_fitting(animal1, animal2, data_summary_names, data_summary, spiket
             # get the neural history kernel
             if dospikehist:
                 try:
-                    kernel_spikehist = poisson_results.params[nbhvtypes*ntrig_frames+1:]
+                    kernel_spikehist = poisson_results.params[nbhvtypes*ntrig_frames:nbhvtypes*ntrig_frames+spikehist_twinframe]
                     kernel_spikehist = scipy.ndimage.gaussian_filter1d(kernel_spikehist,10)
                 except:
                     kernel_spikehist = np.ones((1,spikehist_twinframe))*np.nan
-                    
                 #
                 if ibtstrps == 0:
                     Kernel_spikehist_allboots = kernel_spikehist
                 else:
                     Kernel_spikehist_allboots = np.vstack((Kernel_spikehist_allboots,kernel_spikehist))
+
+            # get the kernel for self force and partner force
+            if doforcelevel:
+                try:
+                    kernel_selfforce = poisson_results.params[-2]
+                    kernel_partnerforce = poisson_results.params[-1]     
+                except:
+                    kernel_selfforce = np.nan
+                    kernel_partnerforce = np.nan
+                #
+                if ibtstrps == 0:
+                    Kernel_selfforce_allboots = kernel_selfforce
+                    Kernel_partnerforce_allboots = kernel_partnerforce
+                else:
+                    Kernel_selfforce_allboots = np.vstack((Kernel_selfforce_allboots,kernel_selfforce)) 
+                    Kernel_partnerforce_allboots = np.vstack((Kernel_partnerforce_allboots,kernel_partnerforce)) 
 
 
             # fit Poisson GLM for shuffle data
@@ -600,27 +666,49 @@ def neuralGLM_fitting(animal1, animal2, data_summary_names, data_summary, spiket
                 # get the neural history kernel
                 if dospikehist:
                     try:
-                        kernel_spikehist = poisson_results.params[nbhvtypes*ntrig_frames+1:]
+                        kernel_spikehist = poisson_results.params[nbhvtypes*ntrig_frames:nbhvtypes*ntrig_frames+spikehist_twinframe]
                         kernel_spikehist = scipy.ndimage.gaussian_filter1d(kernel_spikehist,10)
                     except:
                         kernel_spikehist = np.ones((1,spikehist_twinframe))*np.nan
-                    
+
                     #
                     if ibtstrps == 0:
                         Kernel_spikehist_allboots_shf = kernel_spikehist
                     else:
                         Kernel_spikehist_allboots_shf = np.vstack((Kernel_spikehist_allboots_shf,kernel_spikehist))
 
+                # get the kernel for self force and partner force
+                if doforcelevel:
+                    try:
+                        kernel_selfforce = poisson_results.params[-2]
+                        kernel_partnerforce = poisson_results.params[-1]     
+                    except:
+                        kernel_selfforce = np.nan
+                        kernel_partnerforce = np.nan
+                    #
+                    if ibtstrps == 0:
+                        Kernel_selfforce_allboots_shf = kernel_selfforce
+                        Kernel_partnerforce_allboots_shf = kernel_partnerforce
+                    else:
+                        Kernel_selfforce_allboots_shf = np.vstack((Kernel_selfforce_allboots_shf,kernel_selfforce)) 
+                        Kernel_partnerforce_allboots_shf = np.vstack((Kernel_partnerforce_allboots_shf,kernel_partnerforce)) 
 
         # pull the data in the summerizing dataset 
         Kernel_coefs_allboots_allcells[iclusterID] = Kernel_coefs_allboots
         if dospikehist:
             Kernel_spikehist_allboots_allcells[iclusterID] = Kernel_spikehist_allboots 
+        if doforcelevel:
+            Kernel_selfforce_allboots_allcells[iclusterID] = Kernel_selfforce_allboots
+            Kernel_partnerforce_allboots_allcells[iclusterID] = Kernel_partnerforce_allboots
         #
         if donullshuffle:
             Kernel_coefs_allboots_allcells_shf[iclusterID] = Kernel_coefs_allboots_shf
             if dospikehist:
                 Kernel_spikehist_allboots_allcells_shf[iclusterID] = Kernel_spikehist_allboots_shf
+            if doforcelevel:
+                Kernel_selfforce_allboots_allcells_shf[iclusterID] = Kernel_selfforce_allboots_shf
+                Kernel_partnerforce_allboots_allcells_shf[iclusterID] = Kernel_partnerforce_allboots_shf
+
 
 
 
@@ -683,9 +771,23 @@ def neuralGLM_fitting(animal1, animal2, data_summary_names, data_summary, spiket
                 axs2[nbhvvaris,icluster].plot([xxx_forplot[0],xxx_forplot[-1]],[0,0], '--k')
 
                 axs2[nbhvvaris,icluster].set_xlabel('time (s)')
-                axs2[nbhvvaris,icluster].set_ylabel('spike history')
+                if icluster == 0:
+                    axs2[nbhvvaris,icluster].set_ylabel('spike history')
                 axs2[nbhvvaris,icluster].set_xticks(np.arange(-spikehist_twin*fps, 0,60))
                 axs2[nbhvvaris,icluster].set_xticklabels(list(map(str,np.arange(-spikehist_twin,0,2))))
+
+            if doforcelevel:
+                seaborn.violinplot(ax = axs2[-2,icluster],data = Kernel_selfforce_allboots, 
+                                   position = 1, color='#666666')
+                if icluster == 0:
+                    axs2[-2,icluster].set_ylabel('self force level')
+                axs2[-2,icluster].set_xlim(0,3)
+                #
+                seaborn.violinplot(ax = axs2[-1,icluster],data = Kernel_partnerforce_allboots, 
+                                   position = 1, color='#666666')
+                if icluster == 0:
+                    axs2[-1,icluster].set_ylabel('partner force level')
+                axs2[-1,icluster].set_xlim(0,3)
 
 
             # 
@@ -722,6 +824,16 @@ def neuralGLM_fitting(animal1, animal2, data_summary_names, data_summary, spiket
                     axs2[nbhvvaris,icluster].errorbar(xxx_forplot,mean_trig_trace,yerr=itv95_trig_trace,
                                                      color='#e3e3e3',ecolor='#e3e3e3')
 
+                if doforcelevel:
+                    seaborn.violinplot(ax = axs2[-2,icluster],data = Kernel_selfforce_allboots_shf, 
+                                       position = 2, color='#e3e3e3')
+                    #
+                    seaborn.violinplot(ax = axs2[-1,icluster],data = Kernel_partnerforce_allboots_shf, 
+                                       position = 2, color='#e3e3e3')
+
+
+
+
 
     #
     if savefig:
@@ -731,7 +843,8 @@ def neuralGLM_fitting(animal1, animal2, data_summary_names, data_summary, spiket
             fig2.savefig(save_path+"/"+date_tgt+'_GLMfitting_meanKernel.pdf')               
                
                     
-    return Kernel_coefs_allboots_allcells, Kernel_spikehist_allboots_allcells, Kernel_coefs_allboots_allcells_shf, Kernel_spikehist_allboots_allcells_shf
+    return Kernel_coefs_allboots_allcells, Kernel_spikehist_allboots_allcells, Kernel_selfforce_allboots_allcells, Kernel_partnerforce_allboots_allcells, Kernel_coefs_allboots_allcells_shf, Kernel_spikehist_allboots_allcells_shf, Kernel_selfforce_allboots_allcells_shf, Kernel_partnerforce_allboots_allcells_shf
+
 
 
 

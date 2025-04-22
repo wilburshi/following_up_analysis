@@ -58,6 +58,8 @@ animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename,animal
 
     import pandas as pd
     import numpy as np
+    import matplotlib
+    matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     from matplotlib.gridspec import GridSpec
     import scipy
@@ -103,7 +105,7 @@ animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename,animal
                     ]
     nskeletons = np.shape(skeletons)[0]
     
-    colors = ['b','r','k']
+    colors = ['#bf3eff','#f5911e','#5c5c5c']
     
 
     # Settings
@@ -333,16 +335,20 @@ animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename,animal
 
 
                 # ax1.legend(loc='upper right',fontsize = 28)
-                         
+               
+                # Adjust the viewing angle
+                # ax1.view_init(elev = 15, azim=270)  # Change these values to rotate
 
 
                 # draw animal behavioral events
                 # look_at_other_framenum_all = np.where(np.array(output_look_ornot["look_at_face_or_not_Anipose"][ianimal_name])==1)[0]
                 look_at_other_framenum_all = np.where((np.array(output_look_ornot["look_at_face_or_not_Anipose"][ianimal_name])==1)|(np.array(output_look_ornot["look_at_otherlever_or_not_Anipose"][ianimal_name])==1)|(np.array(output_look_ornot["look_at_othertube_or_not_Anipose"][ianimal_name])==1))[0]
                 look_at_other_framenum_plot = look_at_other_framenum_all[(look_at_other_framenum_all<=iframe)&(look_at_other_framenum_all>iframe_min)]
-                look_at_lever_framenum_all = np.where(np.array(output_look_ornot["look_at_selflever_or_not_Anipose"][ianimal_name])==1)[0]
+                # look_at_lever_framenum_all = np.where(np.array(output_look_ornot["look_at_selflever_or_not_Anipose"][ianimal_name])==1)[0]
+                look_at_lever_framenum_all = np.where(np.array(output_look_ornot["look_at_otherlever_or_not_Anipose"][ianimal_name])==1)[0]
                 look_at_lever_framenum_plot = look_at_lever_framenum_all[(look_at_lever_framenum_all<=iframe)&(look_at_lever_framenum_all>iframe_min)]
-                look_at_tube_framenum_all = np.where(np.array(output_look_ornot["look_at_selftube_or_not_Anipose"][ianimal_name])==1)[0]
+                # look_at_tube_framenum_all = np.where(np.array(output_look_ornot["look_at_selftube_or_not_Anipose"][ianimal_name])==1)[0]
+                look_at_tube_framenum_all = np.where(np.array(output_look_ornot["look_at_othertube_or_not_Anipose"][ianimal_name])==1)[0]
                 look_at_tube_framenum_plot = look_at_tube_framenum_all[(look_at_tube_framenum_all<=iframe)&(look_at_tube_framenum_all>iframe_min)]
 
                 pull1_framenum = (time_point_pull1 + session_start_time)*fps
@@ -358,26 +364,39 @@ animalnames_videotrack,bodypartnames_videotrack,date_tgt,animal1_filename,animal
                     bhv_events_iframe = bhv_events_plot[iplotframe]
                     if (ianimal == 0):
                         if (np.isin(bhv_events_iframe,look_at_other_framenum_plot)): 
-                            ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = colors[np.absolute(ianimal-1)])
+                            # ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = colors[np.absolute(ianimal-1)])
+                            ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'r')
                         elif (np.isin(bhv_events_iframe,look_at_lever_framenum_plot)): 
-                            ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'g')
-                        elif (np.isin(bhv_events_iframe,look_at_tube_framenum_plot)): 
-                            ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'y')
+                            ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'b')
+                        # elif (np.isin(bhv_events_iframe,look_at_tube_framenum_plot)): 
+                        #     ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'y')
                         elif (np.isin(bhv_events_iframe,pull1_framenum_plot)): 
                             ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'k')
                         # else:
                         #     ax2.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = '0.5')
                     elif (ianimal == 1):
                         if (np.isin(bhv_events_iframe,look_at_other_framenum_plot)): 
-                            ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = colors[np.absolute(ianimal-1)])
+                            # ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = colors[np.absolute(ianimal-1)])
+                            ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'r')
                         elif (np.isin(bhv_events_iframe,look_at_lever_framenum_plot)): 
-                            ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'g')
-                        elif (np.isin(bhv_events_iframe,look_at_tube_framenum_plot)): 
-                            ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'y')
+                            ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'b')
+                        #  elif (np.isin(bhv_events_iframe,look_at_tube_framenum_plot)): 
+                        #     ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'y')
                         elif (np.isin(bhv_events_iframe,pull2_framenum_plot)): 
                             ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = 'k')
                         # else:
                         #     ax3.plot([bhv_events_iframe,bhv_events_iframe],[0,1],'-',color = '0.5')                         
                     
 
-            writer.grab_frame()            
+            writer.grab_frame()           
+
+    do_exampleframe = 1
+    if do_exampleframe:
+        pdf_file = video_file.replace('.mp4', '.pdf')
+        plt.savefig(pdf_file, format="pdf", bbox_inches="tight")
+
+	
+
+
+
+ 

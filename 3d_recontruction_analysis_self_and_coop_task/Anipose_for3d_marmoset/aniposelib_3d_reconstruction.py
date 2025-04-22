@@ -55,14 +55,12 @@ else:
 
 # dates for Dannon Kanga
 if 1:
-    analyzed_dates = [                     
-"20241022"
+    analyzed_dates = [ "20250421",
                      ]
-    session_start_times = [ 
-0.00,                      
+    session_start_times = [    231.9            
                           ] # in second 
 
-    animal1 = "Dannon"
+    animal1 = "Dodson"
     animal2 = "Kanga"
 
 
@@ -105,10 +103,12 @@ do_videodemos = 0
 for idate in np.arange(0,ndates,1):
     date_tgt = analyzed_dates[idate]
 
-    # twocamera_videos_cam12 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera12/"
-    # twocamera_videos_cam23 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera23/"
-    twocamera_videos_cam12 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_forceManipulation_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera12/"
-    twocamera_videos_cam23 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_forceManipulation_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera23/"
+    twocamera_videos_cam12 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera12/"
+    twocamera_videos_cam23 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_cooperative_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera23/"
+    # twocamera_videos_cam12 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_forceManipulation_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera12/"
+    # twocamera_videos_cam23 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_forceManipulation_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera23/"
+    # twocamera_videos_cam12 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_altruistic_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera12/"
+    # twocamera_videos_cam23 = "/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/test_video_altruistic_task_3d/"+date_tgt+"_"+animal1+"_"+animal2+"_camera23/"
 
     bodyparts_cam1_cam12 = twocamera_videos_cam12+date_tgt+"_"+animal1+"_"+animal2+"_camera-1"+singlecam_ana_type+"_el_filtered.h5"
     bodyparts_cam2_cam12 = twocamera_videos_cam12+date_tgt+"_"+animal1+"_"+animal2+"_camera-2"+singlecam_ana_type+"_el_filtered.h5"

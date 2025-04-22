@@ -278,7 +278,7 @@ def train_DBN_multiLag_training_only(bhv_df,starting_graph,colnames,eventnames,f
     from pgmpy.estimators import HillClimbSearch,BicScore
     import networkx as nx
 
-    from AicScore import AicScore
+    from ana_functions.AicScore import AicScore
 
     from ana_functions.train_DBN_multiLag import get_weighted_dags
     from ana_functions.train_DBN_multiLag import graph_to_matrix

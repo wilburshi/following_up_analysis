@@ -187,7 +187,7 @@ def plot_spike_triggered_singlecam_bhvevent(date_tgt,savefig,save_path, animal1,
             timeseries_pull_succ = np.zeros((min_length,))
             timeseries_pull_succ[list(map(int,list(np.round((timepoint_pull_succ))*fps)))]=1
         except: # some videos are shorter than the task 
-            timeseries_pull_succ = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_pull*fps))))+1,))
+            timeseries_pull_succ = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_pull_succ*fps))))+2,))
             timeseries_pull_succ[list(map(int,list(np.round(timepoint_pull_succ*fps))))]=1
         succpull_prob = scipy.ndimage.gaussian_filter1d(timeseries_pull_succ,gausKernelsize)
 
@@ -203,7 +203,7 @@ def plot_spike_triggered_singlecam_bhvevent(date_tgt,savefig,save_path, animal1,
             timeseries_pull_fail = np.zeros((min_length,))
             timeseries_pull_fail[list(map(int,list(np.round((timepoint_pull_fail))*fps)))]=1
         except: # some videos are shorter than the task 
-            timeseries_pull_fail = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_pull*fps))))+1,))
+            timeseries_pull_fail = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_pull_fail*fps))))+2,))
             timeseries_pull_fail[list(map(int,list(np.round(timepoint_pull_fail*fps))))]=1
         failpull_prob = scipy.ndimage.gaussian_filter1d(timeseries_pull_fail,gausKernelsize)
 

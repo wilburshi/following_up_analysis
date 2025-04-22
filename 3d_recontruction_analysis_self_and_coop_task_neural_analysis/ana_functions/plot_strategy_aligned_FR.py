@@ -71,12 +71,13 @@ def plot_strategy_aligned_FR(date_tgt,savefig,save_path, animal1, animal2,time_p
         itv = itpoint_pull1 - time_point_pull2
         itv_alt = itpoint_pull1 - oneway_gaze1
         try:
-            if (np.nanmin(itv[itv>0]) <= stg_twins): # & (np.nanmin(itv_alt[itv_alt>0]) > stg_twins):
+            if (np.nanmin(itv[itv>0]) <= stg_twins) & (np.nanmin(itv_alt[itv_alt>0]) > stg_twins):
                 tpoint_pull2_to_pull1 = np.append(tpoint_pull2_to_pull1,[itpoint_pull1])
             else:
                 tpoint_pull2_to_pull1_not = np.append(tpoint_pull2_to_pull1_not,[itpoint_pull1])
         except:
             tpoint_pull2_to_pull1_not = np.append(tpoint_pull2_to_pull1_not,[itpoint_pull1])
+    #     
     # pull1 -> pull2 (no gaze involved)
     tpoint_pull1_to_pull2 = np.array([])
     tpoint_pull1_to_pull2_not = np.array([])
@@ -84,12 +85,13 @@ def plot_strategy_aligned_FR(date_tgt,savefig,save_path, animal1, animal2,time_p
         itv = itpoint_pull2 - time_point_pull1
         itv_alt = itpoint_pull2 - oneway_gaze2
         try:
-            if (np.nanmin(itv[itv>0]) <= stg_twins): # & (np.nanmin(itv_alt[itv_alt>0]) > stg_twins):
+            if (np.nanmin(itv[itv>0]) <= stg_twins) & (np.nanmin(itv_alt[itv_alt>0]) > stg_twins):
                 tpoint_pull1_to_pull2 = np.append(tpoint_pull1_to_pull2,[itpoint_pull2])
             else:
                 tpoint_pull1_to_pull2_not = np.append(tpoint_pull1_to_pull2_not,[itpoint_pull2])
         except:
             tpoint_pull1_to_pull2_not = np.append(tpoint_pull1_to_pull2_not,[itpoint_pull2])
+    #
     # pull2 -> gaze1 (did not translate to own pull)
     tpoint_pull2_to_gaze1 = np.array([])
     tpoint_pull2_to_gaze1_not = np.array([])
@@ -103,6 +105,7 @@ def plot_strategy_aligned_FR(date_tgt,savefig,save_path, animal1, animal2,time_p
                 tpoint_pull2_to_gaze1_not = np.append(tpoint_pull2_to_gaze1_not,[itpoint_gaze1])
         except:
             tpoint_pull2_to_gaze1_not = np.append(tpoint_pull2_to_gaze1_not,[itpoint_gaze1])
+    #
     # pull1 -> gaze2 (did not translate to own pull)
     tpoint_pull1_to_gaze2 = np.array([])
     tpoint_pull1_to_gaze2_not = np.array([])
@@ -116,6 +119,7 @@ def plot_strategy_aligned_FR(date_tgt,savefig,save_path, animal1, animal2,time_p
                 tpoint_pull1_to_gaze2_not = np.append(tpoint_pull1_to_gaze2_not,[itpoint_gaze2])
         except:
             tpoint_pull1_to_gaze2_not = np.append(tpoint_pull1_to_gaze2_not,[itpoint_gaze2])       
+    #
     # gaze1 -> pull1 (no sync pull)
     tpoint_gaze1_to_pull1 = np.array([])
     tpoint_gaze1_to_pull1_not = np.array([])
@@ -129,7 +133,8 @@ def plot_strategy_aligned_FR(date_tgt,savefig,save_path, animal1, animal2,time_p
                 tpoint_gaze1_to_pull1_not = np.append(tpoint_gaze1_to_pull1_not,[itpoint_pull1])
         except:
             tpoint_gaze1_to_pull1_not = np.append(tpoint_gaze1_to_pull1_not,[itpoint_pull1])        
-    # gaze2 -> pull2
+    #
+    # gaze2 -> pull2 (no sync pull)
     tpoint_gaze2_to_pull2 = np.array([])
     tpoint_gaze2_to_pull2_not = np.array([])
     for itpoint_pull2 in time_point_pull2:
