@@ -1,0 +1,5 @@
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) StdEnv
+/var/spool/slurmd/job242079/slurm_script: line 14: 1535920 Killed                  python basic_neural_analysis_allsessions_basicEvents_PCA_makeBhvNeuronVideos_Pullfocused_continuousBhv_2.py

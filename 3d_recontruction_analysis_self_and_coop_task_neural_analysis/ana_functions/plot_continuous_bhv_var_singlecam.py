@@ -230,22 +230,23 @@ def plot_continuous_bhv_var_singlecam(date_tgt, aligntwins, savefig, animal1, an
                     pull_trigevent_data.append(np.full((1,np.shape(xxx_trigevent)[0]),np.nan)[0])
                     
                 # separate trace for the successful pulls
-                if succpulls_ornot[ianimal][ipull]==1:
-                    try:
-                        axs3[iplot].plot(xxx_trigevent,data_summary[iplot][int(frame_win_ipull[0]):int(frame_win_ipull[1])],'-',color = clrs_plot[iplot])
-                        #
-                        pull_trigevent_data_succtrial.append(data_summary[iplot][int(frame_win_ipull[0]):int(frame_win_ipull[1])])
-                    except:
-                        pull_trigevent_data_succtrial.append(np.full((1,np.shape(xxx_trigevent)[0]),np.nan)[0])
+                if 0:
+                    if succpulls_ornot[ianimal][ipull]==1:
+                        try:
+                            axs3[iplot].plot(xxx_trigevent,data_summary[iplot][int(frame_win_ipull[0]):int(frame_win_ipull[1])],'-',color = clrs_plot[iplot])
+                            #
+                            pull_trigevent_data_succtrial.append(data_summary[iplot][int(frame_win_ipull[0]):int(frame_win_ipull[1])])
+                        except:
+                            pull_trigevent_data_succtrial.append(np.full((1,np.shape(xxx_trigevent)[0]),np.nan)[0])
                 
-                # separate trace for the failed pulls
-                if succpulls_ornot[ianimal][ipull]==0:
-                    try:
-                        axs4[iplot].plot(xxx_trigevent,data_summary[iplot][int(frame_win_ipull[0]):int(frame_win_ipull[1])],'-',color = clrs_plot[iplot])
-                        #
-                        pull_trigevent_data_errtrial.append(data_summary[iplot][int(frame_win_ipull[0]):int(frame_win_ipull[1])])
-                    except:
-                        pull_trigevent_data_errtrial.append(np.full((1,np.shape(xxx_trigevent)[0]),np.nan)[0])
+                    # separate trace for the failed pulls
+                    if succpulls_ornot[ianimal][ipull]==0:
+                        try:
+                            axs4[iplot].plot(xxx_trigevent,data_summary[iplot][int(frame_win_ipull[0]):int(frame_win_ipull[1])],'-',color = clrs_plot[iplot])
+                            #
+                            pull_trigevent_data_errtrial.append(data_summary[iplot][int(frame_win_ipull[0]):int(frame_win_ipull[1])])
+                        except:
+                            pull_trigevent_data_errtrial.append(np.full((1,np.shape(xxx_trigevent)[0]),np.nan)[0])
                 
                 
 

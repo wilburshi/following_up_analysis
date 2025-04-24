@@ -7,7 +7,7 @@
 # #### analyze the spike triggered pull and gaze ditribution
 # #### the following detailed analysis focused on pull related behavioral events
 
-# In[510]:
+# In[150]:
 
 
 import pandas as pd
@@ -51,7 +51,7 @@ from statsmodels.stats.multitest import multipletests
 
 # ### function - get body part location for each pair of cameras
 
-# In[511]:
+# In[151]:
 
 
 from ana_functions.body_part_locs_eachpair import body_part_locs_eachpair
@@ -60,7 +60,7 @@ from ana_functions.body_part_locs_singlecam import body_part_locs_singlecam
 
 # ### function - align the two cameras
 
-# In[512]:
+# In[152]:
 
 
 from ana_functions.camera_align import camera_align       
@@ -68,7 +68,7 @@ from ana_functions.camera_align import camera_align
 
 # ### function - merge the two pairs of cameras
 
-# In[513]:
+# In[153]:
 
 
 from ana_functions.camera_merge import camera_merge
@@ -76,7 +76,7 @@ from ana_functions.camera_merge import camera_merge
 
 # ### function - find social gaze time point
 
-# In[514]:
+# In[154]:
 
 
 from ana_functions.find_socialgaze_timepoint import find_socialgaze_timepoint
@@ -87,7 +87,7 @@ from ana_functions.find_socialgaze_timepoint_singlecam_wholebody_2 import find_s
 
 # ### function - define time point of behavioral events
 
-# In[515]:
+# In[155]:
 
 
 from ana_functions.bhv_events_timepoint import bhv_events_timepoint
@@ -96,7 +96,7 @@ from ana_functions.bhv_events_timepoint_singlecam import bhv_events_timepoint_si
 
 # ### function - plot behavioral events
 
-# In[516]:
+# In[156]:
 
 
 from ana_functions.plot_bhv_events import plot_bhv_events
@@ -109,7 +109,7 @@ from matplotlib.collections import PatchCollection
 
 # ### function - plot inter-pull interval
 
-# In[517]:
+# In[157]:
 
 
 from ana_functions.plot_interpull_interval import plot_interpull_interval
@@ -117,7 +117,7 @@ from ana_functions.plot_interpull_interval import plot_interpull_interval
 
 # ### function - make demo videos with skeleton and inportant vectors
 
-# In[518]:
+# In[158]:
 
 
 from ana_functions.tracking_video_singlecam_demo import tracking_video_singlecam_demo
@@ -129,7 +129,7 @@ from ana_functions.tracking_frame_singlecam_wholebody_withNeuron_sepbhv_demo imp
 
 # ### function - interval between all behavioral events
 
-# In[519]:
+# In[159]:
 
 
 from ana_functions.bhv_events_interval import bhv_events_interval
@@ -137,7 +137,7 @@ from ana_functions.bhv_events_interval import bhv_events_interval
 
 # ### function - spike analysis
 
-# In[520]:
+# In[160]:
 
 
 from ana_functions.spike_analysis_FR_calculation import spike_analysis_FR_calculation
@@ -148,7 +148,7 @@ from ana_functions.plot_strategy_aligned_FR import plot_strategy_aligned_FR
 
 # ### function - PCA projection
 
-# In[521]:
+# In[161]:
 
 
 from ana_functions.PCA_around_bhv_events import PCA_around_bhv_events
@@ -158,7 +158,7 @@ from ana_functions.confidence_ellipse import confidence_ellipse
 
 # ### function - train the dynamic bayesian network - multi time lag (3 lags)
 
-# In[522]:
+# In[162]:
 
 
 from ana_functions.train_DBN_multiLag_withNeuron import train_DBN_multiLag
@@ -177,7 +177,7 @@ from ana_functions.AicScore import AicScore
 
 # ### prepare the basic behavioral data (especially the time stamps for each bhv events)
 
-# In[523]:
+# In[349]:
 
 
 # instead of using gaze angle threshold, use the target rectagon to deside gaze info
@@ -277,6 +277,8 @@ if 1:
                                     '20250417_Dodson_MC_withKanga',
                                     '20250418_Dodson_SR_withKanga',
                                     '20250421_Dodson_SR_withKanga',
+                                    '20250422_Dodson_MC_withKanga',
+                                    '20250422_Dodson_SR_withKanga',
                                    ]
         task_conditions = [
                             'MC',           
@@ -332,6 +334,8 @@ if 1:
                             'SR_withKanga',
                             'MC_withKanga',
                             'SR_withKanga',
+                            'SR_withKanga',
+                            'MC_withKanga',
                             'SR_withKanga',
                           ]
         dates_list = [
@@ -389,6 +393,8 @@ if 1:
                         '20250417',
                         '20250418',
                         '20250421',
+                        '20250422',
+                        '20250422_SR',
                      ]
         videodates_list = [
                             '20240531',
@@ -445,6 +451,8 @@ if 1:
                             '20250417',
                             '20250418',
                             '20250421',
+                            '20250422',
+                            '20250422_SR',
             
                           ] # to deal with the sessions that MC and SR were in the same session
         session_start_times = [ 
@@ -502,6 +510,8 @@ if 1:
                                 79.0,
                                 162.6,
                                 231.9,
+                                109,
+                                0.00,
                               ] # in second
         kilosortvers = [ 
                             4,
@@ -558,20 +568,22 @@ if 1:
                             4,
                             4,
                             4,
+                            4,
+                            4,
                        ]
         trig_channelnames = [ 'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0',
                               'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0',
                               'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0',
                               'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0',
                               'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0',
-                              'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0',
+                              'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai9','Dev1/ai9',
                               ]
         animal1_fixedorders = ['dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson',
                                'dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson',
                                'dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson',
                                'dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson',
                                'dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson',
-                               'dodson','dodson','dodson','dodson','dodson',
+                               'dodson','dodson','dodson','dodson','dodson','dodson','dodson',
                               ]
         recordedanimals = animal1_fixedorders 
         animal2_fixedorders = ['ginger','ginger','ginger','ginger','ginger','ginger','ginger','ginger','ginger',
@@ -579,7 +591,7 @@ if 1:
                                'koala', 'koala', 'koala', 'koala', 'koala', 'koala', 'koala', 'koala', 'koala',
                                'koala', 'koala', 'koala', 'koala', 'koala', 'koala', 'koala', 'koala', 'koala',
                                'koala', 'koala', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga',
-                               'kanga', 'kanga', 'kanga', 'kanga', 'kanga',
+                               'kanga', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga',
                               ]
 
         animal1_filenames = ["Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson",
@@ -587,14 +599,14 @@ if 1:
                              "Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson",
                              "Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson",
                              "Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson",
-                             'Dodson','Dodson','Dodson','Dodson','Dodson',
+                             'Dodson','Dodson','Dodson','Dodson','Dodson','Dodson','Dodson',
                             ]
         animal2_filenames = ["Ginger","Ginger","Ginger","Ginger","Ginger","Ginger","Ginger","Ginger","Ginger",
                              "Ginger","Ginger","Ginger","Ginger","Ginger","Ginger","Ginger","Ginger","Ginger",
                              "Koala", "Koala", "Koala", "Koala", "Koala", "Koala", "Koala", "Koala", "Koala",
                              "Koala", "Koala", "Koala", "Koala", "Koala", "Koala", "Koala", "Koala", "Koala",
                              "Koala", "Koala", "Kanga", "Kanga", "Kanga", "Kanga", "Kanga", "Kanga", "Kanga",
-                             'Kanga', 'Kanga', 'Kanga', 'Kanga', 'Kanga',
+                             'Kanga', 'Kanga', 'Kanga', 'Kanga', 'Kanga', 'Kanga', 'Kanga',
                             ]
         
     elif do_OFC:
@@ -695,6 +707,7 @@ if 0:
                                      '20250416_Kanga_SR_withDodson',
                                      '20250417_Kanga_MC_withDodson',
                                      '20250418_Kanga_SR_withDodson',
+                                     '20250421_Kanga_SR_withDodson',
                                    ]
         dates_list = [
                       "20240508",
@@ -728,6 +741,7 @@ if 0:
                       "20250416",
                       "20250417",
                       "20250418",
+                      "20250421",
                      ]
         videodates_list = dates_list
         task_conditions = [
@@ -762,6 +776,7 @@ if 0:
                              'SR_withDodson',
                              'MC_withDodson',
                              'SR_withDodson',
+                             'SR_withDodson',
                           ]
         session_start_times = [ 
                                  0.00,
@@ -795,6 +810,7 @@ if 0:
                                  0.00,
                                  79.0,
                                  162.6,
+                                 231.9,
                               ] # in second
         kilosortvers = [
                          4,
@@ -828,34 +844,35 @@ if 0:
                          4,
                          4,
                          4,
+                         4,
                         ]
         trig_channelnames = ['Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0',
                              'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0',
                              'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0',
-                             'Dev1/ai0','Dev1/ai9','Dev1/ai9','Dev1/ai9','Dev1/ai9',
+                             'Dev1/ai0','Dev1/ai9','Dev1/ai9','Dev1/ai9','Dev1/ai9','Dev1/ai9',
                               ]
         
         animal1_fixedorders = ['dannon','dannon','dannon','dannon','dannon','dannon','dannon','dannon',
                                'dannon','dannon','dannon','dannon','dannon','dannon','dannon','dannon',
                                'ginger','ginger','ginger','koala','koala','koala','vermelho','vermelho',
-                               'vermelho','dodson','dodson','dodson','dodson',
+                               'vermelho','dodson','dodson','dodson','dodson','dodson',
                               ]
         animal2_fixedorders = ['kanga','kanga','kanga','kanga','kanga','kanga','kanga','kanga',
                                'kanga','kanga','kanga','kanga','kanga','kanga','kanga','kanga',
                                'kanga','kanga','kanga','kanga','kanga','kanga','kanga','kanga',
-                               'kanga','kanga','kanga','kanga','kanga',
+                               'kanga','kanga','kanga','kanga','kanga','kanga',
                               ]
         recordedanimals = animal2_fixedorders
 
         animal1_filenames = ["Dannon","Dannon","Dannon","Dannon","Dannon","Dannon","Dannon","Dannon",
                              "Dannon","Dannon","Dannon","Dannon","Dannon","Dannon","Dannon","Dannon",
                              "Ginger","Ginger","Ginger", "Kanga", "Kanga", "Kanga", "Kanga", "Kanga",
-                              "Kanga","Dodson","Dodson","Dodson","Dodson"
+                              "Kanga","Dodson","Dodson","Dodson","Dodson","Dodson",
                             ]
         animal2_filenames = ["Kanga","Kanga","Kanga","Kanga","Kanga","Kanga","Kanga","Kanga",
                              "Kanga","Kanga","Kanga","Kanga","Kanga","Kanga","Kanga","Kanga",
                              "Kanga","Kanga","Kanga","Koala","Koala","Koala","Vermelho","Vermelho",
-                             "Vermelho","Kanga","Kanga","Kanga","Kanga",
+                             "Vermelho","Kanga","Kanga","Kanga","Kanga","Kanga",
                             ]
         
     elif do_OFC:
@@ -986,7 +1003,7 @@ neural_data_folder = '/gpfs/radev/pi/nandy/jadi_gibbs_data/Marmoset_neural_recor
     
 
 
-# In[524]:
+# In[350]:
 
 
 # basic behavior analysis (define time stamps for each bhv events, etc)
@@ -994,6 +1011,9 @@ neural_data_folder = '/gpfs/radev/pi/nandy/jadi_gibbs_data/Marmoset_neural_recor
 try:
     if redo_anystep:
         dummy
+    
+    #
+    print('loading all data')
     
     # load saved data
     data_saved_subfolder = data_saved_folder+'data_saved_singlecam_wholebody'+savefile_sufix+'/'+cameraID+'/'+animal1_fixedorders[0]+animal2_fixedorders[0]+'/'
@@ -1717,7 +1737,7 @@ except:
 # #### the ultamate goal is to analyze the difference in single trial and if gaze related variables related to any of them
 # #### make some prilimary plot for sanity check
 
-# In[525]:
+# In[351]:
 
 
 
@@ -1794,13 +1814,13 @@ for idate in np.arange(0,ndates,1):
                 
 
 
-# In[526]:
+# In[352]:
 
 
 np.unique(bhvevents_aligned_FR_allevents_all_dates_df['condition'])
 
 
-# In[571]:
+# In[354]:
 
 
 # act_animals_to_ana = np.unique(bhvevents_aligned_FR_allevents_all_dates_df['act_animal'])
@@ -1824,14 +1844,15 @@ nconds_to_ana = np.shape(conditions_to_ana)[0]
 # #### add the option to look at gaze accumulation over time
 # #### also use this code to defined significant neurons - label neurons that significantly encode gaze accumulation before pull, this is for later analysis
 
-# In[595]:
+# In[355]:
 
 
 if 1:   
-    gaze_duration_type = 'before_pull'  # 'around_pull', 'before_pull', 'after_pull'
+    # gaze_duration_type = 'before_pull'  # 'around_pull', 'before_pull', 'after_pull'
+    gaze_duration_type = 'around_pull'  # 'around_pull', 'before_pull', 'after_pull'
     
     # calculate the gaze accumulation if the condition allows (calculate the auc)
-    doGazeAccum = 1
+    doGazeAccum = 0
         
     significant_neurons_data_df = pd.DataFrame(columns=['dates','condition','act_animal','bhv_name',
                                                         'clusterID','significance_or_not',
@@ -2125,7 +2146,13 @@ if 1:
                 plt.close(fig_corr)
 
 
-# In[531]:
+# In[356]:
+
+
+significant_neurons_data_df
+
+
+# In[357]:
 
 
 if 0:
@@ -2148,13 +2175,11 @@ if 0:
 # #### for the activity aligned at the different bhv events
 # #### run PCA for all bhvevent together combined
 
-# In[ ]:
+# In[358]:
 
 
 if 1:
-    
-    doOnlySigniNeurons = 1 # define the significant neurons using the previous code
-    
+        
     # Step 1 - run PCA separately
     # save the simple PCA data
     FRPCA_all_sessions_allevents_sum_df = pd.DataFrame(columns=['condition','session','succrate','act_animal',
@@ -2276,7 +2301,7 @@ if 1:
 
 # #### first analysis to test hypothesis
 
-# In[ ]:
+# In[359]:
 
 
 # step 2 for each PCA trace, calculate the length, curvature, and/or tortusity for comparison later
@@ -2613,7 +2638,7 @@ for ianimal_ana in np.arange(0,nanimal_to_ana,1):
         
 
 
-# In[ ]:
+# In[360]:
 
 
 # show all the session-by-session correlation between PC trajectory features and gaze duration 
@@ -2707,7 +2732,7 @@ if 1:
         
 
 
-# In[ ]:
+# In[361]:
 
 
 # show the single trial trajectories of an example session - compared the nogaze_pull and gaze_pull
@@ -2764,7 +2789,7 @@ if 0:
     ax.legend()
 
 
-# In[ ]:
+# In[362]:
 
 
 # show the single trial trajectories of an example session - compared the gaze_pull separating three quantile based on the gaze duration
@@ -2843,7 +2868,7 @@ if 0:
     
 
 
-# In[ ]:
+# In[363]:
 
 
 # show the single trial  an example session - compared the gaze_pull separating three quantile based on the gaze duration
@@ -2922,13 +2947,13 @@ if 0:
 
 # #### sanity check plot, indibidual neurons' pull aligned FR and gaze related measures
 
-# In[ ]:
+# In[364]:
 
 
 # this one needs to be run after the previous code becuase it need the definition of the 
 # gaze_duration or gaze_accumulation from the previous code
 
-if 1:   
+if 0:
     
     # load the data 
     for icond_ana in np.arange(0,nconds_to_ana,1):
@@ -3160,13 +3185,13 @@ if 1:
 # ### pool sessions for each task conditions together and then run PCA
 # #### pool sessions based on quantiles of gaze-accumulation or gaze-length variables (e.g. 5 quantiles)
 
-# In[ ]:
+# In[365]:
 
 
 # only analyze a subset of conditions
 # act_animals_to_ana = np.unique(bhvevents_aligned_FR_allevents_all_dates_df['act_animal'])
-# act_animals_to_ana = ['kanga']
-act_animals_to_ana = ['dodson']
+act_animals_to_ana = ['kanga']
+# act_animals_to_ana = ['dodson']
 nanimal_to_ana = np.shape(act_animals_to_ana)[0]
 #
 # bhv_names_to_ana = np.unique(bhvevents_aligned_FR_allevents_all_dates_df['bhv_name'])
@@ -3177,11 +3202,11 @@ bhvname_clrs = ['r','y','g','b','c','m','#458B74','#FFC710','#FF1493','#A9A9A9',
 # # the following analysis can only do one conditions 
 # # multiple condition will be considered into one conditions for quantile and FR averaging analysis
 # conditions_to_ana = np.unique(bhvevents_aligned_FR_allevents_all_dates_df['condition'])
-conditions_to_ana = ['MC',]
+# conditions_to_ana = ['MC',]
 # conditions_to_ana = ['SR']
 ###
 # For Kanga
-# conditions_to_ana = ['MC', 'MC_withDodson','MC_withGinger', 'MC_withKoala', 'MC_withVermelho', ] # all MC
+conditions_to_ana = ['MC', 'MC_withDodson','MC_withGinger', 'MC_withKoala', 'MC_withVermelho', ] # all MC
 # conditions_to_ana = ['SR', 'SR_withDodson', ] # all SR
 # conditions_to_ana = ['MC', 'MC_withDodson', 'MC_withVermelho', ] # MC with male
 # conditions_to_ana = ['MC_withGinger', 'MC_withKoala', ] # MC with female
@@ -3196,18 +3221,20 @@ conditions_to_ana = ['MC',]
 # For Dodson
 # conditions_to_ana = ['MC', 'MC_withGingerNew', 'MC_withKanga', 'MC_withKoala', ] # all MC
 # conditions_to_ana = ['SR', 'SR_withGingerNew', 'SR_withKanga', 'SR_withKoala', ] # all SR
+# conditions_to_ana = ['MC', 'MC_withKanga', 'MC_withKoala', ] # all MC, no gingerNew
+# conditions_to_ana = ['SR', 'SR_withKanga', 'SR_withKoala', ] # all SR,  no gingerNew
 # conditions_to_ana = ['MC', 'MC_withGingerNew', 'MC_withKanga', 'MC_withKoala', ] # MC with female
 # conditions_to_ana = ['MC', 'MC_withGingerNew', ] # MC with familiar female
 # conditions_to_ana = ['MC_withKanga', 'MC_withKoala', ] # MC with unfamiliar female
 # conditions_to_ana = ['MC_KoalaAuto_withKoala'] # partner AL
 # conditions_to_ana = ['MC_DodsonAuto_withKoala'] # self AL
 
-
-
 nconds_to_ana = np.shape(conditions_to_ana)[0]
 
+doOnlySigniNeurons = 1 # define the significant neurons using the previous code
 
-# In[ ]:
+
+# In[366]:
 
 
 import numpy as np
@@ -3233,7 +3260,7 @@ if 1:
     xxx_type = 'gaze_accum'  # 'gaze_dur' or 'gaze_accum'
 
     # special here, number of quantile to use for pooling across different days
-    num_quantiles = 3
+    num_quantiles = 4
 
     #
     for icond_ana in np.arange(0, nconds_to_ana, 1):
@@ -3500,14 +3527,46 @@ if 1:
                     )
 
 
-# In[ ]:
+# In[367]:
+
+
+# only consider the significant neurons based on the previous analysis
+if 1:
+    if doOnlySigniNeurons:
+        
+        #
+        # Rename 'session' column in the first DataFrame to 'dates' for merging
+        bhvevents_aligned_FR_and_eventFeatures_meanFReachQuant_all_dates_df = bhvevents_aligned_FR_and_eventFeatures_meanFReachQuant_all_dates_df.rename(columns={'session': 'dates'})
+        # Merge the DataFrames
+        merged_df = pd.merge(bhvevents_aligned_FR_and_eventFeatures_meanFReachQuant_all_dates_df, significant_neurons_data_df,
+                            on=['dates', 'act_animal', 'bhv_name', 'clusterID','condition'],
+                            how='inner')
+        # Filter for significant neurons
+        significant_bhv_df = merged_df[merged_df['significance_or_not'] == True]
+        significant_bhv_df = significant_bhv_df.rename(columns={'dates':'session'})
+        bhvevents_aligned_FR_and_eventFeatures_meanFReachQuant_all_dates_df = significant_bhv_df
+
+        #
+        # Rename 'session' column in the first DataFrame to 'dates' for merging
+        bhvevents_aligned_FR_and_eventFeatures_all_dates_df = bhvevents_aligned_FR_and_eventFeatures_all_dates_df.rename(columns={'session': 'dates'})
+        # Merge the DataFrames
+        merged_df = pd.merge(bhvevents_aligned_FR_and_eventFeatures_all_dates_df, significant_neurons_data_df,
+                            on=['dates', 'act_animal', 'bhv_name', 'clusterID','condition'],
+                            how='inner')
+        # Filter for significant neurons
+        significant_bhv_df = merged_df[merged_df['significance_or_not'] == True]
+        significant_bhv_df = significant_bhv_df.rename(columns={'dates':'session'})
+        bhvevents_aligned_FR_and_eventFeatures_all_dates_df = significant_bhv_df
+
+
+# In[368]:
 
 
 # bhvevents_aligned_FR_and_eventFeatures_all_dates_df
 # bhvevents_aligned_FR_and_eventFeatures_meanFReachQuant_all_dates_df
 
 
-# In[ ]:
+# In[369]:
 
 
 # step 1 - 2:
@@ -3550,13 +3609,12 @@ if 1:
     plt.show()
 
 
-# In[ ]:
+# In[370]:
 
 
-import numpy as np
-import pandas as pd
+# Step 2 - calculate the PCA with the pooled data
+
 from sklearn.decomposition import PCA
-import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter1d
 from scipy.interpolate import splprep, splev
 from mpl_toolkits.mplot3d import Axes3D  # Import for 3D plotting
@@ -3630,33 +3688,81 @@ if 1:
             end_col = (i_quantile + 1) * n_timepoints
             quantile_data = pca_data[:, start_col:end_col]  # (10, n_timepoints)
 
-            # Calculate Length
-            length = np.sum(np.sqrt(np.sum(np.diff(quantile_data[:3, :], axis=1)**2, axis=0))) # Use only first 3 PCs
-            all_quantile_lengths[boot_iter, i_quantile] = length
+            # 
+            if gaze_duration_type == 'around_pull':
+                # Calculate Length
+                length = np.sum(np.sqrt(np.sum(np.diff(quantile_data[:10, :], axis=1)**2, axis=0))) # Use only first 10 PCs
+                all_quantile_lengths[boot_iter, i_quantile] = length
 
-            # Calculate Curvature (using spline interpolation)
-            t = np.linspace(0, 1, n_timepoints)
-            try:
-                spl = splprep(quantile_data[:3, :], s=0)  # Use only first 3 PCs, s=0 for no smoothing
-                spl_deriv2 = splev(t, spl[0], der=2)
-                curvature = np.mean(np.sqrt(spl_deriv2[0]**2 + spl_deriv2[1]**2 + spl_deriv2[2]**2))
-                all_quantile_curvatures[boot_iter, i_quantile] = curvature
-            except:
-                all_quantile_curvatures[boot_iter, i_quantile] = np.nan  # Handle spline fitting errors
+                # Calculate Curvature (using spline interpolation)
+                t = np.linspace(0, 1, n_timepoints)
+                try:
+                    spl = splprep(quantile_data[:10, :], s=0)  # Use only first 10 PCs, s=0 for no smoothing
+                    spl_deriv2 = splev(t, spl[0], der=2)
+                    curvature = np.mean(np.sqrt(spl_deriv2[0]**2 + spl_deriv2[1]**2 + spl_deriv2[2]**2))
+                    all_quantile_curvatures[boot_iter, i_quantile] = curvature
+                except:
+                    all_quantile_curvatures[boot_iter, i_quantile] = np.nan  # Handle spline fitting errors
+            #
+            elif gaze_duration_type == 'before_pull':
+                ind_tgt = timewins<0
+                # Calculate Length
+                length = np.sum(np.sqrt(np.sum(np.diff(quantile_data[:10, ind_tgt], axis=1)**2, axis=0))) # Use only first 10 PCs
+                all_quantile_lengths[boot_iter, i_quantile] = length
+
+                # Calculate Curvature (using spline interpolation)
+                t = np.linspace(0, 1, n_timepoints)
+                try:
+                    spl = splprep(quantile_data[:10, ind_tgt], s=0)  # Use only first 10 PCs, s=0 for no smoothing
+                    spl_deriv2 = splev(t, spl[0], der=2)
+                    curvature = np.mean(np.sqrt(spl_deriv2[0]**2 + spl_deriv2[1]**2 + spl_deriv2[2]**2))
+                    all_quantile_curvatures[boot_iter, i_quantile] = curvature
+                except:
+                    all_quantile_curvatures[boot_iter, i_quantile] = np.nan  # Handle spline fitting errors
+            #
+            elif gaze_duration_type == 'after_pull':
+                ind_tgt = timewins>0
+                # Calculate Length
+                length = np.sum(np.sqrt(np.sum(np.diff(quantile_data[:10, ind_tgt], axis=1)**2, axis=0))) # Use only first 10 PCs
+                all_quantile_lengths[boot_iter, i_quantile] = length
+
+                # Calculate Curvature (using spline interpolation)
+                t = np.linspace(0, 1, n_timepoints)
+                try:
+                    spl = splprep(quantile_data[:10, ind_tgt], s=0)  # Use only first 10 PCs, s=0 for no smoothing
+                    spl_deriv2 = splev(t, spl[0], der=2)
+                    curvature = np.mean(np.sqrt(spl_deriv2[0]**2 + spl_deriv2[1]**2 + spl_deriv2[2]**2))
+                    all_quantile_curvatures[boot_iter, i_quantile] = curvature
+                except:
+                    all_quantile_curvatures[boot_iter, i_quantile] = np.nan  # Handle spline fitting errors
+                
 
     # --- Plotting ---
-
     # Plot Length and Curvature (as before)
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
-
-    axes[0].boxplot(all_quantile_lengths)
-    axes[0].set_xticks(np.arange(1, n_quantiles + 1))
+    
+    # Create a Pandas DataFrame for easier plotting with Seaborn
+    df = pd.DataFrame(all_quantile_lengths, columns=[f'Quantile {i+1}' for i in range(num_quantiles)])
+    # Melt the DataFrame to long format, which is ideal for Seaborn
+    df_melted = pd.melt(df, var_name='Quantile Group', value_name='Length')
+    # Create the swamp plot (also known as a violin plot)
+    seaborn.swarmplot(ax = axes[0], x='Quantile Group', y='Length', data=df_melted, 
+                      hue='Quantile Group', palette='viridis')
+    #axes[0].boxplot(all_quantile_lengths)
+    # axes[0].set_xticks(np.arange(1, n_quantiles + 1))
     axes[0].set_xlabel('Quantile')
     axes[0].set_ylabel('PC Trajectory Length')
     axes[0].set_title('Bootstrapped PC Trajectory Lengths')
 
-    axes[1].boxplot(all_quantile_curvatures)
-    axes[1].set_xticks(np.arange(1, n_quantiles + 1))
+    # Create a Pandas DataFrame for easier plotting with Seaborn
+    df = pd.DataFrame(all_quantile_curvatures, columns=[f'Quantile {i+1}' for i in range(num_quantiles)])
+    # Melt the DataFrame to long format, which is ideal for Seaborn
+    df_melted = pd.melt(df, var_name='Quantile Group', value_name='Length')
+    # Create the swamp plot (also known as a violin plot)
+    seaborn.swarmplot(ax = axes[1], x='Quantile Group', y='Length', data=df_melted, 
+                      hue='Quantile Group', palette='viridis')
+    # axes[1].boxplot(all_quantile_curvatures)
+    # axes[1].set_xticks(np.arange(1, n_quantiles + 1))
     axes[1].set_xlabel('Quantile')
     axes[1].set_ylabel('PC Trajectory Curvature')
     axes[1].set_title('Bootstrapped PC Trajectory Curvatures')
@@ -3676,9 +3782,9 @@ if 1:
         mean_quantile_data = mean_traces_3d[:, start_col:end_col]
 
         # Smooth the trajectory
-        smooth_x = gaussian_filter1d(mean_quantile_data[0, :], sigma=smooth_kernel_size)
-        smooth_y = gaussian_filter1d(mean_quantile_data[1, :], sigma=smooth_kernel_size)
-        smooth_z = gaussian_filter1d(mean_quantile_data[2, :], sigma=smooth_kernel_size)
+        smooth_x = gaussian_filter1d(mean_quantile_data[0, ind_tgt], sigma=smooth_kernel_size)
+        smooth_y = gaussian_filter1d(mean_quantile_data[1, ind_tgt], sigma=smooth_kernel_size)
+        smooth_z = gaussian_filter1d(mean_quantile_data[2, ind_tgt], sigma=smooth_kernel_size)
 
         # Plot the smoothed trajectory
         ax.plot(smooth_x, smooth_y, smooth_z, label=f'Quantile {int(q_val)}')
@@ -3694,60 +3800,67 @@ if 1:
     ax.legend()
     plt.show()
 
-    # --- Statistical Analysis (ANOVA and Tukey HSD) ---
-    print("\n--- Statistical Analysis (ANOVA and Tukey HSD) ---")
+    # --- Statistical Analysis (Paired t-tests with Holm-Bonferroni) ---
+    print("\n--- Statistical Analysis (Paired t-tests with Holm-Bonferroni) ---")
 
-    # Length ANOVA
-    # Remove NaN columns before ANOVA
-    valid_length_data = all_quantile_lengths[:, ~np.isnan(all_quantile_lengths).any(axis=0)]
-    if valid_length_data.shape[1] > 1:  # Perform ANOVA only if there are at least 2 groups
-        fvalue_length, pvalue_length = stats.f_oneway(*valid_length_data.T)
-        print(f"Length ANOVA: F={fvalue_length:.2f}, p={pvalue_length:.3f}")
+    from scipy import stats
+    from statsmodels.sandbox.stats.multicomp import multipletests
 
-        # Post-Hoc Tests (if ANOVA is significant)
-        if pvalue_length < 0.01:
-            # Create a MultiComparison object
-            mc_length = MultiComparison(data=valid_length_data.flatten(), groups=np.repeat(np.arange(valid_length_data.shape[1]), valid_length_data.shape[0]))
-            # Perform the Tukey HSD test
-            tukey_length_result = mc_length.tukeyhsd(alpha=0.01)
-            print("\nTukey HSD Post-Hoc Test (Length):")
-            print(tukey_length_result)
-    else:
-        print("Length ANOVA: Not enough valid groups to perform ANOVA")
-        fvalue_length = np.nan
-        pvalue_length = np.nan
+    def perform_pairwise_paired_ttests(data, group_labels, alpha=0.01):
+        unique_groups = np.unique(group_labels)
+        n_groups = len(unique_groups)
+        p_values = []
+        comparisons = []
 
-    # Curvature ANOVA
-    # Remove NaN columns before ANOVA
-    valid_curvature_data = all_quantile_curvatures[:, ~np.isnan(all_quantile_curvatures).any(axis=0)]
-    if valid_curvature_data.shape[1] > 1:  # Perform ANOVA only if there are at least 2 groups
-        fvalue_curvature, pvalue_curvature = stats.f_oneway(*valid_curvature_data.T)
-        print(f"Curvature ANOVA: F={fvalue_curvature:.2f}, p={pvalue_curvature:.3f}")
+        for i in range(n_groups):
+            for j in range(i + 1, n_groups):
+                group1_data = data[:, i]
+                group2_data = data[:, j]
+                t_stat, p_val = stats.ttest_rel(group1_data, group2_data)
+                p_values.append(p_val)
+                comparisons.append((unique_groups[i], unique_groups[j]))
 
-        # Post-Hoc Tests (if ANOVA is significant)
-        if pvalue_curvature < 0.01:
-            # Create a MultiComparison object
-            mc_curvature = MultiComparison(data=valid_curvature_data.flatten(), groups=np.repeat(np.arange(valid_curvature_data.shape[1]), valid_curvature_data.shape[0]))
-            # Perform the Tukey HSD test
-            tukey_curvature_result = mc_curvature.tukeyhsd(alpha=0.01)
-            print("\nTukey HSD Post-Hoc Test (Curvature):")
-            print(tukey_curvature_result)
-    else:
-        print("Curvature ANOVA: Not enough valid groups to perform ANOVA")
-        fvalue_curvature = np.nan
-        pvalue_curvature = np.nan
+        reject, p_corrected, _, _ = multipletests(p_values, method='holm', alpha=alpha)
+
+        results_df = pd.DataFrame({'Comparison': comparisons,
+                                   'p_value': p_values,
+                                   'p_corrected': p_corrected,
+                                   'reject_null': reject})
+        return results_df
+
+    # Perform pairwise paired t-tests for Length
+    length_pairwise_results = perform_pairwise_paired_ttests(all_quantile_lengths, unique_quantiles)
+    print("\nPairwise Paired t-tests for Length:")
+    print(length_pairwise_results)
+
+    # Perform pairwise paired t-tests for Curvature
+    curvature_pairwise_results = perform_pairwise_paired_ttests(all_quantile_curvatures, unique_quantiles)
+    print("\nPairwise Paired t-tests for Curvature:")
+    print(curvature_pairwise_results)
 
 
 # In[ ]:
 
 
-n_neurons
+
 
 
 # In[ ]:
 
 
-np.shape(all_boot_pca_data)
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
 
 # In[ ]:
