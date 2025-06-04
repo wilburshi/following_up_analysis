@@ -3,7 +3,7 @@
 #SBATCH --job-name=basic_neural_analysis_allsessions_basicEvents_PCA_makeBhvNeuronVideos_Pullfocused_continuousBhv_nogpu_2
 #SBATCH --out="slurm-%j.out"
 #SBATCH --ntasks=1 --nodes=1
-#SBATCH --mem-per-cpu=60000
+#SBATCH --mem-per-cpu=260000
 #SBATCH --time=48:00:00
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=weikang.shi@yale.edu

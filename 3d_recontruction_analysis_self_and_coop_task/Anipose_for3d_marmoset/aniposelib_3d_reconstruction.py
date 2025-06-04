@@ -55,9 +55,9 @@ else:
 
 # dates for Dannon Kanga
 if 1:
-    analyzed_dates = [ "20250422", "20250422_SR"
+    analyzed_dates = [ "20250423", "20250423_SR", "20250424", "20250424_MC", "20250424_SR", "20250425" ,"20250425_SR", "20250428_MC", "20250428_NV", "20250428_SR", "20250429_MC", "20250429_NV", "20250429_SR", "20250430_MC", "20250430_NV", "20250430_SR", 
                      ]
-    session_start_times = [    109, 0            
+    session_start_times = [    0, 0, 0, 0, 0, 0, 93, 0, 0, 0, 0, 0, 0, 0, 274.4, 0,             
                           ] # in second 
 
     animal1 = "Dodson"

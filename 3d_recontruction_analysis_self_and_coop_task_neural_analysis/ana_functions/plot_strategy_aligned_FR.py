@@ -24,20 +24,31 @@ def plot_strategy_aligned_FR(date_tgt,savefig,save_path, animal1, animal2,time_p
     #animal1_gaze = np.concatenate([oneway_gaze1, mutual_gaze1])
     animal1_gaze = oneway_gaze1
     animal1_gaze = np.sort(np.unique(animal1_gaze))
-    animal1_gaze_stop = animal1_gaze[np.concatenate(((animal1_gaze[1:]-animal1_gaze[0:-1]>gaze_thresold)*1,[1]))==1]
-    animal1_gaze_start = np.concatenate(([animal1_gaze[0]],animal1_gaze[np.where(animal1_gaze[1:]-animal1_gaze[0:-1]>gaze_thresold)[0]+1]))
-    animal1_gaze_flash = np.intersect1d(animal1_gaze_start, animal1_gaze_stop)
-    animal1_gaze_start = animal1_gaze_start[~np.isin(animal1_gaze_start,animal1_gaze_flash)]
-    animal1_gaze_stop = animal1_gaze_stop[~np.isin(animal1_gaze_stop,animal1_gaze_flash)]
+    try:
+        animal1_gaze_stop = animal1_gaze[np.concatenate(((animal1_gaze[1:]-animal1_gaze[0:-1]>gaze_thresold)*1,[1]))==1]
+        animal1_gaze_start = np.concatenate(([animal1_gaze[0]],animal1_gaze[np.where(animal1_gaze[1:]-animal1_gaze[0:-1]>gaze_thresold)[0]+1]))
+        animal1_gaze_flash = np.intersect1d(animal1_gaze_start, animal1_gaze_stop)
+        animal1_gaze_start = animal1_gaze_start[~np.isin(animal1_gaze_start,animal1_gaze_flash)]
+        animal1_gaze_stop = animal1_gaze_stop[~np.isin(animal1_gaze_stop,animal1_gaze_flash)]
+    except:
+        animal1_gaze_flash = np.nan
+        animal1_gaze_start = np.nan
+        animal1_gaze_stop = np.nan
     #
     #animal2_gaze = np.concatenate([oneway_gaze2, mutual_gaze2])
     animal2_gaze = oneway_gaze2
     animal2_gaze = np.sort(np.unique(animal2_gaze))
-    animal2_gaze_stop = animal2_gaze[np.concatenate(((animal2_gaze[1:]-animal2_gaze[0:-1]>gaze_thresold)*1,[1]))==1]
-    animal2_gaze_start = np.concatenate(([animal2_gaze[0]],animal2_gaze[np.where(animal2_gaze[1:]-animal2_gaze[0:-1]>gaze_thresold)[0]+1]))
-    animal2_gaze_flash = np.intersect1d(animal2_gaze_start, animal2_gaze_stop)
-    animal2_gaze_start = animal2_gaze_start[~np.isin(animal2_gaze_start,animal2_gaze_flash)]
-    animal2_gaze_stop = animal2_gaze_stop[~np.isin(animal2_gaze_stop,animal2_gaze_flash)] 
+    try:
+        animal2_gaze_stop = animal2_gaze[np.concatenate(((animal2_gaze[1:]-animal2_gaze[0:-1]>gaze_thresold)*1,[1]))==1]
+        animal2_gaze_start = np.concatenate(([animal2_gaze[0]],animal2_gaze[np.where(animal2_gaze[1:]-animal2_gaze[0:-1]>gaze_thresold)[0]+1]))
+        animal2_gaze_flash = np.intersect1d(animal2_gaze_start, animal2_gaze_stop)
+        animal2_gaze_start = animal2_gaze_start[~np.isin(animal2_gaze_start,animal2_gaze_flash)]
+        animal2_gaze_stop = animal2_gaze_stop[~np.isin(animal2_gaze_stop,animal2_gaze_flash)] 
+    except:
+        animal2_gaze_flash = np.nan
+        animal2_gaze_start = np.nan
+        animal2_gaze_stop = np.nan 
+
 
     # get the successful and failed pull time point
     time_point_pull1_succ = np.array(time_point_pulls_succfail['pull1_succ'])
@@ -51,10 +62,14 @@ def plot_strategy_aligned_FR(date_tgt,savefig,save_path, animal1, animal2,time_p
     time_point_pull2 = np.unique(time_point_pull2[time_point_pull2<totalsess_time_forFR])
     oneway_gaze1 = np.unique(oneway_gaze1[oneway_gaze1<totalsess_time_forFR])
     oneway_gaze2 = np.unique(oneway_gaze2[oneway_gaze2<totalsess_time_forFR])
-    animal1_gaze_start = np.unique(animal1_gaze_start[animal1_gaze_start<totalsess_time_forFR])
-    animal2_gaze_start = np.unique(animal2_gaze_start[animal2_gaze_start<totalsess_time_forFR])
-    animal1_gaze_stop = np.unique(animal1_gaze_stop[animal1_gaze_stop<totalsess_time_forFR])
-    animal2_gaze_stop = np.unique(animal2_gaze_stop[animal2_gaze_stop<totalsess_time_forFR])
+    try:
+        animal1_gaze_start = np.unique(animal1_gaze_start[animal1_gaze_start<totalsess_time_forFR])
+        animal2_gaze_start = np.unique(animal2_gaze_start[animal2_gaze_start<totalsess_time_forFR])
+        animal1_gaze_stop = np.unique(animal1_gaze_stop[animal1_gaze_stop<totalsess_time_forFR])
+        animal2_gaze_stop = np.unique(animal2_gaze_stop[animal2_gaze_stop<totalsess_time_forFR])
+    except:
+        animal2_gaze_start = np.nan
+        animal2_gaze_stop = np.nan        
     #
     time_point_pull1_succ = np.unique(time_point_pull1_succ[time_point_pull1_succ<totalsess_time_forFR])
     time_point_pull2_succ = np.unique(time_point_pull2_succ[time_point_pull2_succ<totalsess_time_forFR])
@@ -245,7 +260,10 @@ def plot_strategy_aligned_FR(date_tgt,savefig,save_path, animal1, animal2,time_p
 
         bhv_event_timepoint = timepoint_bhvevents_not[bhvevent_anatype]
 
-        nevents = np.shape(bhv_event_timepoint)[0]
+        try:
+            nevents = np.shape(bhv_event_timepoint)[0]
+        except:
+            nevents = 0
 
         #
         strategy_aligned_FR_average_all[bhvevent_not_name] = dict.fromkeys(clusterIDs,[])

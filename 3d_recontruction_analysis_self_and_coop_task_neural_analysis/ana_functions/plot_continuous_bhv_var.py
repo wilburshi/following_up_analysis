@@ -12,9 +12,9 @@ def plot_continuous_bhv_var(date_tgt,savefig, animal1, animal2, session_start_ti
 
     fps = 30 
 
-    gausKernelsize = 15
+    gausKernelsize = 4 #15
 
-    gaze_thresold = 0.25 # min length threshold to define if a gaze is real gaze or noise, in the unit of second
+    gaze_thresold = 0.2 # min length threshold to define if a gaze is real gaze or noise, in the unit of second
     
     nanimals = np.shape(animalnames_videotrack)[0]
     
@@ -27,28 +27,37 @@ def plot_continuous_bhv_var(date_tgt,savefig, animal1, animal2, session_start_ti
     #animal1_gaze = np.concatenate([oneway_gaze1, mutual_gaze1])
     animal1_gaze = oneway_gaze1
     animal1_gaze = np.sort(np.unique(animal1_gaze))
-    animal1_gaze_stop = animal1_gaze[np.concatenate(((animal1_gaze[1:]-animal1_gaze[0:-1]>gaze_thresold)*1,[1]))==1]
-    animal1_gaze_start = np.concatenate(([animal1_gaze[0]],animal1_gaze[np.where(animal1_gaze[1:]-animal1_gaze[0:-1]>gaze_thresold)[0]+1]))
-    animal1_gaze_flash = np.intersect1d(animal1_gaze_start, animal1_gaze_stop)
-    animal1_gaze_start = animal1_gaze_start[~np.isin(animal1_gaze_start,animal1_gaze_flash)]
-    animal1_gaze_stop = animal1_gaze_stop[~np.isin(animal1_gaze_stop,animal1_gaze_flash)]
+    try:
+        animal1_gaze_stop = animal1_gaze[np.concatenate(((animal1_gaze[1:]-animal1_gaze[0:-1]>gaze_thresold)*1,[1]))==1]
+        animal1_gaze_start = np.concatenate(([animal1_gaze[0]],animal1_gaze[np.where(animal1_gaze[1:]-animal1_gaze[0:-1]>gaze_thresold)[0]+1]))
+        animal1_gaze_flash = np.intersect1d(animal1_gaze_start, animal1_gaze_stop)
+        animal1_gaze_start = animal1_gaze_start[~np.isin(animal1_gaze_start,animal1_gaze_flash)]
+        animal1_gaze_stop = animal1_gaze_stop[~np.isin(animal1_gaze_stop,animal1_gaze_flash)]
+    except:
+        animal1_gaze_flash = np.nan
+        animal1_gaze_start = np.nan
+        animal1_gaze_stop = np.nan
     #
     #animal2_gaze = np.concatenate([oneway_gaze2, mutual_gaze2])
     animal2_gaze = oneway_gaze2
     animal2_gaze = np.sort(np.unique(animal2_gaze))
-    animal2_gaze_stop = animal2_gaze[np.concatenate(((animal2_gaze[1:]-animal2_gaze[0:-1]>gaze_thresold)*1,[1]))==1]
-    animal2_gaze_start = np.concatenate(([animal2_gaze[0]],animal2_gaze[np.where(animal2_gaze[1:]-animal2_gaze[0:-1]>gaze_thresold)[0]+1]))
-    animal2_gaze_flash = np.intersect1d(animal2_gaze_start, animal2_gaze_stop)
-    animal2_gaze_start = animal2_gaze_start[~np.isin(animal2_gaze_start,animal2_gaze_flash)]
-    animal2_gaze_stop = animal2_gaze_stop[~np.isin(animal2_gaze_stop,animal2_gaze_flash)] 
-    
+    try:
+        animal2_gaze_stop = animal2_gaze[np.concatenate(((animal2_gaze[1:]-animal2_gaze[0:-1]>gaze_thresold)*1,[1]))==1]
+        animal2_gaze_start = np.concatenate(([animal2_gaze[0]],animal2_gaze[np.where(animal2_gaze[1:]-animal2_gaze[0:-1]>gaze_thresold)[0]+1]))
+        animal2_gaze_flash = np.intersect1d(animal2_gaze_start, animal2_gaze_stop)
+        animal2_gaze_start = animal2_gaze_start[~np.isin(animal2_gaze_start,animal2_gaze_flash)]
+        animal2_gaze_stop = animal2_gaze_stop[~np.isin(animal2_gaze_stop,animal2_gaze_flash)] 
+    except:
+        animal2_gaze_flash = np.nan
+        animal2_gaze_start = np.nan
+        animal2_gaze_stop = np.nan 
     
 
-    con_vars_plot = ['gaze_other_angle','gaze_tube_angle','gaze_lever_angle','animal_animal_dist','animal_tube_dist','animal_lever_dist','othergaze_self_angle','mass_move_speed','gaze_angle_speed','socialgaze_prob','othergaze_prob']
+    con_vars_plot = ['gaze_other_angle', 'gaze_tube_angle', 'gaze_lever_angle', 'animal_animal_dist', 'animal_tube_dist',' animal_lever_dist', 'othergaze_self_angle', 'mass_move_speed', 'gaze_angle_speed', 'otherani_otherlever_dist', 'otherani_othertube_dist', 'socialgaze_prob',' othergaze_prob', 'otherpull_prob']
     nconvarplots = np.shape(con_vars_plot)[0]
 
-    clrs_plot = ['r','y','g','b','c','m','#458B74','#FFC710','#FF1493','#A9A9A9','#8B4513']
-    yaxis_labels = ['degree','degree','degree','dist(a.u.)','dist(a.u.)','dist(a.u.)','degree','pixel/s','degree/s','','']
+    clrs_plot = ['r','y','g','b','c','m','#458B74','#FFC710','#FF1493','#A9A9A9','#8B4513','#8b4613','#8b4713','#8b4813']
+    yaxis_labels = ['degree','degree','degree','dist(a.u.)','dist(a.u.)','dist(a.u.)','degree','dist(a.u.)','dist(a.u.)','pixel/s','degree/s','','','']
 
 
     pull_trig_events_summary = {}
@@ -69,7 +78,9 @@ def plot_continuous_bhv_var(date_tgt,savefig, animal1, animal2, session_start_ti
         fig.set_figwidth(20)
 
         # plot the pull triggered continuous variables
-        trig_twin = [-6,6] # time window to plot the pull triggered events; unit: s
+        # trig_twin = [-6,6] # time window to plot the pull triggered events; unit: s
+        trig_twin = [-4,4] # time window to plot the pull triggered events; unit: s
+         
         fig2, axs2 = plt.subplots(nconvarplots,1)
         fig2.set_figheight(2*nconvarplots)
         fig2.set_figwidth(6)
@@ -136,6 +147,18 @@ def plot_continuous_bhv_var(date_tgt,savefig, animal1, animal2, session_start_ti
             gaze_angle_speed[iframe] = np.arccos(np.clip(np.dot(at1[:,iframe]/np.linalg.norm(at1[:,iframe]), at0[:,iframe]/np.linalg.norm(at0[:,iframe])), -1.0, 1.0))    
         gaze_angle_speed = scipy.ndimage.gaussian_filter1d(gaze_angle_speed,gausKernelsize)  
 
+        a = output_key_locations['lever_loc_all_Anipose'][animal_name_other].transpose()
+        b = output_key_locations['meaneye_loc_all_Anipose'][animal_name_other].transpose()
+        a_min_b = a - b
+        otherani_otherlever_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
+        otherani_otherlever_dist = scipy.ndimage.gaussian_filter1d(otherani_otherlever_dist,gausKernelsize)
+
+        a = output_key_locations['tube_loc_all_Anipose'][animal_name_other].transpose()
+        b = output_key_locations['meaneye_loc_all_Anipose'][animal_name_other].transpose()
+        a_min_b = a - b
+        otherani_othertube_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
+        otherani_othertube_dist = scipy.ndimage.gaussian_filter1d(otherani_othertube_dist,gausKernelsize)
+
         #
         # get the self social gaze time series
         # align to the start of the video recording
@@ -154,7 +177,7 @@ def plot_continuous_bhv_var(date_tgt,savefig, animal1, animal2, session_start_ti
         socialgaze_prob = scipy.ndimage.gaussian_filter1d(timeseries_gaze,gausKernelsize)
         
         #
-        # get the self social gaze time series
+        # get the other social gaze time series
         # align to the start of the video recording
         # other social gaze
         if ianimal == 0:
@@ -171,8 +194,26 @@ def plot_continuous_bhv_var(date_tgt,savefig, animal1, animal2, session_start_ti
         othergaze_prob = scipy.ndimage.gaussian_filter1d(timeseries_gaze,gausKernelsize)
 
 
+        #
+        # get the other pull time series
+        # align to the start of the video recording
+        # other pull
+        if ianimal == 0:
+            timepoint_otherpull = time_point_pull2 + session_start_time
+        elif ianimal == 1:
+            timepoint_otherpull = time_point_pull1 + session_start_time
+        #
+        try:
+            timeseries_otherpull = np.zeros(np.shape(gaze_angle_speed))
+            timeseries_otherpull[list(map(int,list(np.round((timepoint_otherpull))*fps)))]=1
+        except: # some videos are shorter than the task 
+            timeseries_otherpull = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_otherpull*fps))))+1,))
+            timeseries_otherpull[list(map(int,list(np.round(timepoint_otherpull*fps))))]=1
+        otherpull_prob = scipy.ndimage.gaussian_filter1d(timeseries_otherpull,gausKernelsize)
+
+
         # put all the data together in the same order as the con_vars_plot
-        data_summary = [gaze_other_angle,gaze_tube_angle,gaze_lever_angle,animal_animal_dist,animal_tube_dist,animal_lever_dist,othergaze_self_angle,mass_move_speed,gaze_angle_speed,socialgaze_prob,othergaze_prob]
+        data_summary = [gaze_other_angle, gaze_tube_angle, gaze_lever_angle, animal_animal_dist, animal_tube_dist, animal_lever_dist, othergaze_self_angle, mass_move_speed, gaze_angle_speed, otherani_otherlever_dist, otherani_othertube_dist, socialgaze_prob, othergaze_prob, otherpull_prob]
 
         for iplot in np.arange(0,nconvarplots,1):
             

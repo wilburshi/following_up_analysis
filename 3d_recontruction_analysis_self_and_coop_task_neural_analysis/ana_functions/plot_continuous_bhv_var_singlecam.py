@@ -44,11 +44,11 @@ def plot_continuous_bhv_var_singlecam(date_tgt, aligntwins, savefig, animal1, an
     
     
 
-    con_vars_plot = ['gaze_other_angle','gaze_tube_angle','gaze_lever_angle','animal_animal_dist','animal_tube_dist','animal_lever_dist','othergaze_self_angle','mass_move_speed','gaze_angle_speed','otherani_otherlever_dist','socialgaze_prob','othergaze_prob']
+    con_vars_plot = ['gaze_other_angle','gaze_tube_angle','gaze_lever_angle','animal_animal_dist','animal_tube_dist','animal_lever_dist','othergaze_self_angle','mass_move_speed', 'other_mass_move_speed', 'gaze_angle_speed','otherani_otherlever_dist','otherani_othertube_dist','socialgaze_prob','othergaze_prob','otherpull_prob', 'selfpull_prob']
     nconvarplots = np.shape(con_vars_plot)[0]
 
-    clrs_plot = ['r','y','g','b','c','m','#458B74','#FFC710','#FF1493','#A9A9A9','#8B4513','#8b4513']
-    yaxis_labels = ['degree','degree','degree','dist(a.u.)','dist(a.u.)','dist(a.u.)','degree','dist(a.u.)','pixel/s','degree/s','','']
+    clrs_plot = ['r','y','g','b','c','m','#458B74','#FFC710','#FF1493','#FF1483','#A9A9A9','#8B4513','#8b4613','#8b4713','#8b4813','#8b4913']
+    yaxis_labels = ['degree','degree','degree','dist(a.u.)','dist(a.u.)','dist(a.u.)','degree','pixel/s','pixel/s','degree/s','dist(a.u.)','dist(a.u.)','','','','']
 
 
     pull_trig_events_summary = {}
@@ -122,6 +122,12 @@ def plot_continuous_bhv_var_singlecam(date_tgt, aligntwins, savefig, animal1, an
         mass_move_speed = np.sqrt(np.einsum('ij,ij->j', at1_min_at0, at1_min_at0))*fps 
         mass_move_speed = scipy.ndimage.gaussian_filter1d(mass_move_speed,gausKernelsize)  
 
+        a = output_key_locations['facemass_loc_all_merge'][animal_name_other].transpose()
+        a = np.hstack((a,[[np.nan],[np.nan]]))
+        at1_min_at0 = (a[:,1:]-a[:,:-1])
+        other_mass_move_speed = np.sqrt(np.einsum('ij,ij->j', at1_min_at0, at1_min_at0))*fps 
+        other_mass_move_speed = scipy.ndimage.gaussian_filter1d(other_mass_move_speed,gausKernelsize)
+
         a = np.array(output_allvectors['head_vect_all_merge'][animal_name]).transpose()
         a = np.hstack((a,[[np.nan],[np.nan]]))
         at1 = a[:,1:]
@@ -141,6 +147,12 @@ def plot_continuous_bhv_var_singlecam(date_tgt, aligntwins, savefig, animal1, an
         otherani_otherlever_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
         otherani_otherlever_dist = scipy.ndimage.gaussian_filter1d(otherani_otherlever_dist,gausKernelsize)
 
+        a = output_key_locations['tube_loc_all_merge'][animal_name_other].transpose()
+        b = output_key_locations['meaneye_loc_all_merge'][animal_name_other].transpose()
+        a_min_b = a - b
+        otherani_othertube_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
+        otherani_othertube_dist = scipy.ndimage.gaussian_filter1d(otherani_othertube_dist,gausKernelsize)
+
         #
         # get the self social gaze time series
         # align to the start of the video recording
@@ -152,7 +164,7 @@ def plot_continuous_bhv_var_singlecam(date_tgt, aligntwins, savefig, animal1, an
         #
         try:
             timeseries_gaze = np.zeros(np.shape(gaze_angle_speed))
-            timeseries_gaze[list(map(int,list(np.round((timepoint_gaze)*fps))))]=1
+            timeseries_gaze[list(map(int,list(np.round(timepoint_gaze*fps))))]=1
         except: # some videos are shorter than the task 
             timeseries_gaze = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_gaze*fps))))+1,))
             timeseries_gaze[list(map(int,list(np.round(timepoint_gaze*fps))))]=1
@@ -160,7 +172,7 @@ def plot_continuous_bhv_var_singlecam(date_tgt, aligntwins, savefig, animal1, an
         socialgaze_prob = scipy.ndimage.gaussian_filter1d(timeseries_gaze,gausKernelsize)
         
         #
-        # get the self social gaze time series
+        # get the other social gaze time series
         # align to the start of the video recording
         # other social gaze
         if ianimal == 0:
@@ -170,16 +182,50 @@ def plot_continuous_bhv_var_singlecam(date_tgt, aligntwins, savefig, animal1, an
         #
         try:
             timeseries_gaze = np.zeros(np.shape(gaze_angle_speed))
-            timeseries_gaze[list(map(int,list(np.round((timepoint_gaze)*fps))))]=1
+            timeseries_gaze[list(map(int,list(np.round(timepoint_gaze*fps))))]=1
         except: # some videos are shorter than the task 
             timeseries_gaze = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_gaze*fps))))+1,))
             timeseries_gaze[list(map(int,list(np.round(timepoint_gaze*fps))))]=1
         othergaze_prob = timeseries_gaze
         othergaze_prob = scipy.ndimage.gaussian_filter1d(timeseries_gaze,gausKernelsize)
 
+        #
+        # get the other pull time series
+        # align to the start of the video recording
+        # other pull
+        if ianimal == 0:
+            timepoint_otherpull = time_point_pull2 + session_start_time
+        elif ianimal == 1:
+            timepoint_otherpull = time_point_pull1 + session_start_time
+        #
+        try:
+            timeseries_otherpull = np.zeros(np.shape(gaze_angle_speed))
+            timeseries_otherpull[list(map(int,list(np.round(timepoint_otherpull*fps))))]=1
+        except: # some videos are shorter than the task 
+            timeseries_otherpull = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_otherpull*fps))))+1,))
+            timeseries_otherpull[list(map(int,list(np.round(timepoint_otherpull*fps))))]=1
+        otherpull_prob = scipy.ndimage.gaussian_filter1d(timeseries_otherpull,1)
+
+        #
+        # get the self pull time series for comparison
+        # align to the start of the video recording
+        # self pull
+        if ianimal == 0:
+            timepoint_selfpull = time_point_pull1 + session_start_time
+        elif ianimal == 1:
+            timepoint_selfpull = time_point_pull2 + session_start_time
+        #
+        try:
+            timeseries_selfpull = np.zeros(np.shape(gaze_angle_speed))
+            timeseries_selfpull[list(map(int,list(np.round(timepoint_selfpull*fps))))]=1
+        except: # some videos are shorter than the task 
+            timeseries_selfpull = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_selfpull*fps))))+1,))
+            timeseries_selfpull[list(map(int,list(np.round(timepoint_selfpull*fps))))]=1
+        selfpull_prob = scipy.ndimage.gaussian_filter1d(timeseries_selfpull,1)
+
 
         # put all the data together in the same order as the con_vars_plot
-        data_summary = [gaze_other_angle, gaze_tube_angle, gaze_lever_angle, animal_animal_dist, animal_tube_dist, animal_lever_dist, othergaze_self_angle, mass_move_speed, gaze_angle_speed, otherani_otherlever_dist, socialgaze_prob, othergaze_prob]
+        data_summary = [gaze_other_angle, gaze_tube_angle, gaze_lever_angle, animal_animal_dist, animal_tube_dist, animal_lever_dist, othergaze_self_angle, mass_move_speed, other_mass_move_speed, gaze_angle_speed, otherani_otherlever_dist, otherani_othertube_dist, socialgaze_prob, othergaze_prob, otherpull_prob, selfpull_prob]
 
         for iplot in np.arange(0,nconvarplots,1):
             

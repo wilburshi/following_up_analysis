@@ -7,7 +7,7 @@
 # #### analyze the spike triggered pull and gaze ditribution
 # #### the following detailed analysis focused on pull related behavioral events
 
-# In[150]:
+# In[169]:
 
 
 import pandas as pd
@@ -51,7 +51,7 @@ from statsmodels.stats.multitest import multipletests
 
 # ### function - get body part location for each pair of cameras
 
-# In[151]:
+# In[170]:
 
 
 from ana_functions.body_part_locs_eachpair import body_part_locs_eachpair
@@ -60,7 +60,7 @@ from ana_functions.body_part_locs_singlecam import body_part_locs_singlecam
 
 # ### function - align the two cameras
 
-# In[152]:
+# In[171]:
 
 
 from ana_functions.camera_align import camera_align       
@@ -68,7 +68,7 @@ from ana_functions.camera_align import camera_align
 
 # ### function - merge the two pairs of cameras
 
-# In[153]:
+# In[172]:
 
 
 from ana_functions.camera_merge import camera_merge
@@ -76,7 +76,7 @@ from ana_functions.camera_merge import camera_merge
 
 # ### function - find social gaze time point
 
-# In[154]:
+# In[173]:
 
 
 from ana_functions.find_socialgaze_timepoint import find_socialgaze_timepoint
@@ -87,7 +87,7 @@ from ana_functions.find_socialgaze_timepoint_singlecam_wholebody_2 import find_s
 
 # ### function - define time point of behavioral events
 
-# In[155]:
+# In[174]:
 
 
 from ana_functions.bhv_events_timepoint import bhv_events_timepoint
@@ -96,7 +96,7 @@ from ana_functions.bhv_events_timepoint_singlecam import bhv_events_timepoint_si
 
 # ### function - plot behavioral events
 
-# In[156]:
+# In[175]:
 
 
 from ana_functions.plot_bhv_events import plot_bhv_events
@@ -109,7 +109,7 @@ from matplotlib.collections import PatchCollection
 
 # ### function - plot inter-pull interval
 
-# In[157]:
+# In[176]:
 
 
 from ana_functions.plot_interpull_interval import plot_interpull_interval
@@ -117,7 +117,7 @@ from ana_functions.plot_interpull_interval import plot_interpull_interval
 
 # ### function - make demo videos with skeleton and inportant vectors
 
-# In[158]:
+# In[177]:
 
 
 from ana_functions.tracking_video_singlecam_demo import tracking_video_singlecam_demo
@@ -129,7 +129,7 @@ from ana_functions.tracking_frame_singlecam_wholebody_withNeuron_sepbhv_demo imp
 
 # ### function - interval between all behavioral events
 
-# In[159]:
+# In[178]:
 
 
 from ana_functions.bhv_events_interval import bhv_events_interval
@@ -137,7 +137,7 @@ from ana_functions.bhv_events_interval import bhv_events_interval
 
 # ### function - spike analysis
 
-# In[160]:
+# In[179]:
 
 
 from ana_functions.spike_analysis_FR_calculation import spike_analysis_FR_calculation
@@ -148,7 +148,7 @@ from ana_functions.plot_strategy_aligned_FR import plot_strategy_aligned_FR
 
 # ### function - PCA projection
 
-# In[161]:
+# In[180]:
 
 
 from ana_functions.PCA_around_bhv_events import PCA_around_bhv_events
@@ -158,7 +158,7 @@ from ana_functions.confidence_ellipse import confidence_ellipse
 
 # ### function - train the dynamic bayesian network - multi time lag (3 lags)
 
-# In[162]:
+# In[181]:
 
 
 from ana_functions.train_DBN_multiLag_withNeuron import train_DBN_multiLag
@@ -177,7 +177,7 @@ from ana_functions.AicScore import AicScore
 
 # ### prepare the basic behavioral data (especially the time stamps for each bhv events)
 
-# In[349]:
+# In[182]:
 
 
 # instead of using gaze angle threshold, use the target rectagon to deside gaze info
@@ -273,12 +273,31 @@ if 1:
                                     '20250409_Dodson_MC_withKanga',
             
                                     '20250415_Dodson_MC_withKanga',
-                                    '20250416_Dodson_SR_withKanga', # has to remove from the later analysis, recording has problems
+                                    # '20250416_Dodson_SR_withKanga', # has to remove from the later analysis, recording has problems
                                     '20250417_Dodson_MC_withKanga',
                                     '20250418_Dodson_SR_withKanga',
                                     '20250421_Dodson_SR_withKanga',
                                     '20250422_Dodson_MC_withKanga',
                                     '20250422_Dodson_SR_withKanga',
+            
+                                    '20250423_Dodson_MC_withKanga',
+                                    '20250423_Dodson_SR_withKanga', 
+                                    '20250424_Dodson_NV_withKanga',
+                                    '20250424_Dodson_MC_withKanga',
+                                    '20250424_Dodson_SR_withKanga',            
+                                    '20250425_Dodson_NV_withKanga',
+                                    '20250425_Dodson_SR_withKanga',
+                                    '20250428_Dodson_NV_withKanga',
+                                    '20250428_Dodson_MC_withKanga',
+                                    '20250428_Dodson_SR_withKanga',  
+                                    '20250429_Dodson_NV_withKanga',
+                                    '20250429_Dodson_MC_withKanga',
+                                    '20250429_Dodson_SR_withKanga',  
+                                    '20250430_Dodson_NV_withKanga',
+                                    '20250430_Dodson_MC_withKanga',
+                                    '20250430_Dodson_SR_withKanga',  
+
+            
                                    ]
         task_conditions = [
                             'MC',           
@@ -331,12 +350,29 @@ if 1:
                             'MC_withKanga',
             
                             'MC_withKanga',
-                            'SR_withKanga',
+                            # 'SR_withKanga',
                             'MC_withKanga',
                             'SR_withKanga',
                             'SR_withKanga',
                             'MC_withKanga',
                             'SR_withKanga',
+            
+                            'MC_withKanga',
+                            'SR_withKanga', 
+                            'NV_withKanga',
+                            'MC_withKanga',
+                            'SR_withKanga',            
+                            'NV_withKanga',
+                            'SR_withKanga',
+                            'NV_withKanga',
+                            'MC_withKanga',
+                            'SR_withKanga',  
+                            'NV_withKanga',
+                            'MC_withKanga',
+                            'SR_withKanga',  
+                            'NV_withKanga',
+                            'MC_withKanga',
+                            'SR_withKanga',  
                           ]
         dates_list = [
                         '20240531',
@@ -389,12 +425,29 @@ if 1:
                         '20250409',
             
                         '20250415',
-                        '20250416',
+                        # '20250416',
                         '20250417',
                         '20250418',
                         '20250421',
                         '20250422',
                         '20250422_SR',
+            
+                        '20250423',
+                        '20250423_SR', 
+                        '20250424',
+                        '20250424_MC',
+                        '20250424_SR',            
+                        '20250425',
+                        '20250425_SR',
+                        '20250428_NV',
+                        '20250428_MC',
+                        '20250428_SR',  
+                        '20250429_NV',
+                        '20250429_MC',
+                        '20250429_SR',  
+                        '20250430_NV',
+                        '20250430_MC',
+                        '20250430_SR',  
                      ]
         videodates_list = [
                             '20240531',
@@ -447,12 +500,29 @@ if 1:
                             '20250409',
             
                             '20250415',
-                            '20250416',
+                            # '20250416',
                             '20250417',
                             '20250418',
                             '20250421',
                             '20250422',
                             '20250422_SR',
+            
+                            '20250423',
+                            '20250423_SR', 
+                            '20250424',
+                            '20250424_MC',
+                            '20250424_SR',            
+                            '20250425',
+                            '20250425_SR',
+                            '20250428_NV',
+                            '20250428_MC',
+                            '20250428_SR',  
+                            '20250429_NV',
+                            '20250429_MC',
+                            '20250429_SR',  
+                            '20250430_NV',
+                            '20250430_MC',
+                            '20250430_SR',  
             
                           ] # to deal with the sessions that MC and SR were in the same session
         session_start_times = [ 
@@ -506,107 +576,81 @@ if 1:
                                 0.00,
             
                                 363,
-                                0.00,
+                                # 0.00,
                                 79.0,
                                 162.6,
                                 231.9,
                                 109,
                                 0.00,
+            
+                                0.00,
+                                0.00, 
+                                0.00,
+                                0.00,
+                                0.00,          
+                                0.00,
+                                93.0,
+                                0.00,
+                                0.00,
+                                0.00,
+                                0.00,
+                                0.00,
+                                0.00, 
+                                0.00,
+                                274.4,
+                                0.00,
+            
                               ] # in second
-        kilosortvers = [ 
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-
-                            4,
-                            4,
-                            4,
-                            
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-            
-                            4,
-                            4,    
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-            
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                            4,
-                       ]
+        
+        kilosortvers = list((np.ones(np.shape(dates_list))*4).astype(int))
+        
         trig_channelnames = [ 'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0',
                               'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0',
                               'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0',
                               'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0',
+                              'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0', #'Dev1/ai0',
+                              'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai9','Dev1/ai9','Dev1/ai9','Dev1/ai9',
                               'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0',
-                              'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai9','Dev1/ai9',
+                              'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0',
+                             
                               ]
         animal1_fixedorders = ['dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson',
                                'dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson',
                                'dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson',
                                'dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson',
+                               'dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson',# 'dodson',
                                'dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson',
-                               'dodson','dodson','dodson','dodson','dodson','dodson','dodson',
+                               'dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson','dodson',
+                               'dodson','dodson','dodson','dodson','dodson',
                               ]
         recordedanimals = animal1_fixedorders 
         animal2_fixedorders = ['ginger','ginger','ginger','ginger','ginger','ginger','ginger','ginger','ginger',
                                'ginger','ginger','ginger','ginger','ginger','ginger','gingerNew','gingerNew','gingerNew',
                                'koala', 'koala', 'koala', 'koala', 'koala', 'koala', 'koala', 'koala', 'koala',
                                'koala', 'koala', 'koala', 'koala', 'koala', 'koala', 'koala', 'koala', 'koala',
-                               'koala', 'koala', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga',
-                               'kanga', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga',
+                               'koala', 'koala', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga', # 'kanga',
+                               'kanga', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga',
+                               'kanga', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga', 'kanga',
+                               'kanga', 'kanga', 'kanga', 'kanga', 'kanga',
                               ]
 
         animal1_filenames = ["Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson",
                              "Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson",
                              "Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson",
                              "Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson",
-                             "Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson",
-                             'Dodson','Dodson','Dodson','Dodson','Dodson','Dodson','Dodson',
+                             "Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson",# "Dodson",
+                             'Dodson','Dodson','Dodson','Dodson','Dodson','Dodson','Dodson','Dodson','Dodson',
+                             'Dodson','Dodson','Dodson','Dodson','Dodson','Dodson','Dodson','Dodson','Dodson',
+                             'Dodson','Dodson','Dodson','Dodson','Dodson',
                             ]
         animal2_filenames = ["Ginger","Ginger","Ginger","Ginger","Ginger","Ginger","Ginger","Ginger","Ginger",
                              "Ginger","Ginger","Ginger","Ginger","Ginger","Ginger","Ginger","Ginger","Ginger",
                              "Koala", "Koala", "Koala", "Koala", "Koala", "Koala", "Koala", "Koala", "Koala",
                              "Koala", "Koala", "Koala", "Koala", "Koala", "Koala", "Koala", "Koala", "Koala",
-                             "Koala", "Koala", "Kanga", "Kanga", "Kanga", "Kanga", "Kanga", "Kanga", "Kanga",
-                             'Kanga', 'Kanga', 'Kanga', 'Kanga', 'Kanga', 'Kanga', 'Kanga',
+                             "Koala", "Koala", "Kanga", "Kanga", "Kanga", "Kanga", "Kanga", "Kanga", # "Kanga",
+                             'Kanga', 'Kanga', 'Kanga', 'Kanga', 'Kanga', 'Kanga', 'Kanga', 'Kanga', 'Kanga',
+                             'Kanga', 'Kanga', 'Kanga', 'Kanga', 'Kanga', 'Kanga', 'Kanga', 'Kanga', 'Kanga',
+                             'Kanga', 'Kanga', 'Kanga', 'Kanga', 'Kanga',
                             ]
         
     elif do_OFC:
@@ -708,6 +752,8 @@ if 0:
                                      '20250417_Kanga_MC_withDodson',
                                      '20250418_Kanga_SR_withDodson',
                                      '20250421_Kanga_SR_withDodson',
+                                     '20250422_Kanga_MC_withDodson',
+                                     '20250422_Kanga_SR_withDodson',
                                    ]
         dates_list = [
                       "20240508",
@@ -742,6 +788,8 @@ if 0:
                       "20250417",
                       "20250418",
                       "20250421",
+                      "20250422",
+                      "20250422_SR",
                      ]
         videodates_list = dates_list
         task_conditions = [
@@ -777,6 +825,8 @@ if 0:
                              'MC_withDodson',
                              'SR_withDodson',
                              'SR_withDodson',
+                             'MC_withDodson',
+                             'SR_withDodson',
                           ]
         session_start_times = [ 
                                  0.00,
@@ -811,6 +861,8 @@ if 0:
                                  79.0,
                                  162.6,
                                  231.9,
+                                 109,
+                                 0.00,
                               ] # in second
         kilosortvers = [
                          4,
@@ -845,34 +897,36 @@ if 0:
                          4,
                          4,
                          4,
+                         4,
+                         4,
                         ]
         trig_channelnames = ['Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0',
                              'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0',
                              'Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0','Dev1/ai0',
-                             'Dev1/ai0','Dev1/ai9','Dev1/ai9','Dev1/ai9','Dev1/ai9','Dev1/ai9',
+                             'Dev1/ai0','Dev1/ai9','Dev1/ai9','Dev1/ai9','Dev1/ai9','Dev1/ai9','Dev1/ai0','Dev1/ai0',
                               ]
         
         animal1_fixedorders = ['dannon','dannon','dannon','dannon','dannon','dannon','dannon','dannon',
                                'dannon','dannon','dannon','dannon','dannon','dannon','dannon','dannon',
                                'ginger','ginger','ginger','koala','koala','koala','vermelho','vermelho',
-                               'vermelho','dodson','dodson','dodson','dodson','dodson',
+                               'vermelho','dodson','dodson','dodson','dodson','dodson','dodson','dodson',
                               ]
         animal2_fixedorders = ['kanga','kanga','kanga','kanga','kanga','kanga','kanga','kanga',
                                'kanga','kanga','kanga','kanga','kanga','kanga','kanga','kanga',
                                'kanga','kanga','kanga','kanga','kanga','kanga','kanga','kanga',
-                               'kanga','kanga','kanga','kanga','kanga','kanga',
+                               'kanga','kanga','kanga','kanga','kanga','kanga','kanga','kanga',
                               ]
         recordedanimals = animal2_fixedorders
 
         animal1_filenames = ["Dannon","Dannon","Dannon","Dannon","Dannon","Dannon","Dannon","Dannon",
                              "Dannon","Dannon","Dannon","Dannon","Dannon","Dannon","Dannon","Dannon",
                              "Ginger","Ginger","Ginger", "Kanga", "Kanga", "Kanga", "Kanga", "Kanga",
-                              "Kanga","Dodson","Dodson","Dodson","Dodson","Dodson",
+                              "Kanga","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson","Dodson",
                             ]
         animal2_filenames = ["Kanga","Kanga","Kanga","Kanga","Kanga","Kanga","Kanga","Kanga",
                              "Kanga","Kanga","Kanga","Kanga","Kanga","Kanga","Kanga","Kanga",
                              "Kanga","Kanga","Kanga","Koala","Koala","Koala","Vermelho","Vermelho",
-                             "Vermelho","Kanga","Kanga","Kanga","Kanga","Kanga",
+                             "Vermelho","Kanga","Kanga","Kanga","Kanga","Kanga","Kanga","Kanga",
                             ]
         
     elif do_OFC:
@@ -985,6 +1039,8 @@ pull2_num_all_dates = np.zeros((ndates,1))
 bhv_intv_all_dates = dict.fromkeys(dates_list, [])
 
 pull_trig_events_all_dates = dict.fromkeys(dates_list, [])
+succpull_trig_events_all_dates = dict.fromkeys(dates_list, [])
+failpull_trig_events_all_dates = dict.fromkeys(dates_list, [])
 
 spike_trig_events_all_dates = dict.fromkeys(dates_list, [])
 
@@ -1003,7 +1059,27 @@ neural_data_folder = '/gpfs/radev/pi/nandy/jadi_gibbs_data/Marmoset_neural_recor
     
 
 
-# In[350]:
+# In[185]:
+
+
+print(np.shape(neural_record_conditions))
+print(np.shape(task_conditions))
+print(np.shape(dates_list))
+print(np.shape(videodates_list)) 
+print(np.shape(session_start_times))
+
+print(np.shape(kilosortvers))
+
+print(np.shape(trig_channelnames))
+print(np.shape(animal1_fixedorders)) 
+print(np.shape(recordedanimals))
+print(np.shape(animal2_fixedorders))
+
+print(np.shape(animal1_filenames))
+print(np.shape(animal2_filenames))  
+
+
+# In[ ]:
 
 
 # basic behavior analysis (define time stamps for each bhv events, etc)
@@ -1046,6 +1122,10 @@ try:
 
     with open(data_saved_subfolder+'/pull_trig_events_all_dates_'+animal1_fixedorders[0]+animal2_fixedorders[0]+'.pkl', 'rb') as f:
         pull_trig_events_all_dates = pickle.load(f)    
+    with open(data_saved_subfolder+'/succpull_trig_events_all_dates_'+animal1_fixedorders[0]+animal2_fixedorders[0]+'.pkl', 'rb') as f:
+        succpull_trig_events_all_dates = pickle.load(f)    
+    with open(data_saved_subfolder+'/failpull_trig_events_all_dates_'+animal1_fixedorders[0]+animal2_fixedorders[0]+'.pkl', 'rb') as f:
+        failpull_trig_events_all_dates = pickle.load(f)    
     
     with open(data_saved_subfolder+'/spike_trig_events_all_dates_'+animal1_fixedorders[0]+animal2_fixedorders[0]+'.pkl', 'rb') as f:
         spike_trig_events_all_dates = pickle.load(f) 
@@ -1207,8 +1287,12 @@ except:
         #
         interpullintv_all_dates[idate] = mean_interpull_intv
         # 
-        pull1_num_all_dates[idate] = np.sum(bhv_data['behavior_events']==1) 
-        pull2_num_all_dates[idate] = np.sum(bhv_data['behavior_events']==2)
+        if np.isin(animal1,animal1_fixedorder):
+            pull1_num_all_dates[idate] = np.sum(bhv_data['behavior_events']==1) 
+            pull2_num_all_dates[idate] = np.sum(bhv_data['behavior_events']==2)
+        else:
+            pull1_num_all_dates[idate] = np.sum(bhv_data['behavior_events']==2) 
+            pull2_num_all_dates[idate] = np.sum(bhv_data['behavior_events']==1)
 
         
         # load behavioral event results
@@ -1356,10 +1440,17 @@ except:
             plt.savefig(data_saved_folder+"/bhv_events_singlecam_wholebody/"+animal1_fixedorder[0]+animal2_fixedorder[0]+"/"+cameraID+'/'+date_tgt+'/'+date_tgt+"_"+cameraID_short+".pdf")
 
         #
-        owgaze1_num_all_dates[idate] = np.shape(oneway_gaze1)[0]
-        owgaze2_num_all_dates[idate] = np.shape(oneway_gaze2)[0]
-        mtgaze1_num_all_dates[idate] = np.shape(mutual_gaze1)[0]
-        mtgaze2_num_all_dates[idate] = np.shape(mutual_gaze2)[0]
+        if np.isin(animal1,animal1_fixedorder):
+            owgaze1_num_all_dates[idate] = np.shape(oneway_gaze1)[0]
+            owgaze2_num_all_dates[idate] = np.shape(oneway_gaze2)[0]
+            mtgaze1_num_all_dates[idate] = np.shape(mutual_gaze1)[0]
+            mtgaze2_num_all_dates[idate] = np.shape(mutual_gaze2)[0]
+        else:            
+            owgaze1_num_all_dates[idate] = np.shape(oneway_gaze2)[0]
+            owgaze2_num_all_dates[idate] = np.shape(oneway_gaze1)[0]
+            mtgaze1_num_all_dates[idate] = np.shape(mutual_gaze2)[0]
+            mtgaze2_num_all_dates[idate] = np.shape(mutual_gaze1)[0]
+            
 
      
         
@@ -1386,6 +1477,7 @@ except:
             
             min_length = np.shape(look_at_other_or_not_merge['dodson'])[0] # frame numbers of the video recording
 
+            # NOTE! This one used the wrong and old version of separating successful and failed 
             pull_trig_events_summary, _, _ = plot_continuous_bhv_var_singlecam(filepath_cont_var+date_tgt+cameraID,
                                     aligntwins, savefig, animal1, animal2, 
                                     session_start_time, min_length, succpulls_ornot, time_point_pull1, time_point_pull2, 
@@ -1393,6 +1485,29 @@ except:
                                     output_look_ornot, output_allvectors, output_allangles,output_key_locations)
             pull_trig_events_all_dates[date_tgt] = pull_trig_events_summary
             
+            # successful pull
+            try:
+                pull_trig_events_summary, _, _ = plot_continuous_bhv_var_singlecam(filepath_cont_var+date_tgt+cameraID,
+                                        aligntwins, savefig, animal1, animal2, 
+                                        session_start_time, min_length, succpulls_ornot, 
+                                        time_point_pull1_succ, time_point_pull2_succ, 
+                                        oneway_gaze1, oneway_gaze2, mutual_gaze1, mutual_gaze2, animalnames_videotrack,
+                                        output_look_ornot, output_allvectors, output_allangles,output_key_locations)
+                succpull_trig_events_all_dates[date_tgt] = pull_trig_events_summary
+            except:
+                succpull_trig_events_all_dates[date_tgt] = np.nan
+            
+            # failed pull
+            try:
+                pull_trig_events_summary, _, _ = plot_continuous_bhv_var_singlecam(filepath_cont_var+date_tgt+cameraID,
+                                        aligntwins, savefig, animal1, animal2, 
+                                        session_start_time, min_length, succpulls_ornot, 
+                                        time_point_pull1_fail, time_point_pull2_fail, 
+                                        oneway_gaze1, oneway_gaze2, mutual_gaze1, mutual_gaze2, animalnames_videotrack,
+                                        output_look_ornot, output_allvectors, output_allangles,output_key_locations)
+                failpull_trig_events_all_dates[date_tgt] = pull_trig_events_summary
+            except:
+                failpull_trig_events_all_dates[date_tgt] = np.nan
                 
         
         # session starting time compared with the neural recording
@@ -1696,6 +1811,10 @@ except:
             
         with open(data_saved_subfolder+'/pull_trig_events_all_dates_'+animal1_fixedorders[0]+animal2_fixedorders[0]+'.pkl', 'wb') as f:
             pickle.dump(pull_trig_events_all_dates, f) 
+        with open(data_saved_subfolder+'/succpull_trig_events_all_dates_'+animal1_fixedorders[0]+animal2_fixedorders[0]+'.pkl', 'wb') as f:
+            pickle.dump(succpull_trig_events_all_dates, f) 
+        with open(data_saved_subfolder+'/failpull_trig_events_all_dates_'+animal1_fixedorders[0]+animal2_fixedorders[0]+'.pkl', 'wb') as f:
+            pickle.dump(failpull_trig_events_all_dates, f) 
             
         with open(data_saved_subfolder+'/spike_trig_events_all_dates_'+animal1_fixedorders[0]+animal2_fixedorders[0]+'.pkl', 'wb') as f:
             pickle.dump(spike_trig_events_all_dates, f)  
@@ -1717,19 +1836,28 @@ except:
         if not os.path.exists(data_saved_subfolder):
             os.makedirs(data_saved_subfolder)
     
-        with open(data_saved_subfolder+'/pull_trig_events_all_dates_'+animal1_fixedorders[0]+animal2_fixedorders[0]+'.pkl', 'wb') as f:
-            pickle.dump(pull_trig_events_all_dates, f) 
+        with open(data_saved_subfolder+'/succpull_trig_events_all_dates_'+animal1_fixedorders[0]+animal2_fixedorders[0]+'.pkl', 'wb') as f:
+            pickle.dump(succpull_trig_events_all_dates, f) 
+        with open(data_saved_subfolder+'/failpull_trig_events_all_dates_'+animal1_fixedorders[0]+animal2_fixedorders[0]+'.pkl', 'wb') as f:
+            pickle.dump(failpull_trig_events_all_dates, f) 
     
+        with open(data_saved_subfolder+'/owgaze1_num_all_dates_'+animal1_fixedorders[0]+animal2_fixedorders[0]+'.pkl', 'wb') as f:
+            pickle.dump(owgaze1_num_all_dates, f)
+        with open(data_saved_subfolder+'/owgaze2_num_all_dates_'+animal1_fixedorders[0]+animal2_fixedorders[0]+'.pkl', 'wb') as f:
+            pickle.dump(owgaze2_num_all_dates, f)
+        with open(data_saved_subfolder+'/mtgaze1_num_all_dates_'+animal1_fixedorders[0]+animal2_fixedorders[0]+'.pkl', 'wb') as f:
+            pickle.dump(mtgaze1_num_all_dates, f)
+        with open(data_saved_subfolder+'/mtgaze2_num_all_dates_'+animal1_fixedorders[0]+animal2_fixedorders[0]+'.pkl', 'wb') as f:
+            pickle.dump(mtgaze2_num_all_dates, f)
+        with open(data_saved_subfolder+'/pull1_num_all_dates_'+animal1_fixedorders[0]+animal2_fixedorders[0]+'.pkl', 'wb') as f:
+            pickle.dump(pull1_num_all_dates, f)
+        with open(data_saved_subfolder+'/pull2_num_all_dates_'+animal1_fixedorders[0]+animal2_fixedorders[0]+'.pkl', 'wb') as f:
+            pickle.dump(pull2_num_all_dates, f)
+
     
     
    
     
-
-
-# In[ ]:
-
-
-
 
 
 # #### re-organized the data
@@ -1737,7 +1865,7 @@ except:
 # #### the ultamate goal is to analyze the difference in single trial and if gaze related variables related to any of them
 # #### make some prilimary plot for sanity check
 
-# In[351]:
+# In[ ]:
 
 
 
@@ -1779,6 +1907,19 @@ for idate in np.arange(0,ndates,1):
                 pull_trig_events_tgt = pull_trig_events_all_dates[date_tgt][(ibhv_type_split[0],pull_trig_events_tgtname)]
             except:
                 pull_trig_events_tgt = np.nan
+        #
+        elif ibhv_type_split[1] == 'succpull':
+            try:
+                pull_trig_events_tgt = succpull_trig_events_all_dates[date_tgt][(ibhv_type_split[0],pull_trig_events_tgtname)]
+            except:
+                pull_trig_events_tgt = np.nan
+        #
+        elif ibhv_type_split[1] == 'failpull':
+            try:
+                pull_trig_events_tgt = failpull_trig_events_all_dates[date_tgt][(ibhv_type_split[0],pull_trig_events_tgtname)]
+            except:
+                pull_trig_events_tgt = np.nan
+        #
         else:
             pull_trig_events_tgt = np.nan
             
@@ -1814,13 +1955,13 @@ for idate in np.arange(0,ndates,1):
                 
 
 
-# In[352]:
+# In[ ]:
 
 
 np.unique(bhvevents_aligned_FR_allevents_all_dates_df['condition'])
 
 
-# In[354]:
+# In[ ]:
 
 
 # act_animals_to_ana = np.unique(bhvevents_aligned_FR_allevents_all_dates_df['act_animal'])
@@ -1829,6 +1970,8 @@ act_animals_to_ana = ['kanga']
 nanimal_to_ana = np.shape(act_animals_to_ana)[0]
 #
 # bhv_names_to_ana = np.unique(bhvevents_aligned_FR_allevents_all_dates_df['bhv_name'])
+# bhv_names_to_ana = ['succpull','failpull']
+# bhv_names_to_ana = ['failpull']
 bhv_names_to_ana = ['pull']
 nbhvnames_to_ana = np.shape(bhv_names_to_ana)[0]
 bhvname_clrs = ['r','y','g','b','c','m','#458B74','#FFC710','#FF1493','#A9A9A9','#8B4513']
@@ -1837,6 +1980,17 @@ conditions_to_ana = np.unique(bhvevents_aligned_FR_allevents_all_dates_df['condi
 # conditions_to_ana = ['MC',]
 # conditions_to_ana = ['SR']
 # conditions_to_ana = ['MC_DannonAuto']
+#
+# for Kanga only
+# conditions_to_ana = ['MC', 'MC_DannonAuto', 'MC_KangaAuto', 'MC_withDodson','MC_withGinger', 
+#                      'MC_withKoala', 'MC_withVermelho', 'NV', ]
+# 
+# for dodson only
+# conditions_to_ana = ['MC', 'MC_DodsonAuto_withKoala', 'MC_KoalaAuto_withKoala',
+#        'MC_withGingerNew', 'MC_withKanga', 'MC_withKoala',  ]
+
+
+
 nconds_to_ana = np.shape(conditions_to_ana)[0]
 
 
@@ -1844,7 +1998,7 @@ nconds_to_ana = np.shape(conditions_to_ana)[0]
 # #### add the option to look at gaze accumulation over time
 # #### also use this code to defined significant neurons - label neurons that significantly encode gaze accumulation before pull, this is for later analysis
 
-# In[355]:
+# In[ ]:
 
 
 if 1:   
@@ -1912,23 +2066,27 @@ if 1:
                         FRs_allevents_ineuron = np.array(bhvevents_aligned_FR_allevents_tgt['FR_allevents'])[0]
 
                         nevents = np.shape(FRs_allevents_ineuron)[1]
+                        
+                        if nevents > 0:
+                            FRsmoothed_allevents_ineuron = gaussian_filter1d(FRs_allevents_ineuron, sigma=6, axis=0)
 
-                        FRsmoothed_allevents_ineuron = gaussian_filter1d(FRs_allevents_ineuron, sigma=6, axis=0)
+                            # Compute mean and SEM while ignoring NaNs
+                            mean_trace = np.nanmean(FRsmoothed_allevents_ineuron, axis=1)
+                            std_trace = np.nanstd(FRsmoothed_allevents_ineuron, axis=1)
+                            sem_trace = std_trace / np.sqrt(nevents)  # Standard error of the mean
 
-                        # Compute mean and SEM while ignoring NaNs
-                        mean_trace = np.nanmean(FRsmoothed_allevents_ineuron, axis=1)
-                        std_trace = np.nanstd(FRsmoothed_allevents_ineuron, axis=1)
-                        sem_trace = std_trace / np.sqrt(nevents)  # Standard error of the mean
+                            # Plot the results
+                            time_trace = np.arange(-4,4,1/fps)  # Assuming time is just indices
 
-                        # Plot the results
-                        time_trace = np.arange(-4,4,1/fps)  # Assuming time is just indices
-
-                        # Plot each behavior as a separate trace
-                        ax.plot(time_trace, mean_trace, label=bhvname_ana+'(n='+str(nevents)+')', 
-                                color=bhvname_clrs[ibhvname_ana])
-                        ax.fill_between(time_trace, mean_trace - sem_trace, mean_trace + sem_trace, 
-                                        color=bhvname_clrs[ibhvname_ana], alpha=0.3)
-
+                            # Plot each behavior as a separate trace
+                            ax.plot(time_trace, mean_trace, label=bhvname_ana+'(n='+str(nevents)+')', 
+                                    color=bhvname_clrs[ibhvname_ana])
+                            ax.fill_between(time_trace, mean_trace - sem_trace, mean_trace + sem_trace, 
+                                            color=bhvname_clrs[ibhvname_ana], alpha=0.3)
+                        #
+                        else:
+                            FRsmoothed_allevents_ineuron = np.nan
+                            
                         #
                         # load and plot the pull aligned continuous bhv variables
                         conBhv_allevents_ineuron = np.array(bhvevents_aligned_FR_allevents_tgt[pull_trig_events_tgtname])[0]
@@ -1965,13 +2123,23 @@ if 1:
                         conBhv_allevents_ineuron_z = flattened_z.reshape(conBhv_allevents_ineuron.shape)
                         # 
                         conBhv_allevents_ineuron = conBhv_allevents_ineuron_z
-
-                        nevents = np.shape(conBhv_allevents_ineuron)[1]
-
-                        FRconBhv_allevents_ineuron = gaussian_filter1d(conBhv_allevents_ineuron, sigma=6, axis=0)
-
+    
+                        try:
+                            nevents = np.shape(conBhv_allevents_ineuron)[1]
+                        except:
+                            nevents = 0
+                        
+                        try:
+                            FRconBhv_allevents_ineuron = gaussian_filter1d(conBhv_allevents_ineuron, sigma=6, axis=0)
+                        except:
+                            FRconBhv_allevents_ineuron = np.nan
+                            
                         # if the pull aligned FR and bhv have different number
-                        nevents_fr = np.shape(FRs_allevents_ineuron)[1]
+                        try:
+                            nevents_fr = np.shape(FRs_allevents_ineuron)[1]
+                        except:
+                            nevents_fr = 0
+                            
                         if not  nevents_fr == nevents: 
                             print(date_ana+' mismatched number')
                             if nevents_fr < nevents:
@@ -1981,19 +2149,25 @@ if 1:
                             
                         
                         # Compute correlation coefficient between FR and behavior at each time point
-                        corrs = np.full(FRsmoothed_allevents_ineuron.shape[0], np.nan)
-                        pvals = np.full(FRsmoothed_allevents_ineuron.shape[0], np.nan)
+                        try:
+                            corrs = np.full(FRsmoothed_allevents_ineuron.shape[0], np.nan)
+                            pvals = np.full(FRsmoothed_allevents_ineuron.shape[0], np.nan)
 
-                        for t in range(FRsmoothed_allevents_ineuron.shape[0]):
-                            fr_t = FRsmoothed_allevents_ineuron[t, :]
-                            bhv_t = FRconBhv_allevents_ineuron[t, :]
+                            for t in range(FRsmoothed_allevents_ineuron.shape[0]):
+                                fr_t = FRsmoothed_allevents_ineuron[t, :]
+                                bhv_t = FRconBhv_allevents_ineuron[t, :]
 
-                            valid_mask = ~np.isnan(fr_t) & ~np.isnan(bhv_t)
-                            if np.sum(valid_mask) > 5:  # Only compute if enough data points
-                                r, p = st.pearsonr(fr_t[valid_mask], bhv_t[valid_mask])
-                                corrs[t] = r
-                                pvals[t] = p                               
-                        
+                                valid_mask = ~np.isnan(fr_t) & ~np.isnan(bhv_t)
+                                if np.sum(valid_mask) > 5:  # Only compute if enough data points
+                                    r, p = st.pearsonr(fr_t[valid_mask], bhv_t[valid_mask])
+                                    corrs[t] = r
+                                    pvals[t] = p    
+                        except:
+                            time_trace = np.arange(-4,4,1/fps)
+                            corrs = np.full(time_trace.shape[0], np.nan)
+                            pvals = np.full(time_trace.shape[0], np.nan)
+
+
                         r_traces_all_neurons.append(corrs)
                         p_traces_all_neurons.append(pvals)
 
@@ -2029,41 +2203,42 @@ if 1:
                                                                                    }, ignore_index=True)
                         
                         
-                        # Compute mean and SEM while ignoring NaNs
-                        mean_trace = np.nanmean(FRconBhv_allevents_ineuron, axis=1)
-                        std_trace = np.nanstd(FRconBhv_allevents_ineuron, axis=1)
-                        sem_trace = std_trace / np.sqrt(nevents)  # Standard error of the mean
+                        if nevents > 0:
+                            # Compute mean and SEM while ignoring NaNs
+                            mean_trace = np.nanmean(FRconBhv_allevents_ineuron, axis=1)
+                            std_trace = np.nanstd(FRconBhv_allevents_ineuron, axis=1)
+                            sem_trace = std_trace / np.sqrt(nevents)  # Standard error of the mean
 
-                        # Plot each behavior as a separate trace
-                        if doGazeAccum:
-                            ax.plot(time_trace, mean_trace, label='pull_trig_'+pull_trig_events_tgtname+'_AUC(n='+str(nevents)+')', 
-                                    color='#808080')
-                            ax.fill_between(time_trace, mean_trace - sem_trace, mean_trace + sem_trace, 
-                                            color='#808080', alpha=0.3)
-                        else:
-                            ax.plot(time_trace, mean_trace, label='pull_trig_'+pull_trig_events_tgtname+'(n='+str(nevents)+')', 
-                                    color='#808080')
-                            ax.fill_between(time_trace, mean_trace - sem_trace, mean_trace + sem_trace, 
-                                            color='#808080', alpha=0.3)
-                        
-                        
-                        # Create a twin axis for the correlation plot
-                        ax2 = ax.twinx()                   
+                            # Plot each behavior as a separate trace
+                            if doGazeAccum:
+                                ax.plot(time_trace, mean_trace, label='pull_trig_'+pull_trig_events_tgtname+'_AUC(n='+str(nevents)+')', 
+                                        color='#808080')
+                                ax.fill_between(time_trace, mean_trace - sem_trace, mean_trace + sem_trace, 
+                                                color='#808080', alpha=0.3)
+                            else:
+                                ax.plot(time_trace, mean_trace, label='pull_trig_'+pull_trig_events_tgtname+'(n='+str(nevents)+')', 
+                                        color='#808080')
+                                ax.fill_between(time_trace, mean_trace - sem_trace, mean_trace + sem_trace, 
+                                                color='#808080', alpha=0.3)
 
-                        # Plot correlation coefficient trace on the right y-axis
-                        ax2.plot(time_trace, corrs, color='black', linestyle='--', label='FR–Bhv r')
-                        ax2.set_ylabel("Correlation (r)", color='black')
 
-                        # Highlight significant timepoints (p < 0.01) with red dots on the right y-axis
-                        significant_mask = (pvals < 0.01) & ~np.isnan(pvals)
-                        ax2.plot(time_trace[significant_mask], corrs[significant_mask], 'ro', label='p < 0.01')
+                            # Create a twin axis for the correlation plot
+                            ax2 = ax.twinx()                   
 
-                        # Set the label for the right axis
-                        ax2.set_ylabel("Correlation (r)", color='black')
-                        ax2.tick_params(axis='y', labelcolor='black')
+                            # Plot correlation coefficient trace on the right y-axis
+                            ax2.plot(time_trace, corrs, color='black', linestyle='--', label='FR–Bhv r')
+                            ax2.set_ylabel("Correlation (r)", color='black')
 
-                        # Optionally adjust limits or formatting if necessary
-                        ax2.set_ylim(-1, 1)  # Adjust this as necessary for your data range
+                            # Highlight significant timepoints (p < 0.01) with red dots on the right y-axis
+                            significant_mask = (pvals < 0.01) & ~np.isnan(pvals)
+                            ax2.plot(time_trace[significant_mask], corrs[significant_mask], 'ro', label='p < 0.01')
+
+                            # Set the label for the right axis
+                            ax2.set_ylabel("Correlation (r)", color='black')
+                            ax2.tick_params(axis='y', labelcolor='black')
+
+                            # Optionally adjust limits or formatting if necessary
+                            ax2.set_ylim(-1, 1)  # Adjust this as necessary for your data range
 
 
                     ax.set_title(f"Neuron {clusterID_ineuron}")
@@ -2129,16 +2304,16 @@ if 1:
                         os.makedirs(figsavefolder)
 
                     if doGazeAccum:
-                        fig.savefig(figsavefolder+'individualneurons_meanFR_and_mean'+
+                        fig.savefig(figsavefolder+'individualneurons_meanFR_and_mean_'+bhvname_ana+'_'+
                                      pull_trig_events_tgtname+'_auc'+savefile_sufix+'.pdf')
 
-                        fig_corr.savefig(figsavefolder + 'neuron_corr_heatmap_FR_and_' + 
+                        fig_corr.savefig(figsavefolder + 'neuron_corr_heatmap_FR_and_' + bhvname_ana+'_'+
                                          pull_trig_events_tgtname+'_auc'+savefile_sufix+'.pdf')
                     else:
-                        fig.savefig(figsavefolder+'individualneurons_meanFR_and_mean'+
+                        fig.savefig(figsavefolder+'individualneurons_meanFR_and_mean_'+bhvname_ana+'_'+
                                      pull_trig_events_tgtname+savefile_sufix+'.pdf')
 
-                        fig_corr.savefig(figsavefolder + 'neuron_corr_heatmap_FR_and_' + 
+                        fig_corr.savefig(figsavefolder + 'neuron_corr_heatmap_FR_and_' + bhvname_ana+'_'+
                                          pull_trig_events_tgtname+savefile_sufix+'.pdf')
 
                 # Close the figures to avoid memory issues
@@ -2146,13 +2321,13 @@ if 1:
                 plt.close(fig_corr)
 
 
-# In[356]:
+# In[ ]:
 
 
 significant_neurons_data_df
 
 
-# In[357]:
+# In[ ]:
 
 
 if 0:
@@ -2175,7 +2350,7 @@ if 0:
 # #### for the activity aligned at the different bhv events
 # #### run PCA for all bhvevent together combined
 
-# In[358]:
+# In[ ]:
 
 
 if 1:
@@ -2301,7 +2476,7 @@ if 1:
 
 # #### first analysis to test hypothesis
 
-# In[359]:
+# In[ ]:
 
 
 # step 2 for each PCA trace, calculate the length, curvature, and/or tortusity for comparison later
@@ -2633,12 +2808,12 @@ for ianimal_ana in np.arange(0,nanimal_to_ana,1):
         if not os.path.exists(figsavefolder):
             os.makedirs(figsavefolder)
 
-        fig1.savefig(figsavefolder+'bhvevents_aligned_PCspace_trajectory_features_and_continuousBhv_'+
+        fig1.savefig(figsavefolder+'bhvevents_aligned_PCspace_trajectory_features_and_continuousBhv_'+bhvname_ana+'_'+
                      pull_trig_events_tgtname+'_'+xxx_type+'_'+gaze_duration_type+savefile_sufix+'.pdf')
         
 
 
-# In[360]:
+# In[ ]:
 
 
 # show all the session-by-session correlation between PC trajectory features and gaze duration 
@@ -2711,7 +2886,7 @@ if 1:
         if not os.path.exists(figsavefolder):
             os.makedirs(figsavefolder)
 
-        fig2.savefig(figsavefolder+'bhvevents_aligned_PCspace_trajectory_features_and_continuousBhv_'+
+        fig2.savefig(figsavefolder+'bhvevents_aligned_PCspace_trajectory_features_and_continuousBhv_'+bhvname_ana+'_'+
                      pull_trig_events_tgtname+'_'+gaze_duration_type+'_'+corr_type+savefile_sufix+'.pdf')
         
 
@@ -2732,7 +2907,7 @@ if 1:
         
 
 
-# In[361]:
+# In[ ]:
 
 
 # show the single trial trajectories of an example session - compared the nogaze_pull and gaze_pull
@@ -2789,7 +2964,7 @@ if 0:
     ax.legend()
 
 
-# In[362]:
+# In[ ]:
 
 
 # show the single trial trajectories of an example session - compared the gaze_pull separating three quantile based on the gaze duration
@@ -2868,7 +3043,7 @@ if 0:
     
 
 
-# In[363]:
+# In[ ]:
 
 
 # show the single trial  an example session - compared the gaze_pull separating three quantile based on the gaze duration
@@ -2947,7 +3122,7 @@ if 0:
 
 # #### sanity check plot, indibidual neurons' pull aligned FR and gaze related measures
 
-# In[364]:
+# In[ ]:
 
 
 # this one needs to be run after the previous code becuase it need the definition of the 
@@ -3185,7 +3360,7 @@ if 0:
 # ### pool sessions for each task conditions together and then run PCA
 # #### pool sessions based on quantiles of gaze-accumulation or gaze-length variables (e.g. 5 quantiles)
 
-# In[365]:
+# In[ ]:
 
 
 # only analyze a subset of conditions
@@ -3196,6 +3371,8 @@ nanimal_to_ana = np.shape(act_animals_to_ana)[0]
 #
 # bhv_names_to_ana = np.unique(bhvevents_aligned_FR_allevents_all_dates_df['bhv_name'])
 bhv_names_to_ana = ['pull']
+# bhv_names_to_ana = ['failpull']
+# bhv_names_to_ana = ['succpull','failpull']
 nbhvnames_to_ana = np.shape(bhv_names_to_ana)[0]
 bhvname_clrs = ['r','y','g','b','c','m','#458B74','#FFC710','#FF1493','#A9A9A9','#8B4513']
 #
@@ -3203,10 +3380,10 @@ bhvname_clrs = ['r','y','g','b','c','m','#458B74','#FFC710','#FF1493','#A9A9A9',
 # # multiple condition will be considered into one conditions for quantile and FR averaging analysis
 # conditions_to_ana = np.unique(bhvevents_aligned_FR_allevents_all_dates_df['condition'])
 # conditions_to_ana = ['MC',]
-# conditions_to_ana = ['SR']
+# conditions_to_ana = ['MC','SR',]
 ###
 # For Kanga
-conditions_to_ana = ['MC', 'MC_withDodson','MC_withGinger', 'MC_withKoala', 'MC_withVermelho', ] # all MC
+# conditions_to_ana = ['MC', 'MC_withDodson','MC_withGinger', 'MC_withKoala', 'MC_withVermelho', ] # all MC
 # conditions_to_ana = ['SR', 'SR_withDodson', ] # all SR
 # conditions_to_ana = ['MC', 'MC_withDodson', 'MC_withVermelho', ] # MC with male
 # conditions_to_ana = ['MC_withGinger', 'MC_withKoala', ] # MC with female
@@ -3217,6 +3394,7 @@ conditions_to_ana = ['MC', 'MC_withDodson','MC_withGinger', 'MC_withKoala', 'MC_
 # conditions_to_ana = ['MC_DannonAuto'] # partner AL
 # conditions_to_ana = ['MC_KangaAuto'] # self AL
 # conditions_to_ana = ['NV'] # NV
+conditions_to_ana = ['MC', 'MC_withDodson','MC_withGinger', 'MC_withKoala', 'MC_withVermelho', 'SR', 'SR_withDodson',]
 ###
 # For Dodson
 # conditions_to_ana = ['MC', 'MC_withGingerNew', 'MC_withKanga', 'MC_withKoala', ] # all MC
@@ -3234,7 +3412,7 @@ nconds_to_ana = np.shape(conditions_to_ana)[0]
 doOnlySigniNeurons = 1 # define the significant neurons using the previous code
 
 
-# In[366]:
+# In[ ]:
 
 
 import numpy as np
@@ -3260,7 +3438,7 @@ if 1:
     xxx_type = 'gaze_accum'  # 'gaze_dur' or 'gaze_accum'
 
     # special here, number of quantile to use for pooling across different days
-    num_quantiles = 4
+    num_quantiles = 10
 
     #
     for icond_ana in np.arange(0, nconds_to_ana, 1):
@@ -3527,7 +3705,73 @@ if 1:
                     )
 
 
-# In[367]:
+# In[ ]:
+
+
+##
+# do some big picture plot; here is to have a sense of the gaze-accumulation distribution of succ and failed pull
+# ...if the setting is set for that
+## 
+if 1:
+    from scipy.stats import ks_2samp
+
+    # to make the condition more general
+    # Define the function for generalizing condition
+    def generalize_condition(cond):
+        if cond == "MC" or cond.startswith("MC_with"):
+            return "MC"
+        elif cond == "SR" or cond.startswith("SR_with"):
+            return "SR"
+        else:
+            return cond  # default to original condition if no match
+
+    # Apply the function to create the new column
+    bhvevents_aligned_FR_and_eventFeatures_all_dates_df["condition_general"] =         bhvevents_aligned_FR_and_eventFeatures_all_dates_df["condition"].apply(generalize_condition)
+    
+    
+    # 
+    plt.figure(figsize=(20,6))
+    data_toplot = bhvevents_aligned_FR_and_eventFeatures_all_dates_df
+    # seaborn.kdeplot(data=data_toplot,x='gaze_accum_ievent',hue='bhv_name')
+    seaborn.kdeplot(data=data_toplot,x='gaze_accum_ievent',hue='condition_general',
+                   common_norm=False)  # don't normalize across groups
+    # seaborn.histplot(data=data_toplot,x='gaze_accum_ievent',hue='bhv_name')
+
+    # Compute group-wise quantiles (deciles from 10% to 90%)
+    # quantiles_df = data_toplot.groupby('bhv_name')['gaze_accum_ievent'].quantile(np.linspace(0.1, 0.9, 9)).reset_index()
+    quantiles_df = data_toplot.groupby('condition_general')['gaze_accum_ievent'].quantile(np.linspace(0.1, 0.9, 9)).reset_index()
+    quantiles_df.rename(columns={'gaze_accum_ievent': 'quantile_value'}, inplace=True)
+
+    # Draw vertical lines for each quantile
+    if 0:
+        # palette = dict(zip(data_toplot['bhv_name'].unique(), seaborn.color_palette()))  # color matching seaborn
+        palette = dict(zip(data_toplot['condition_general'].unique(), seaborn.color_palette()))  # color matching seaborn
+
+        for _, row in quantiles_df.iterrows():
+            plt.axvline(
+                row['quantile_value'],
+                # color=palette[row['bhv_name']],
+                color=palette[row['condition_general']],
+                linestyle='--',
+                alpha=1
+            )
+
+    plt.title('KDE Plot with Quantile Lines')
+    plt.show()
+    
+    # KS test: compare MC vs SR
+    if 0:
+        group_MC = data_toplot[data_toplot['condition_general'] == 'MC']['gaze_accum_ievent'].dropna()
+        group_SR = data_toplot[data_toplot['condition_general'] == 'SR']['gaze_accum_ievent'].dropna()
+
+        ks_stat, ks_pval = ks_2samp(group_MC, group_SR)
+        print(f"KS test: statistic={ks_stat:.4f}, p-value={ks_pval:.4g}")
+    
+    
+    
+
+
+# In[ ]:
 
 
 # only consider the significant neurons based on the previous analysis
@@ -3559,14 +3803,14 @@ if 1:
         bhvevents_aligned_FR_and_eventFeatures_all_dates_df = significant_bhv_df
 
 
-# In[368]:
+# In[ ]:
 
 
 # bhvevents_aligned_FR_and_eventFeatures_all_dates_df
 # bhvevents_aligned_FR_and_eventFeatures_meanFReachQuant_all_dates_df
 
 
-# In[369]:
+# In[ ]:
 
 
 # step 1 - 2:
@@ -3609,7 +3853,7 @@ if 1:
     plt.show()
 
 
-# In[370]:
+# In[ ]:
 
 
 # Step 2 - calculate the PCA with the pooled data
