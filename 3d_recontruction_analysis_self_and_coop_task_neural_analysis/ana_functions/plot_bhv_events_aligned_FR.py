@@ -221,6 +221,8 @@ def plot_bhv_events_aligned_FR(date_tgt,savefig,save_path, animal1, animal2,time
     #
     if savefig:
         fig2.savefig(save_path+"/"+date_tgt+'_bhv_events_aligned_FR.pdf')
+        
+    plt.close('all')
 
     
     return bhvevents_aligned_FR_average_all, bhvevents_aligned_FR_allevents_all

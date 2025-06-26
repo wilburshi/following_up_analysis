@@ -1,0 +1,266 @@
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) StdEnv
+/gpfs/radev/home/ws523/marmoset_tracking_DLCv2/following_up_analysis/3d_recontruction_analysis_self_and_coop_task_neural_analysis/ana_functions/body_part_locs_singlecam.py:123: RuntimeWarning: Mean of empty slice
+  mass_loc_a2 = np.nanmean(np.vstack((lefteye_loc_a2,righteye_loc_a2,lefteye_loc_a2,righteye_loc_a2,whiblz_loc_a2,mouth_loc_a2)),axis=0)
+/gpfs/radev/home/ws523/marmoset_tracking_DLCv2/following_up_analysis/3d_recontruction_analysis_self_and_coop_task_neural_analysis/ana_functions/body_part_locs_singlecam.py:111: RuntimeWarning: Mean of empty slice
+  mass_loc_a1 = np.nanmean(np.vstack((lefteye_loc_a1,righteye_loc_a1,lefteye_loc_a1,righteye_loc_a1,whiblz_loc_a1,mouth_loc_a1)),axis=0)
+(48,)
+(48,)
+(48,)
+(48,)
+(48,)
+(48,)
+(48,)
+(48,)
+(48,)
+(48,)
+(48,)
+(48,)
+loading all data
+analyze all dates
+load social gaze with camera-2 only of 20240508
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240508_Kanga_SR
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240509
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240509_Kanga_MC
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240513
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240513_Kanga_MC
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240514
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240514_Kanga_SR
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240523
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240523_Kanga_MC
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240524
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240524_Kanga_SR
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240606
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240606_Kanga_MC
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240613
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240613_Kanga_MC_DannonAuto
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240614
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240614_Kanga_MC_DannonAuto
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240617
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240617_Kanga_MC_DannonAuto
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240618
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240618_Kanga_MC_KangaAuto
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240619
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240619_Kanga_MC_KangaAuto
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240620
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240620_Kanga_MC_KangaAuto
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240621_1
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240621_1_Kanga_NoVis
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240624
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240624_Kanga_NoVis
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240626
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240626_Kanga_NoVis
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240808
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240808_Kanga_MC_withGinger
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240809
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240809_Kanga_MC_withGinger
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240812
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240812_Kanga_MC_withGinger
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240813
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240813_Kanga_MC_withKoala
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240814
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240814_Kanga_MC_withKoala
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240815
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240815_Kanga_MC_withKoala
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240819
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240819_Kanga_MC_withVermelho
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240821
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240821_Kanga_MC_withVermelho
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20240822
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20240822_Kanga_MC_withVermelho
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250415
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250415_Kanga_MC_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250416
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250416_Kanga_SR_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250417
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250417_Kanga_MC_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250418
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250418_Kanga_SR_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250421
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250421_Kanga_SR_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250422
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250422_Kanga_MC_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250422_SR
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250422_Kanga_SR_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250423
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250423_Kanga_MC_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250423_SR
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250423_Kanga_SR_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250424
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250424_Kanga_NV_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250424_MC
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250424_Kanga_MC_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250424_SR
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250424_Kanga_SR_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250425
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250425_Kanga_NV_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250425_SR
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250425_Kanga_SR_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250428_NV
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250428_Kanga_NV_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250428_MC
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250428_Kanga_MC_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250428_SR
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250428_Kanga_SR_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250429_NV
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250429_Kanga_NV_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250429_MC
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250429_Kanga_MC_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250429_SR
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250429_Kanga_SR_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250430_NV
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250430_Kanga_NV_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250430_MC
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250430_Kanga_MC_withDodson
+plot event aligned firing rate; pull start focus
+load social gaze with camera-2 only of 20250430_SR
+use the gaze vector speed and face mass speed to define the start of the pull decision
+plot self pull start triggered bhv variables
+load spike data for 20250430_Kanga_SR_withDodson
+plot event aligned firing rate; pull start focus
+Traceback (most recent call last):
+  File "basic_neural_analysis_allsessions_basicEvents_PCA_makeBhvNeuronVideos_PullStartfocused_continuousBhv_partnerDistVaris.py", line 2322, in <module>
+    bhv_types = list(bhvevents_aligned_FR_allevents_all_dates[date_tgt].keys())
+NameError: name 'bhvevents_aligned_FR_allevents_all_dates' is not defined

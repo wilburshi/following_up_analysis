@@ -410,6 +410,8 @@ def plot_strategy_aligned_FR(date_tgt,savefig,save_path, animal1, animal2,time_p
     if savefig:
         fig2.savefig(save_path+"/"+date_tgt+'_strategy_aligned_FR.pdf')
 
+    plt.close('all')
+
     
     return strategy_aligned_FR_average_all, strategy_aligned_FR_allevents_all
           

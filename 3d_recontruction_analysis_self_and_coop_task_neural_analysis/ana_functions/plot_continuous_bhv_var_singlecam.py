@@ -387,5 +387,7 @@ def plot_continuous_bhv_var_singlecam(date_tgt, aligntwins, savefig, animal1, an
                     fig3.savefig(date_tgt+'_'+animal2+"_successfulpull_triggered_bhv_variables.pdf")
                     fig4.savefig(date_tgt+'_'+animal2+"_failedpull_triggered_bhv_variables.pdf")
 
+    plt.close('all')
+
 
     return pull_trig_events_summary, pull_trig_events_succtrial_summary, pull_trig_events_errtrial_summary
