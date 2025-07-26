@@ -2,10 +2,15 @@ import numpy as np
 import pandas as pd
 
 def get_pull_infos(animal1, animal2, time_point_pull1, time_point_pull2, time_point_juice1, time_point_juice2):
+    
     pull_infos = {}
 
     def compute_infos(pull_times, juice_times, animal_name):
-        # Compute successful pulls: the last pull before each juice
+        # Ensure Series and sort
+        pull_times = pd.Series(pull_times).sort_values().reset_index(drop=True)
+        juice_times = pd.Series(juice_times).sort_values().reset_index(drop=True)
+
+        # Compute successful pulls: last pull before each juice
         successful_pulls = [pull_times[pull_times < juice].max() for juice in juice_times if (pull_times < juice).any()]
         successful_pulls = pd.Series(successful_pulls).drop_duplicates().sort_values().reset_index(drop=True)
 
@@ -16,15 +21,12 @@ def get_pull_infos(animal1, animal2, time_point_pull1, time_point_pull2, time_po
         time_from_last_reward = []
         last_successful_pull_time = -np.inf
 
-        # Create lookup-friendly series
-        pull_times_sorted = pull_times.sort_values().reset_index(drop=True)
-
-        for curr_pull in pull_times_sorted:
+        for curr_pull in pull_times:
             # Update last successful pull if current one is successful
             if curr_pull in successful_pulls.values:
                 last_successful_pull_time = curr_pull
 
-            # Count number of failed pulls between last successful pull and current pull
+            # Count failed pulls between last successful and current
             if np.isfinite(last_successful_pull_time):
                 failed_between = failed_pulls[(failed_pulls > last_successful_pull_time) & (failed_pulls < curr_pull)]
             else:
@@ -39,13 +41,16 @@ def get_pull_infos(animal1, animal2, time_point_pull1, time_point_pull2, time_po
             else:
                 time_from_last_reward.append(curr_pull - past_juices.max())
 
-        # Save the data
-        pull_infos[(animal_name, 'num_preceding_failpull')] = pd.Series(num_preceding_failpull, index=pull_times_sorted.index)
-        pull_infos[(animal_name, 'time_from_last_reward')] = pd.Series(time_from_last_reward, index=pull_times_sorted.index)
+        # Compute pull intervals (time since previous pull)
+        pull_interval = pull_times.diff()
+
+        # Save data
+        pull_infos[(animal_name, 'num_preceding_failpull')] = pd.Series(num_preceding_failpull, index=pull_times.index)
+        pull_infos[(animal_name, 'time_from_last_reward')] = pd.Series(time_from_last_reward, index=pull_times.index)
+        pull_infos[(animal_name, 'pull_interval')] = pull_interval
 
     # Process both animals
     compute_infos(time_point_pull1, time_point_juice1, animal1)
     compute_infos(time_point_pull2, time_point_juice2, animal2)
 
     return pull_infos
-

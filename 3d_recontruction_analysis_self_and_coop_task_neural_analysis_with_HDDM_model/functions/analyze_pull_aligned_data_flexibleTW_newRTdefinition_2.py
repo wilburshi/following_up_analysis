@@ -9,7 +9,7 @@ from functions.get_aligned_segment import get_aligned_segment
 # helper function
 # there are two function using different way but define pull 'onset' similarly, choose one of them to use
 # old function: In the IPI, find the lowest movement point, and from there look for when the movement start
-def find_sharp_increases_withinIPI_not_in_use(pull_data,speed_data,session_start_time,fps):
+def find_sharp_increases_withinIPI_not_use(pull_data,speed_data,session_start_time,fps):
 
     import numpy as np
     
@@ -35,16 +35,19 @@ def find_sharp_increases_withinIPI_not_in_use(pull_data,speed_data,session_start
             speed_IPI_tgt = speed_data[pullstart_frame:pull_frame-int(0.5*fps)] # allows a 500ms error time window
     
         # Find index of minimum point
-        min_idx = np.argmin(speed_IPI_tgt) 
-        # Compute first derivative
-        diff = np.diff(speed_IPI_tgt) 
-        # Look for first positive change after the minimum
-        post_min_diff = diff[min_idx+1:]
-        above_zero = np.where(post_min_diff > 0)[0]
-        # Compute actual index in the original array
-        if len(above_zero) > 0:
-            first_increase_idx = min_idx + 1 + above_zero[0]
-        else:
+        try:
+            min_idx = np.argmin(speed_IPI_tgt) 
+            # Compute first derivative
+            diff = np.diff(speed_IPI_tgt) 
+            # Look for first positive change after the minimum
+            post_min_diff = diff[min_idx+1:]
+            above_zero = np.where(post_min_diff > 0)[0]
+            # Compute actual index in the original array
+            if len(above_zero) > 0:
+                first_increase_idx = min_idx + 1 + above_zero[0]
+            else:
+                first_increase_idx = 0
+        except:
             first_increase_idx = 0
             
         sharp_increase_frames[first_increase_idx + pullstart_frame] = 1
@@ -177,19 +180,33 @@ def analyze_pull_aligned_data_flexibleTW_newRTdefinition_2(pull1_ts, pull2_ts, j
         mean_gaze_in_window = np.nan
         partner_speed_mean = np.nan
         self_speed_mean = np.nan
-        
+        partner_speed_std = np.nan
+        self_speed_std = np.nan
+
         if window_pre_steps > 0:
             window_total_steps = window_pre_steps + 1
             self_gaze_segment = get_aligned_segment(gaze1_ts, p_idx, window_pre_steps, 0, window_total_steps, num_time_points)
             gaze_auc = np.nansum(self_gaze_segment) * resolution_s
             # mean_gaze_in_window = gaze_auc / current_rt if current_rt > 0 else 0
             mean_gaze_in_window = gaze_auc
+
+            # only care about the partner speed when self animal is looking
+            gaze_mask = self_gaze_segment > 0
     
             partner_speed_segment = get_aligned_segment(speed2_ts, p_idx, window_pre_steps, 0, window_total_steps, num_time_points)
+            #
+            partner_speed_segment = partner_speed_segment * gaze_mask
+            #
             partner_speed_mean = np.nanmean(partner_speed_segment)
+            partner_speed_std = np.nanstd(partner_speed_segment) # / window_total_steps
+            #
+            if np.sum(gaze_mask)==0:
+                partner_speed_std = np.nan
+                partner_speed_mean = np.nan
     
             self_speed_segment = get_aligned_segment(speed1_ts, p_idx, window_pre_steps, 0, window_total_steps, num_time_points)
             self_speed_mean = np.nanmean(self_speed_segment)
+            self_speed_std = np.nanstd(self_speed_segment) # / window_total_steps
     
         was_successful = 1 if p_idx in successful_pull_indices_a1 else 0
         time_since_last_reward = current_pull_time_s - last_reward_time_a1_context
@@ -201,6 +218,8 @@ def analyze_pull_aligned_data_flexibleTW_newRTdefinition_2(pull1_ts, pull2_ts, j
             'self_gaze_auc': mean_gaze_in_window, 
             'partner_mean_speed': partner_speed_mean,
             'self_mean_speed': self_speed_mean, 
+            'partner_speed_std': partner_speed_std,
+            'self_speed_std': self_speed_std, 
             'failed_pulls_before_reward': failed_count_a1_context,
             'time_since_last_reward': time_since_last_reward,
             'current_pull_time': current_pull_time_s - session_start_time,
@@ -251,6 +270,8 @@ def analyze_pull_aligned_data_flexibleTW_newRTdefinition_2(pull1_ts, pull2_ts, j
         mean_gaze_in_window = np.nan
         partner_speed_mean = np.nan
         self_speed_mean = np.nan
+        partner_speed_std = np.nan
+        self_speed_std = np.nan
         
         if window_pre_steps > 0:
             window_total_steps = window_pre_steps + 1
@@ -258,13 +279,25 @@ def analyze_pull_aligned_data_flexibleTW_newRTdefinition_2(pull1_ts, pull2_ts, j
             gaze_auc = np.nansum(self_gaze_segment) * resolution_s
             # mean_gaze_in_window = gaze_auc / current_rt if current_rt > 0 else 0
             mean_gaze_in_window = gaze_auc
+
+            # only care about the partner speed when self animal is looking
+            gaze_mask = self_gaze_segment > 0
             
             partner_speed_segment = get_aligned_segment(speed1_ts, p_idx, window_pre_steps, 0, window_total_steps, num_time_points)
+            #
+            partner_speed_segment = partner_speed_segment * gaze_mask
+            #
             partner_speed_mean = np.nanmean(partner_speed_segment)
+            partner_speed_std = np.nanstd(partner_speed_segment) # / window_total_steps
+            #
+            if np.sum(gaze_mask)==0:
+                partner_speed_std = np.nan
+                partner_speed_mean = np.nan
     
             self_speed_segment = get_aligned_segment(speed2_ts, p_idx, window_pre_steps, 0, window_total_steps, num_time_points)
             self_speed_mean = np.nanmean(self_speed_segment)
-
+            self_speed_std = np.nanstd(self_speed_segment) # / window_total_steps
+        
         was_successful = 1 if p_idx in successful_pull_indices_a2 else 0
         time_since_last_reward = current_pull_time_s - last_reward_time_a2_context
         
@@ -275,6 +308,8 @@ def analyze_pull_aligned_data_flexibleTW_newRTdefinition_2(pull1_ts, pull2_ts, j
             'self_gaze_auc': mean_gaze_in_window, 
             'partner_mean_speed': partner_speed_mean,
             'self_mean_speed': self_speed_mean, 
+            'partner_speed_std': partner_speed_std,
+            'self_speed_std': self_speed_std, 
             'failed_pulls_before_reward': failed_count_a2_context,
             'time_since_last_reward': time_since_last_reward,
             'current_pull_time': current_pull_time_s - session_start_time,
