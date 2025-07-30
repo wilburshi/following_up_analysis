@@ -2,11 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd # Added import for Pandas
 
-from scipy.ndimage import label  # import once
-
 from functions.get_aligned_segment import get_aligned_segment
 
-def analyze_pull_aligned_data_flexibleTW_newRTdefinition(pull1_ts, pull2_ts, juice1_ts, juice2_ts, gaze1_ts, gaze2_ts, levergaze2_ts, levergaze1_ts, speed1_ts, speed2_ts, anglespeed1_ts, anglespeed2_ts, resolution_s, session_start_time, fps):
+def analyze_pull_aligned_data_flexibleTW_newRTdefinition(pull1_ts, pull2_ts, juice1_ts, juice2_ts, gaze1_ts, gaze2_ts,                                                                            levergaze2_ts, levergaze1_ts, speed1_ts, speed2_ts, resolution_s, session_start_time, fps):
     
    
     """
@@ -31,54 +29,10 @@ def analyze_pull_aligned_data_flexibleTW_newRTdefinition(pull1_ts, pull2_ts, jui
     
     successful_pull_indices_a1 = get_successful_pull_indices(juice1_ts, pull1_ts)
     successful_pull_indices_a2 = get_successful_pull_indices(juice2_ts, pull2_ts)
-
-    # use one of the method to define the start of one trial
-    if 1:
-        # use the movement onset of the start of a trial (movement is measured by mass speed or angle speed)
-        # animal 1
-        speed_thresh = np.nanpercentile(speed1_ts, 75)  # or mean + 2*std of baseline
-        anglespeed_thresh = np.nanpercentile(anglespeed1_ts, 75)
-        min_duration = int(0.1 * fps)  # movement must last at least 0.1 seconds
-        # --- Identify frames above threshold ---
-        above_speed = speed1_ts > speed_thresh
-        above_angle = anglespeed1_ts > anglespeed_thresh
-        movement_raw = np.logical_or(above_speed, above_angle)
-        # --- Apply minimum duration constraint ---
-        from scipy.ndimage import label
-        labeled, num_segments = label(movement_raw)
-        movement_bool = np.zeros_like(movement_raw, dtype=int)
-        #
-        for i in range(1, num_segments + 1):
-            inds = np.where(labeled == i)[0]
-            if len(inds) >= min_duration:
-                movement_bool[inds[0]] = 1  # <- this could be: movement_bool[movement_raw] = 1, but only after duration check
-        #
-        start_gaze_indices_a1 = np.where(movement_bool)[0]
-        #
-        # animal 2
-        speed_thresh = np.nanpercentile(speed2_ts, 75)  # or mean + 2*std of baseline
-        anglespeed_thresh = np.nanpercentile(anglespeed2_ts, 75)
-        min_duration = int(0.1 * fps)  # movement must last at least 0.1 seconds
-        # --- Identify frames above threshold ---
-        above_speed = speed2_ts > speed_thresh
-        above_angle = anglespeed2_ts > anglespeed_thresh
-        movement_raw = np.logical_or(above_speed, above_angle)
-        # --- Apply minimum duration constraint ---
-        from scipy.ndimage import label
-        labeled, num_segments = label(movement_raw)
-        movement_bool = np.zeros_like(movement_raw, dtype=int)
-        #
-        for i in range(1, num_segments + 1):
-            inds = np.where(labeled == i)[0]
-            if len(inds) >= min_duration:
-                movement_bool[inds[0]] = 1  # <- this could be: movement_bool[movement_raw] = 1, but only after duration check
-        #
-        start_gaze_indices_a2 = np.where(movement_bool)[0]
-    if 0:
-        # use the gaze events as the start of a trial
-        # Pre-calculate gaze event indices for efficient lookup
-        start_gaze_indices_a1 = np.where((gaze1_ts + levergaze1_ts) > 0)[0]
-        start_gaze_indices_a2 = np.where((gaze2_ts + levergaze2_ts) > 0)[0]
+    
+    # Pre-calculate gaze event indices for efficient lookup
+    start_gaze_indices_a1 = np.where((gaze1_ts + levergaze1_ts) > 0)[0]
+    start_gaze_indices_a2 = np.where((gaze2_ts + levergaze2_ts) > 0)[0]
     
     # --- Data structures for HDDM ---
     hddm_data_a1 = []

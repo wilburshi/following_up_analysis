@@ -6,7 +6,7 @@ import hddm
 import pymc as pm # Explicitly import pymc for summary function
 import arviz as az # Explicitly import arviz for summary function
 
-def run_hddm_modeling(df_animal_data, animal_id, samples, burn, thin, doNogazeOnly): # Modified signature
+def run_hddmnn_modeling(df_animal_data, animal_id, samples, burn, thin): # Modified signature
     """
     Runs the Hierarchical Drift-Diffusion Model for a single animal using the provided dataframe.
 
@@ -37,26 +37,18 @@ def run_hddm_modeling(df_animal_data, animal_id, samples, burn, thin, doNogazeOn
     covariates = [
         'self_gaze_auc',
         'partner_mean_speed',
-        'self_mean_speed',
-        'partner_speed_std',
-        'self_speed_std',
         'failed_pulls_before_reward',
         'time_since_last_reward',
-        'prev_trial_outcome',
-        'condition',
+        'prev_trial_outcome' 
     ]
-    
-    df_combined['condition'] = df_combined['condition'].astype('category')
-    df_combined['prev_trial_outcome'] = df_combined['prev_trial_outcome'].astype('category')
 
     # Ensure all covariates are numeric and drop rows with NaNs in these specific columns
-    if 0:
-        for col in covariates:
-            if col in df_combined.columns:
-                df_combined[col] = pd.to_numeric(df_combined[col], errors='coerce')
-            else:
-                print(f"Error: Covariate column '{col}' not found in DataFrame for {animal_id}. Please check data preparation.")
-                return None # Exit if critical column is missing
+    for col in covariates:
+        if col in df_combined.columns:
+            df_combined[col] = pd.to_numeric(df_combined[col], errors='coerce')
+        else:
+            print(f"Error: Covariate column '{col}' not found in DataFrame for {animal_id}. Please check data preparation.")
+            return None # Exit if critical column is missing
 
     # Drop rows where any of the specified covariates or RT are NaN
     df_combined = df_combined.dropna(subset=['rt'] + covariates)
@@ -81,11 +73,9 @@ def run_hddm_modeling(df_animal_data, animal_id, samples, burn, thin, doNogazeOn
             # You might consider removing it from depends_on/regressors if this is a persistent issue.
 
     # Define the HDDM model
-    print(f"Defining HDDMRegressor model for {animal_id} with dependencies:")
-    # print(f"  v (drift rate) depends on: self_gaze_auc, partner_mean_speed")
-    # print(f"  a (boundary separation) depends on: failed_pulls_before_reward, time_since_last_reward")
-    print(f"  v (drift rate) depends on: self_gaze_auc, partner_speed_std, time_since_last_reward")
-    print(f"  a (boundary separation) depends on: time_since_last_reward")
+    print(f"Defining HDDMnnRegressor model for {animal_id} with dependencies:")
+    print(f"  v (drift rate) depends on: self_gaze_auc, partner_mean_speed")
+    print(f"  a (boundary separation) depends on: failed_pulls_before_reward, time_since_last_reward")
     print(f"  z (starting bias) depends on: prev_trial_outcome (categorical)") 
 
     
@@ -100,54 +90,34 @@ def run_hddm_modeling(df_animal_data, animal_id, samples, burn, thin, doNogazeOn
     #                  ) 
     
     # # Using HDDMRegressor for linear regression with continuous covariates
-    if not doNogazeOnly:
-        model = hddm.HDDMRegressor(
+    model = hddm.HDDMnnRegressor(
                                     df_combined,
                                     [
-                                        # 'v ~ self_gaze_auc + partner_mean_speed + time_since_last_reward + C(condition)',
-                                        # 'v ~ self_gaze_auc + partner_mean_speed + time_since_last_reward',
-                                        # 'v ~ self_gaze_auc + partner_mean_speed',
-                                        'v ~ self_gaze_auc + partner_mean_speed + self_mean_speed + partner_speed_std + self_speed_std',
-                                        # 'a ~ failed_pulls_before_reward + time_since_last_reward'
-                                        # 'a ~ time_since_last_reward + self_mean_speed + C(condition)'
-                                        'a ~ time_since_last_reward'
-                                        # 'a ~ failed_pulls_before_reward'
-                                        
+                                        'v ~ self_gaze_auc + partner_mean_speed',
+                                        'a ~ failed_pulls_before_reward + time_since_last_reward'
                                     ],
                                     include=['v', 'a', 'z', 't'],
-                                    # depends_on={'z': 'prev_trial_outcome'}
-                                   )
-    elif doNogazeOnly:
-        model = np.nan
-        print('only fit the no self gaze accumulation model')
+                                    depends_on={'z': 'prev_trial_outcome'}
+                                )
     
     # for hypothesis test 
-    model_nogaze = hddm.HDDMRegressor(
+    model_nogaze = hddm.HDDMnnRegressor(
                                         df_combined,
                                         [
-                                            # 'v ~ partner_mean_speed + time_since_last_reward + C(condition)',
-                                            # 'v ~ partner_mean_speed + failed_pulls_before_reward + time_since_last_reward',
-                                            # 'v ~ partner_mean_speed + time_since_last_reward',
-                                            # 'v ~ partner_speed_std + time_since_last_reward',
                                             # 'v ~ partner_mean_speed',
-                                            'v ~ partner_mean_speed + self_mean_speed + partner_speed_std + self_speed_std',
-                                            # 'a ~ time_since_last_reward + C(condition)'
-                                            # 'a ~ failed_pulls_before_reward + time_since_last_reward'
-                                            'a ~ time_since_last_reward'
-                                            # 'a ~ failed_pulls_before_reward'
+                                            'v ~ partner_mean_speed + failed_pulls_before_reward + time_since_last_reward',
+                                            'a ~ failed_pulls_before_reward + time_since_last_reward'
                                         ],
                                         include=['v', 'a', 'z', 't'],
-                                        # depends_on={'z': ['prev_trial_outcome']}
+                                        depends_on={'z': 'prev_trial_outcome'}
                                     )
     
     
     # Run MCMC sampling
     print(f"Sampling HDDM with {samples} samples, {burn} burn-in, {thin} thinning...")
     # Modified this line: Removed 'thin' and used proper args for hddm 0.8.0 / PyMC3 API
-    if not doNogazeOnly:
-        m = model.sample(samples, burn=burn, 
-                         dbname=f'traces_{animal_id}.db', db='pickle') # Saves traces to a file per animal
-    #
+    m = model.sample(samples, burn=burn, 
+                     dbname=f'traces_{animal_id}.db', db='pickle') # Saves traces to a file per animal
     m_nogaze = model_nogaze.sample(samples, burn=burn, 
                              dbname=f'traces_{animal_id}.db', db='pickle') # Saves traces to a file per animal
     
@@ -162,4 +132,4 @@ def run_hddm_modeling(df_animal_data, animal_id, samples, burn, thin, doNogazeOn
     # model.plot_posteriors()
     # plt.show()
 
-    return model, model_nogaze
+    return model,model_nogaze

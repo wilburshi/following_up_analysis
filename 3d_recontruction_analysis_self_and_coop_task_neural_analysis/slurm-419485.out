@@ -1,0 +1,367 @@
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) StdEnv
+No protocol specified
+(48,)
+(48,)
+(48,)
+(48,)
+(48,)
+(48,)
+(48,)
+(48,)
+(48,)
+(48,)
+(48,)
+(48,)
+analyze all dates
+load social gaze with camera-2 only of 20240508
+load spike data for 20240508_Kanga_SR
+get 20240508_Kanga_SR data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240509
+load spike data for 20240509_Kanga_MC
+get 20240509_Kanga_MC data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240513
+load spike data for 20240513_Kanga_MC
+get 20240513_Kanga_MC data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240514
+load spike data for 20240514_Kanga_SR
+get 20240514_Kanga_SR data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240523
+load spike data for 20240523_Kanga_MC
+get 20240523_Kanga_MC data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240524
+load spike data for 20240524_Kanga_SR
+get 20240524_Kanga_SR data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240606
+load spike data for 20240606_Kanga_MC
+get 20240606_Kanga_MC data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240613
+load spike data for 20240613_Kanga_MC_DannonAuto
+get 20240613_Kanga_MC_DannonAuto data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240614
+load spike data for 20240614_Kanga_MC_DannonAuto
+get 20240614_Kanga_MC_DannonAuto data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240617
+load spike data for 20240617_Kanga_MC_DannonAuto
+get 20240617_Kanga_MC_DannonAuto data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240618
+load spike data for 20240618_Kanga_MC_KangaAuto
+get 20240618_Kanga_MC_KangaAuto data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240619
+load spike data for 20240619_Kanga_MC_KangaAuto
+get 20240619_Kanga_MC_KangaAuto data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240620
+load spike data for 20240620_Kanga_MC_KangaAuto
+get 20240620_Kanga_MC_KangaAuto data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240621_1
+load spike data for 20240621_1_Kanga_NoVis
+get 20240621_1_Kanga_NoVis data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240624
+load spike data for 20240624_Kanga_NoVis
+get 20240624_Kanga_NoVis data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240626
+load spike data for 20240626_Kanga_NoVis
+get 20240626_Kanga_NoVis data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240808
+load spike data for 20240808_Kanga_MC_withGinger
+get 20240808_Kanga_MC_withGinger data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240809
+load spike data for 20240809_Kanga_MC_withGinger
+get 20240809_Kanga_MC_withGinger data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240812
+load spike data for 20240812_Kanga_MC_withGinger
+get 20240812_Kanga_MC_withGinger data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240813
+load spike data for 20240813_Kanga_MC_withKoala
+get 20240813_Kanga_MC_withKoala data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240814
+load spike data for 20240814_Kanga_MC_withKoala
+get 20240814_Kanga_MC_withKoala data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240815
+load spike data for 20240815_Kanga_MC_withKoala
+get 20240815_Kanga_MC_withKoala data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240819
+load spike data for 20240819_Kanga_MC_withVermelho
+get 20240819_Kanga_MC_withVermelho data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240821
+load spike data for 20240821_Kanga_MC_withVermelho
+get 20240821_Kanga_MC_withVermelho data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20240822
+load spike data for 20240822_Kanga_MC_withVermelho
+get 20240822_Kanga_MC_withVermelho data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250415
+load spike data for 20250415_Kanga_MC_withDodson
+get 20250415_Kanga_MC_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250416
+load spike data for 20250416_Kanga_SR_withDodson
+get 20250416_Kanga_SR_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250417
+load spike data for 20250417_Kanga_MC_withDodson
+get 20250417_Kanga_MC_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250418
+load spike data for 20250418_Kanga_SR_withDodson
+get 20250418_Kanga_SR_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250421
+load spike data for 20250421_Kanga_SR_withDodson
+get 20250421_Kanga_SR_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250422
+load spike data for 20250422_Kanga_MC_withDodson
+get 20250422_Kanga_MC_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250422_SR
+load spike data for 20250422_Kanga_SR_withDodson
+get 20250422_Kanga_SR_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250423
+load spike data for 20250423_Kanga_MC_withDodson
+get 20250423_Kanga_MC_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250423_SR
+load spike data for 20250423_Kanga_SR_withDodson
+get 20250423_Kanga_SR_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250424
+load spike data for 20250424_Kanga_NV_withDodson
+get 20250424_Kanga_NV_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250424_MC
+load spike data for 20250424_Kanga_MC_withDodson
+get 20250424_Kanga_MC_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250424_SR
+load spike data for 20250424_Kanga_SR_withDodson
+get 20250424_Kanga_SR_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250425
+load spike data for 20250425_Kanga_NV_withDodson
+get 20250425_Kanga_NV_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250425_SR
+load spike data for 20250425_Kanga_SR_withDodson
+get 20250425_Kanga_SR_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250428_NV
+load spike data for 20250428_Kanga_NV_withDodson
+get 20250428_Kanga_NV_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250428_MC
+load spike data for 20250428_Kanga_MC_withDodson
+get 20250428_Kanga_MC_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250428_SR
+load spike data for 20250428_Kanga_SR_withDodson
+get 20250428_Kanga_SR_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250429_NV
+load spike data for 20250429_Kanga_NV_withDodson
+get 20250429_Kanga_NV_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250429_MC
+load spike data for 20250429_Kanga_MC_withDodson
+get 20250429_Kanga_MC_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250429_SR
+load spike data for 20250429_Kanga_SR_withDodson
+get 20250429_Kanga_SR_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+load social gaze with camera-2 only of 20250430_NV
+load spike data for 20250430_Kanga_NV_withDodson
+get 20250430_Kanga_NV_withDodson data for single camera GLM fitting
+load the session wised data for neural GLM fitting
+do GLM fitting for spike trains with continuous variables
+load the session wised data for neural GLM fitting - pull gaze juice projected axes neural-glm
+do GLM fitting for spike trains with continuous variables - pull gaze juice projected axes neural-glm
+Traceback (most recent call last):
+  File "basic_neural_analysis_allsessions_basicEvents_GLMfitting_BasisKernelsForContVaris_singlecam.py", line 1172, in <module>
+    with open(data_saved_subfolder+'/Kernel_coefs_all_dates_'+animal1_fixedorders[0]+animal2_fixedorders[0]+'.pkl', 'rb') as f:
+NameError: name 'data_saved_subfolder' is not defined
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "basic_neural_analysis_allsessions_basicEvents_GLMfitting_BasisKernelsForContVaris_singlecam.py", line 1631, in <module>
+    with open(add_date_dir+'/neuralGLM_mainAxesProjected_kernels_coef.pkl', 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/gpfs/radev/pi/nandy/jadi_gibbs_data/VideoTracker_SocialInter/3d_recontruction_analysis_self_and_coop_task_data_saved//bhv_events_singlecam_wholebody_with_neuralglm_model_DLPFCs/dodsonkanga_kangaRecorded/camera-2/20250430_NV/neuralGLM_mainAxesProjected_kernels_coef.pkl'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "basic_neural_analysis_allsessions_basicEvents_GLMfitting_BasisKernelsForContVaris_singlecam.py", line 1651, in <module>
+    neuralGLM_mainAxesProjected_kernels_coef, neuralGLM_mainAxesProjected_kernels_tempFilter,                 neuralGLM_mainAxesProjected_kernels_coef_shf, neuralGLM_mainAxesProjected_kernels_tempFilter_shf,                 var_toglm_names_mainAxesProjected = neuralGLM_fitting_BasisKernelsForContVaris_PullGazeVectorProjection(
+  File "/gpfs/radev/home/ws523/marmoset_tracking_DLCv2/following_up_analysis/3d_recontruction_analysis_self_and_coop_task_neural_analysis/ana_functions/singlecam_bhv_var_neuralGLM_fitting_BasisKernelsForContVaris_PullGazeVectorProjection.py", line 218, in neuralGLM_fitting_BasisKernelsForContVaris_PullGazeVectorProjection
+    clf_full.fit(X_tr, y_tr)
+  File "/gpfs/radev/home/ws523/.conda/envs/DLC/lib/python3.8/site-packages/sklearn/linear_model/_glm/glm.py", line 249, in fit
+    X, y = self._validate_data(
+  File "/gpfs/radev/home/ws523/.conda/envs/DLC/lib/python3.8/site-packages/sklearn/base.py", line 576, in _validate_data
+    X, y = check_X_y(X, y, **check_params)
+  File "/gpfs/radev/home/ws523/.conda/envs/DLC/lib/python3.8/site-packages/sklearn/utils/validation.py", line 956, in check_X_y
+    X = check_array(
+  File "/gpfs/radev/home/ws523/.conda/envs/DLC/lib/python3.8/site-packages/sklearn/utils/validation.py", line 792, in check_array
+    _assert_all_finite(array, allow_nan=force_all_finite == "allow-nan")
+  File "/gpfs/radev/home/ws523/.conda/envs/DLC/lib/python3.8/site-packages/sklearn/utils/validation.py", line 114, in _assert_all_finite
+    raise ValueError(
+ValueError: Input contains NaN, infinity or a value too large for dtype('float64').
