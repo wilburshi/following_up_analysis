@@ -1,15 +1,29 @@
 #  function - plot behavioral events; save the pull-triggered events - from pull start to pull action
 
-def plot_continuous_bhv_var_singlecam_PullStartToPull_variedSection(pull1_rt, pull2_rt, animal1, animal2, session_start_time, min_length, succpulls_ornot, time_point_pull1, time_point_pull2, oneway_gaze1, oneway_gaze2, mutual_gaze1, mutual_gaze2, animalnames_videotrack, output_look_ornot, output_allvectors, output_allangles, output_key_locations):
-    
-    import pandas as pd
-    import numpy as np
-    import matplotlib.pyplot as plt
-    import scipy
-    import string
-    import warnings
-    import pickle    
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy
+import string
+import warnings
+import pickle   
 
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+    
+def plot_continuous_bhv_var_singlecam_PullStartToPull_variedSection_highbhvDimension_to_lowPCspace(pull1_rt, pull2_rt, animal1, animal2, session_start_time, min_length, succpulls_ornot, time_point_pull1, time_point_pull2, oneway_gaze1, oneway_gaze2, mutual_gaze1, mutual_gaze2, animalnames_videotrack, output_look_ornot, output_allvectors, output_allangles, output_key_locations):
+    
+ 
+
+    #
+    self_vars_toPCA_names = ['gaze_other_angle', 'gaze_tube_angle', 'gaze_lever_angle', 'animal_animal_dist',
+                            'animal_tube_dist', 'animal_lever_dist', 'mass_move_speed', 'gaze_angle_speed',]
+    
+    other_vars_toPCA_names = ['othergaze_self_angle',  'othergaze_othertube_angle', 'othergaze_otherlever_angle',
+                              'animal_animal_dist', 'otherani_otherlever_dist', 'otherani_othertube_dist',
+                              'other_mass_move_speed', 'othergaze_angle_speed']
+    
+            
     fps = 30 
 
     gausKernelsize = 4 # 15
@@ -44,11 +58,20 @@ def plot_continuous_bhv_var_singlecam_PullStartToPull_variedSection(pull1_rt, pu
     
     
 
-    con_vars_plot = ['gaze_other_angle','gaze_tube_angle','gaze_lever_angle','animal_animal_dist','animal_tube_dist','animal_lever_dist','othergaze_self_angle','mass_move_speed', 'other_mass_move_speed', 'gaze_angle_speed','otherani_otherlever_dist','otherani_othertube_dist','socialgaze_prob','othergaze_prob','otherpull_prob', 'selfpull_prob']
+    con_vars_plot = ['gaze_other_angle', 'gaze_tube_angle', 'gaze_lever_angle',
+                     'animal_animal_dist', 'animal_tube_dist', 'animal_lever_dist', 
+                     'mass_move_speed', 'gaze_angle_speed',
+                     'othergaze_self_angle', 'othergaze_othertube_angle', 'othergaze_otherlever_angle', 
+                     'otherani_otherlever_dist', 'otherani_othertube_dist',
+                     'other_mass_move_speed', 'othergaze_angle_speed',
+                     'socialgaze_prob','othergaze_prob',
+                     'selfpull_prob', 'otherpull_prob',
+                     'self_PC1','other_PC1' 
+                    ]
+    
     nconvarplots = np.shape(con_vars_plot)[0]
 
-    clrs_plot = ['r','y','g','b','c','m','#458B74','#FFC710','#FF1493','#FF1483','#A9A9A9','#8B4513','#8b4613','#8b4713','#8b4813','#8b4913']
-    yaxis_labels = ['degree','degree','degree','dist(a.u.)','dist(a.u.)','dist(a.u.)','degree','pixel/s','pixel/s','degree/s','dist(a.u.)','dist(a.u.)','','','','']
+
 
 
     pull_trig_events_summary = {}
@@ -64,6 +87,7 @@ def plot_continuous_bhv_var_singlecam_PullStartToPull_variedSection(pull1_rt, pu
 
 
         # get the variables
+        # 'gaze_other_angle'
         gaze_other_angle = output_allangles['other_eye_angle_all_merge'][animal_name]
         gaze_other_angle = np.array(gaze_other_angle)
         # fill NaNs
@@ -73,6 +97,7 @@ def plot_continuous_bhv_var_singlecam_PullStartToPull_variedSection(pull1_rt, pu
         #
         gaze_other_angle = scipy.ndimage.gaussian_filter1d(gaze_other_angle,gausKernelsize)  # smooth the curve, use 30 before, change to 3 
 
+        # 'gaze_tube_angle'
         gaze_tube_angle = output_allangles['tube_eye_angle_all_merge'][animal_name]
         gaze_tube_angle = np.array(gaze_tube_angle)
         # fill NaNs
@@ -82,6 +107,7 @@ def plot_continuous_bhv_var_singlecam_PullStartToPull_variedSection(pull1_rt, pu
         #
         gaze_tube_angle = scipy.ndimage.gaussian_filter1d(gaze_tube_angle,gausKernelsize)  
 
+        # 'gaze_lever_angle'
         gaze_lever_angle = output_allangles['lever_eye_angle_all_merge'][animal_name]
         gaze_lever_angle = np.array(gaze_lever_angle)
         # fill NaNs
@@ -91,6 +117,7 @@ def plot_continuous_bhv_var_singlecam_PullStartToPull_variedSection(pull1_rt, pu
         #
         gaze_lever_angle = scipy.ndimage.gaussian_filter1d(gaze_lever_angle,gausKernelsize)  
 
+       # 'othergaze_self_angle'
         othergaze_self_angle = output_allangles['other_eye_angle_all_merge'][animal_name_other]
         othergaze_self_angle = np.array(othergaze_self_angle)
         # fill NaNs
@@ -99,7 +126,28 @@ def plot_continuous_bhv_var_singlecam_PullStartToPull_variedSection(pull1_rt, pu
             othergaze_self_angle[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), othergaze_self_angle[~nans])
         #
         othergaze_self_angle = scipy.ndimage.gaussian_filter1d(othergaze_self_angle,gausKernelsize)  
+        
+        # 'othergaze_othertube_angle'
+        othergaze_othertube_angle = output_allangles['tube_eye_angle_all_merge'][animal_name_other]
+        othergaze_othertube_angle = np.array(othergaze_othertube_angle)
+        # fill NaNs
+        nans = np.isnan(othergaze_othertube_angle)
+        if np.any(~nans):
+            othergaze_othertube_angle[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), othergaze_othertube_angle[~nans])
+        #
+        othergaze_othertube_angle = scipy.ndimage.gaussian_filter1d(othergaze_othertube_angle,gausKernelsize) 
+        
+        # 'othergaze_otherlever_angle'
+        othergaze_otherlever_angle = output_allangles['lever_eye_angle_all_merge'][animal_name_other]
+        othergaze_otherlever_angle = np.array(othergaze_otherlever_angle)
+        # fill NaNs
+        nans = np.isnan(othergaze_otherlever_angle)
+        if np.any(~nans):
+            othergaze_otherlever_angle[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), othergaze_otherlever_angle[~nans])
+        #
+        othergaze_otherlever_angle = scipy.ndimage.gaussian_filter1d(othergaze_otherlever_angle,gausKernelsize) 
 
+        # animal-animal_dist
         a = output_key_locations['facemass_loc_all_merge'][animal_name_other].transpose()
         b = output_key_locations['facemass_loc_all_merge'][animal_name].transpose()
         a_min_b = a - b
@@ -111,6 +159,7 @@ def plot_continuous_bhv_var_singlecam_PullStartToPull_variedSection(pull1_rt, pu
         #
         animal_animal_dist = scipy.ndimage.gaussian_filter1d(animal_animal_dist,gausKernelsize)  
 
+        # 'animal_tube_dist'
         a = output_key_locations['tube_loc_all_merge'][animal_name].transpose()
         b = output_key_locations['meaneye_loc_all_merge'][animal_name].transpose()
         a_min_b = a - b
@@ -122,6 +171,7 @@ def plot_continuous_bhv_var_singlecam_PullStartToPull_variedSection(pull1_rt, pu
         #
         animal_tube_dist = scipy.ndimage.gaussian_filter1d(animal_tube_dist,gausKernelsize)  
 
+        # 'animal_lever_dist'
         a = output_key_locations['lever_loc_all_merge'][animal_name].transpose()
         b = output_key_locations['meaneye_loc_all_merge'][animal_name].transpose()
         a_min_b = a - b
@@ -133,6 +183,7 @@ def plot_continuous_bhv_var_singlecam_PullStartToPull_variedSection(pull1_rt, pu
         #
         animal_lever_dist = scipy.ndimage.gaussian_filter1d(animal_lever_dist,gausKernelsize)  
 
+        # 'mass_move_speed'
         a = output_key_locations['facemass_loc_all_merge'][animal_name].transpose()
         a = np.hstack((a,[[np.nan],[np.nan]]))
         at1_min_at0 = (a[:,1:]-a[:,:-1])
@@ -144,6 +195,7 @@ def plot_continuous_bhv_var_singlecam_PullStartToPull_variedSection(pull1_rt, pu
         #
         mass_move_speed = scipy.ndimage.gaussian_filter1d(mass_move_speed,gausKernelsize)  
 
+        # 'other_mass_move_speed'
         a = output_key_locations['facemass_loc_all_merge'][animal_name_other].transpose()
         a = np.hstack((a,[[np.nan],[np.nan]]))
         at1_min_at0 = (a[:,1:]-a[:,:-1])
@@ -155,6 +207,7 @@ def plot_continuous_bhv_var_singlecam_PullStartToPull_variedSection(pull1_rt, pu
         #
         other_mass_move_speed = scipy.ndimage.gaussian_filter1d(other_mass_move_speed,gausKernelsize)
 
+        # 'gaze angle_speed'
         a = np.array(output_allvectors['head_vect_all_merge'][animal_name]).transpose()
         a = np.hstack((a,[[np.nan],[np.nan]]))
         at1 = a[:,1:]
@@ -171,8 +224,28 @@ def plot_continuous_bhv_var_singlecam_PullStartToPull_variedSection(pull1_rt, pu
         if np.any(~nans):
             gaze_angle_speed[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), gaze_angle_speed[~nans])
         #
-        gaze_angle_speed = scipy.ndimage.gaussian_filter1d(gaze_angle_speed,gausKernelsize)  
+        gaze_angle_speed = scipy.ndimage.gaussian_filter1d(gaze_angle_speed,gausKernelsize) 
+        
+        # 'othergaze angle_speed'
+        a = np.array(output_allvectors['head_vect_all_merge'][animal_name_other]).transpose()
+        a = np.hstack((a,[[np.nan],[np.nan]]))
+        at1 = a[:,1:]
+        at0 = a[:,:-1] 
+        nframes = np.shape(at1)[1]
+        othergaze_angle_speed = np.empty((1,nframes,))
+        othergaze_angle_speed[:] = np.nan
+        othergaze_angle_speed = othergaze_angle_speed[0]
+        #
+        for iframe in np.arange(0,nframes,1):
+            othergaze_angle_speed[iframe] = np.arccos(np.clip(np.dot(at1[:,iframe]/np.linalg.norm(at1[:,iframe]), at0[:,iframe]/np.linalg.norm(at0[:,iframe])), -1.0, 1.0))    
+        # fill NaNs
+        nans = np.isnan(othergaze_angle_speed)
+        if np.any(~nans):
+            othergaze_angle_speed[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), othergaze_angle_speed[~nans])
+        #
+        othergaze_angle_speed = scipy.ndimage.gaussian_filter1d(othergaze_angle_speed,gausKernelsize)  
 
+        # 'otheranimal_otherlever_dist'
         a = output_key_locations['lever_loc_all_merge'][animal_name_other].transpose()
         b = output_key_locations['meaneye_loc_all_merge'][animal_name_other].transpose()
         a_min_b = a - b
@@ -184,6 +257,7 @@ def plot_continuous_bhv_var_singlecam_PullStartToPull_variedSection(pull1_rt, pu
         #
         otherani_otherlever_dist = scipy.ndimage.gaussian_filter1d(otherani_otherlever_dist,gausKernelsize)
 
+        # 'otheranimal_othertube_dist'
         a = output_key_locations['tube_loc_all_merge'][animal_name_other].transpose()
         b = output_key_locations['meaneye_loc_all_merge'][animal_name_other].transpose()
         a_min_b = a - b
@@ -267,7 +341,70 @@ def plot_continuous_bhv_var_singlecam_PullStartToPull_variedSection(pull1_rt, pu
 
 
         # put all the data together in the same order as the con_vars_plot
-        data_summary = [gaze_other_angle, gaze_tube_angle, gaze_lever_angle, animal_animal_dist, animal_tube_dist, animal_lever_dist, othergaze_self_angle, mass_move_speed, other_mass_move_speed, gaze_angle_speed, otherani_otherlever_dist, otherani_othertube_dist, socialgaze_prob, othergaze_prob, otherpull_prob, selfpull_prob]
+        data_summary = [gaze_other_angle, gaze_tube_angle, gaze_lever_angle,
+                        animal_animal_dist, animal_tube_dist, animal_lever_dist, 
+                        mass_move_speed, gaze_angle_speed,
+                        othergaze_self_angle, othergaze_othertube_angle, othergaze_otherlever_angle, 
+                        otherani_otherlever_dist, otherani_othertube_dist,
+                        other_mass_move_speed, othergaze_angle_speed,
+                        socialgaze_prob,othergaze_prob,
+                        selfpull_prob, otherpull_prob,]
+        
+        
+        shortest_length = min(len(arr) for arr in data_summary)
+        nn = shortest_length
+        truncated_arrays = [arr[:nn] for arr in data_summary]
+        data_summary = np.stack(truncated_arrays)
+        data_summary = list(data_summary)
+        
+        
+        # add the self PC1
+        indices = [con_vars_plot.index(name) for name in self_vars_toPCA_names]
+        # 
+        # reduce to smaller dimension using PCA; for self animal (animal1)
+        allbhvs_a1 = np.array(data_summary)[indices,:]
+        data_for_pca = allbhvs_a1.T
+        # Normalize the data (Z-score scaling)
+        # Each of the 8 variables will now have a mean of 0 and a standard deviation of 1
+        scaler = StandardScaler()
+        data_scaled = scaler.fit_transform(data_for_pca)
+        # Initialize and run PCA
+        # We want to reduce the 8 variables to 3 principal components
+        pca = PCA(n_components=3)
+        # Fit the model and transform the data
+        principal_components = pca.fit_transform(data_scaled)
+        principal_components_transposed = principal_components.T
+        # Get the explained variance for each component
+        explained_variance = pca.explained_variance_ratio_
+        #
+        PC1_a1 = principal_components_transposed[0,:]
+        #
+        data_summary.append(PC1_a1)
+        
+        # add the other PC1
+        indices = [con_vars_plot.index(name) for name in other_vars_toPCA_names]
+        # 
+        # reduce to smaller dimension using PCA; for self animal (animal2)
+        allbhvs_a2 = np.array(data_summary)[indices,:]
+        data_for_pca = allbhvs_a2.T
+        # Normalize the data (Z-score scaling)
+        # Each of the 8 variables will now have a mean of 0 and a standard deviation of 1
+        scaler = StandardScaler()
+        data_scaled = scaler.fit_transform(data_for_pca)
+        # Initialize and run PCA
+        # We want to reduce the 8 variables to 3 principal components
+        pca = PCA(n_components=3)
+        # Fit the model and transform the data
+        principal_components = pca.fit_transform(data_scaled)
+        principal_components_transposed = principal_components.T
+        # Get the explained variance for each component
+        explained_variance = pca.explained_variance_ratio_
+        #
+        PC1_a2 = principal_components_transposed[0,:]
+        #
+        data_summary.append(PC1_a2)
+        
+        
 
         for iplot in np.arange(0,nconvarplots,1):
             
