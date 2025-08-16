@@ -371,6 +371,12 @@ def plot_continuous_bhv_var_singlecam_highbhvDimension_to_lowPCspace(date_tgt, a
                         socialgaze_prob,othergaze_prob,
                         selfpull_prob, otherpull_prob,]
         
+        shortest_length = min(len(arr) for arr in data_summary)
+        nn = shortest_length
+        truncated_arrays = [arr[:nn] for arr in data_summary]
+        data_summary = np.stack(truncated_arrays)
+        data_summary = list(data_summary)
+        
         # add the self PC1
         indices = [con_vars_plot.index(name) for name in self_vars_toPCA_names]
         # 

@@ -121,271 +121,277 @@ def get_singlecam_bhv_var_for_neuralGLM_fitting_BasisKernelsForContVaris(gausKer
     
     nconvarplots = np.shape(con_vars_plot)[0]    
     
-    #
-    # define and organize the continuous variables corresponding to the recorded animal
-    if animal1 == recordedanimal:
-        ianimal = 0
-    elif animal2 == recordedanimal:
-        ianimal = 1
+    nanimals = np.shape(animalnames_videotrack)[0]
+    
+    data_summary = dict.fromkeys([animal1,animal2],[])
     
     #
-    # load the video tracking animal names
-    animal_name = animalnames_videotrack[ianimal]
-    if ianimal == 0:
-        animal_name_other = animalnames_videotrack[1]
-    elif ianimal == 1:
-        animal_name_other = animalnames_videotrack[0]
+    # define and organize the continuous variables corresponding to the both animals
+    for ianimal in np.arange(0,nanimals,1):
 
-    #
-    # get the variables
-    gaze_other_angle = output_allangles['other_eye_angle_all_merge'][animal_name]
-    gaze_other_angle = np.array(gaze_other_angle)
-    # fill NaNs
-    nans = np.isnan(gaze_other_angle)
-    if np.any(~nans):
-        gaze_other_angle[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), gaze_other_angle[~nans])
-    #
-    gaze_other_angle = scipy.ndimage.gaussian_filter1d(gaze_other_angle,gausKernelsize)  # smooth the curve, use 30 before, change to 3 
-
-    gaze_tube_angle = output_allangles['tube_eye_angle_all_merge'][animal_name]
-    gaze_tube_angle = np.array(gaze_tube_angle)
-    # fill NaNs
-    nans = np.isnan(gaze_tube_angle)
-    if np.any(~nans):
-        gaze_tube_angle[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), gaze_tube_angle[~nans])
-    #
-    gaze_tube_angle = scipy.ndimage.gaussian_filter1d(gaze_tube_angle,gausKernelsize)  
-
-    gaze_lever_angle = output_allangles['lever_eye_angle_all_merge'][animal_name]
-    gaze_lever_angle = np.array(gaze_lever_angle)
-    # fill NaNs
-    nans = np.isnan(gaze_lever_angle)
-    if np.any(~nans):
-        gaze_lever_angle[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), gaze_lever_angle[~nans])
-    #
-    gaze_lever_angle = scipy.ndimage.gaussian_filter1d(gaze_lever_angle,gausKernelsize)  
-
-    othergaze_self_angle = output_allangles['other_eye_angle_all_merge'][animal_name_other]
-    othergaze_self_angle = np.array(othergaze_self_angle)
-    # fill NaNs
-    nans = np.isnan(othergaze_self_angle)
-    if np.any(~nans):
-        othergaze_self_angle[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), othergaze_self_angle[~nans])
-    #
-    othergaze_self_angle = scipy.ndimage.gaussian_filter1d(othergaze_self_angle,gausKernelsize)  
-
-    a = output_key_locations['facemass_loc_all_merge'][animal_name_other].transpose()
-    b = output_key_locations['facemass_loc_all_merge'][animal_name].transpose()
-    a_min_b = a - b
-    animal_animal_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
-    # fill NaNs
-    nans = np.isnan(animal_animal_dist)
-    if np.any(~nans):
-        animal_animal_dist[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), animal_animal_dist[~nans])
-    #
-    animal_animal_dist = scipy.ndimage.gaussian_filter1d(animal_animal_dist,gausKernelsize)  
-
-    a = output_key_locations['tube_loc_all_merge'][animal_name].transpose()
-    b = output_key_locations['meaneye_loc_all_merge'][animal_name].transpose()
-    a_min_b = a - b
-    animal_tube_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
-    # fill NaNs
-    nans = np.isnan(animal_tube_dist)
-    if np.any(~nans):
-        animal_tube_dist[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), animal_tube_dist[~nans])
-    #
-    animal_tube_dist = scipy.ndimage.gaussian_filter1d(animal_tube_dist,gausKernelsize)  
-
-    a = output_key_locations['lever_loc_all_merge'][animal_name].transpose()
-    b = output_key_locations['meaneye_loc_all_merge'][animal_name].transpose()
-    a_min_b = a - b
-    animal_lever_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
-    # fill NaNs
-    nans = np.isnan(animal_lever_dist)
-    if np.any(~nans):
-        animal_lever_dist[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), animal_lever_dist[~nans])
-    #
-    animal_lever_dist = scipy.ndimage.gaussian_filter1d(animal_lever_dist,gausKernelsize)  
-
-    a = output_key_locations['facemass_loc_all_merge'][animal_name].transpose()
-    a = np.hstack((a,[[np.nan],[np.nan]]))
-    at1_min_at0 = (a[:,1:]-a[:,:-1])
-    mass_move_speed = np.sqrt(np.einsum('ij,ij->j', at1_min_at0, at1_min_at0))*fps 
-    # fill NaNs
-    nans = np.isnan(mass_move_speed)
-    if np.any(~nans):
-        mass_move_speed[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), mass_move_speed[~nans])
-    #
-    mass_move_speed = scipy.ndimage.gaussian_filter1d(mass_move_speed,gausKernelsize)  
-
-    a = output_key_locations['facemass_loc_all_merge'][animal_name_other].transpose()
-    a = np.hstack((a,[[np.nan],[np.nan]]))
-    at1_min_at0 = (a[:,1:]-a[:,:-1])
-    other_mass_move_speed = np.sqrt(np.einsum('ij,ij->j', at1_min_at0, at1_min_at0))*fps 
-    # fill NaNs
-    nans = np.isnan(other_mass_move_speed)
-    if np.any(~nans):
-        other_mass_move_speed[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), other_mass_move_speed[~nans])
-    #
-    other_mass_move_speed = scipy.ndimage.gaussian_filter1d(other_mass_move_speed,gausKernelsize)
-
-    a = np.array(output_allvectors['head_vect_all_merge'][animal_name]).transpose()
-    a = np.hstack((a,[[np.nan],[np.nan]]))
-    at1 = a[:,1:]
-    at0 = a[:,:-1] 
-    nframes = np.shape(at1)[1]
-    gaze_angle_speed = np.empty((1,nframes,))
-    gaze_angle_speed[:] = np.nan
-    gaze_angle_speed = gaze_angle_speed[0]
-    #
-    for iframe in np.arange(0,nframes,1):
-        gaze_angle_speed[iframe] = np.arccos(np.clip(np.dot(at1[:,iframe]/np.linalg.norm(at1[:,iframe]), at0[:,iframe]/np.linalg.norm(at0[:,iframe])), -1.0, 1.0))    
-    # fill NaNs
-    nans = np.isnan(gaze_angle_speed)
-    if np.any(~nans):
-        gaze_angle_speed[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), gaze_angle_speed[~nans])
-    #
-    gaze_angle_speed = scipy.ndimage.gaussian_filter1d(gaze_angle_speed,gausKernelsize)  
-
-    a = output_key_locations['lever_loc_all_merge'][animal_name_other].transpose()
-    b = output_key_locations['meaneye_loc_all_merge'][animal_name_other].transpose()
-    a_min_b = a - b
-    otherani_otherlever_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
-    # fill NaNs
-    nans = np.isnan(otherani_otherlever_dist)
-    if np.any(~nans):
-        otherani_otherlever_dist[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), otherani_otherlever_dist[~nans])
-    #
-    otherani_otherlever_dist = scipy.ndimage.gaussian_filter1d(otherani_otherlever_dist,gausKernelsize)
-
-    a = output_key_locations['tube_loc_all_merge'][animal_name_other].transpose()
-    b = output_key_locations['meaneye_loc_all_merge'][animal_name_other].transpose()
-    a_min_b = a - b
-    otherani_othertube_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
-    # fill NaNs
-    nans = np.isnan(otherani_othertube_dist)
-    if np.any(~nans):
-        otherani_othertube_dist[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), otherani_othertube_dist[~nans])
-    #
-    otherani_othertube_dist = scipy.ndimage.gaussian_filter1d(otherani_othertube_dist,gausKernelsize)
-
-    #
-    # get the self social gaze time series
-    # align to the start of the video recording
-    # self social gaze
-    if ianimal == 0:
-        timepoint_gaze = animal1_gaze+session_start_time
-    elif ianimal == 1:
-        timepoint_gaze = animal2_gaze+session_start_time
-    #
-    try:
-        timeseries_gaze = np.zeros(np.shape(gaze_angle_speed))
-        timeseries_gaze[list(map(int,list(np.round(timepoint_gaze*fps))))]=1
-    except: # some videos are shorter than the task 
-        timeseries_gaze = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_gaze*fps))))+1,))
-        timeseries_gaze[list(map(int,list(np.round(timepoint_gaze*fps))))]=1
-    socialgaze_prob = timeseries_gaze
-    # socialgaze_prob = scipy.ndimage.gaussian_filter1d(timeseries_gaze,gausKernelsize)
-    socialgaze_prob = scipy.ndimage.gaussian_filter1d(timeseries_gaze,1)
-
-    #
-    # get the other social gaze time series
-    # align to the start of the video recording
-    # other social gaze
-    if ianimal == 0:
-        timepoint_gaze = animal2_gaze+session_start_time
-    elif ianimal == 1:
-        timepoint_gaze = animal1_gaze+session_start_time
-    #
-    try:
-        timeseries_gaze = np.zeros(np.shape(gaze_angle_speed))
-        timeseries_gaze[list(map(int,list(np.round(timepoint_gaze*fps))))]=1
-    except: # some videos are shorter than the task 
-        timeseries_gaze = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_gaze*fps))))+1,))
-        timeseries_gaze[list(map(int,list(np.round(timepoint_gaze*fps))))]=1
-    othergaze_prob = timeseries_gaze
-    # othergaze_prob = scipy.ndimage.gaussian_filter1d(timeseries_gaze,gausKernelsize)
-    othergaze_prob = scipy.ndimage.gaussian_filter1d(timeseries_gaze,1)
-    
-    #
-    # get the other pull time series
-    # align to the start of the video recording
-    # other pull
-    if ianimal == 0:
-        timepoint_otherpull = time_point_pull2 + session_start_time
-    elif ianimal == 1:
-        timepoint_otherpull = time_point_pull1 + session_start_time
-    #
-    try:
-        timeseries_otherpull = np.zeros(np.shape(gaze_angle_speed))
-        timeseries_otherpull[list(map(int,list(np.round(timepoint_otherpull*fps))))]=1
-    except: # some videos are shorter than the task 
-        timeseries_otherpull = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_otherpull*fps))))+1,))
-        timeseries_otherpull[list(map(int,list(np.round(timepoint_otherpull*fps))))]=1
-    otherpull_prob = scipy.ndimage.gaussian_filter1d(timeseries_otherpull,1)
-
-    #
-    # get the self pull time series for comparison
-    # align to the start of the video recording
-    # self pull
-    if ianimal == 0:
-        timepoint_selfpull = time_point_pull1 + session_start_time
-    elif ianimal == 1:
-        timepoint_selfpull = time_point_pull2 + session_start_time
-    #
-    try:
-        timeseries_selfpull = np.zeros(np.shape(gaze_angle_speed))
-        timeseries_selfpull[list(map(int,list(np.round(timepoint_selfpull*fps))))]=1
-    except: # some videos are shorter than the task 
-        timeseries_selfpull = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_selfpull*fps))))+1,))
-        timeseries_selfpull[list(map(int,list(np.round(timepoint_selfpull*fps))))]=1
-    selfpull_prob = scipy.ndimage.gaussian_filter1d(timeseries_selfpull,1)
-    
-    #
-    # get the self juice time series 
-    # align to the start of the video recording
-    # self juice
-    if ianimal == 0:
-        timepoint_selfjuice = time_point_juice1 + session_start_time
-    elif ianimal == 1:
-        timepoint_selfjuice = time_point_juice2 + session_start_time
-    #
-    try:
-        timeseries_selfjuice = np.zeros(np.shape(gaze_angle_speed))
-        timeseries_selfjuice[list(map(int,list(np.round(timepoint_selfjuice*fps))))]=1
-    except: # some videos are shorter than the task 
-        timeseries_selfjuice = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_selfjuice*fps))))+1,))
-        timeseries_selfjuice[list(map(int,list(np.round(timepoint_selfjuice*fps))))]=1
-    selfjuice_prob = scipy.ndimage.gaussian_filter1d(timeseries_selfjuice,1)
-
-
-    # put all the data together in the same order as the con_vars_plot
-    data_summary = [gaze_other_angle, gaze_tube_angle, gaze_lever_angle, animal_animal_dist, animal_tube_dist, animal_lever_dist, othergaze_self_angle, mass_move_speed, other_mass_move_speed, gaze_angle_speed, otherani_otherlever_dist, otherani_othertube_dist, socialgaze_prob, othergaze_prob, otherpull_prob, selfpull_prob, selfjuice_prob]
-        
-    #
-    # only plot the active meaning period
-    for ivar in np.arange(0,nconvarplots,1):
-        
+        #
+        # load the video tracking animal names
+        animal_name = animalnames_videotrack[ianimal]
         if ianimal == 0:
-            timepoint_pull = time_point_pull1
+            animal_name_other = animalnames_videotrack[1]
         elif ianimal == 1:
-            timepoint_pull = time_point_pull2
-        #
-        xxx_time = np.arange(0,np.shape(data_summary[ivar])[0],1)/fps
-        # only plot the active meaning period
-        xxx_time_range = [np.max([xxx_time[0],np.array(timepoint_pull)[0]+session_start_time-5]),
-                          np.min([xxx_time[-1],np.array(timepoint_pull)[-1]+session_start_time+5])]
-        # 
-        if xxx_time_range[1]<np.floor(np.shape(gaze_angle_speed)[0]/fps):
-            ind_time_range = (xxx_time >= xxx_time_range[0]) & (xxx_time <=xxx_time_range[1])   
-        else:
-            xxx_time_range[1] = np.floor(np.shape(gaze_angle_speed)[0]/fps)
-            ind_time_range = (xxx_time >= xxx_time_range[0]) & (xxx_time <=xxx_time_range[1])   
+            animal_name_other = animalnames_videotrack[0]
+            
+        if ianimal == 0:
+            animal_name_forsaving = animal1
+        elif ianimal == 1:
+            animal_name_forsaving = animal2
 
         #
-        data_summary[ivar] = data_summary[ivar][ind_time_range]
-        
-        data_summary[ivar] = (data_summary[ivar] - np.nanmean(data_summary[ivar])) / np.nanstd(data_summary[ivar])
+        # get the variables
+        gaze_other_angle = output_allangles['other_eye_angle_all_merge'][animal_name]
+        gaze_other_angle = np.array(gaze_other_angle)
+        # fill NaNs
+        nans = np.isnan(gaze_other_angle)
+        if np.any(~nans):
+            gaze_other_angle[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), gaze_other_angle[~nans])
+        #
+        gaze_other_angle = scipy.ndimage.gaussian_filter1d(gaze_other_angle,gausKernelsize)  # smooth the curve, use 30 before, change to 3 
+
+        gaze_tube_angle = output_allangles['tube_eye_angle_all_merge'][animal_name]
+        gaze_tube_angle = np.array(gaze_tube_angle)
+        # fill NaNs
+        nans = np.isnan(gaze_tube_angle)
+        if np.any(~nans):
+            gaze_tube_angle[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), gaze_tube_angle[~nans])
+        #
+        gaze_tube_angle = scipy.ndimage.gaussian_filter1d(gaze_tube_angle,gausKernelsize)  
+
+        gaze_lever_angle = output_allangles['lever_eye_angle_all_merge'][animal_name]
+        gaze_lever_angle = np.array(gaze_lever_angle)
+        # fill NaNs
+        nans = np.isnan(gaze_lever_angle)
+        if np.any(~nans):
+            gaze_lever_angle[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), gaze_lever_angle[~nans])
+        #
+        gaze_lever_angle = scipy.ndimage.gaussian_filter1d(gaze_lever_angle,gausKernelsize)  
+
+        othergaze_self_angle = output_allangles['other_eye_angle_all_merge'][animal_name_other]
+        othergaze_self_angle = np.array(othergaze_self_angle)
+        # fill NaNs
+        nans = np.isnan(othergaze_self_angle)
+        if np.any(~nans):
+            othergaze_self_angle[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), othergaze_self_angle[~nans])
+        #
+        othergaze_self_angle = scipy.ndimage.gaussian_filter1d(othergaze_self_angle,gausKernelsize)  
+
+        a = output_key_locations['facemass_loc_all_merge'][animal_name_other].transpose()
+        b = output_key_locations['facemass_loc_all_merge'][animal_name].transpose()
+        a_min_b = a - b
+        animal_animal_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
+        # fill NaNs
+        nans = np.isnan(animal_animal_dist)
+        if np.any(~nans):
+            animal_animal_dist[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), animal_animal_dist[~nans])
+        #
+        animal_animal_dist = scipy.ndimage.gaussian_filter1d(animal_animal_dist,gausKernelsize)  
+
+        a = output_key_locations['tube_loc_all_merge'][animal_name].transpose()
+        b = output_key_locations['meaneye_loc_all_merge'][animal_name].transpose()
+        a_min_b = a - b
+        animal_tube_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
+        # fill NaNs
+        nans = np.isnan(animal_tube_dist)
+        if np.any(~nans):
+            animal_tube_dist[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), animal_tube_dist[~nans])
+        #
+        animal_tube_dist = scipy.ndimage.gaussian_filter1d(animal_tube_dist,gausKernelsize)  
+
+        a = output_key_locations['lever_loc_all_merge'][animal_name].transpose()
+        b = output_key_locations['meaneye_loc_all_merge'][animal_name].transpose()
+        a_min_b = a - b
+        animal_lever_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
+        # fill NaNs
+        nans = np.isnan(animal_lever_dist)
+        if np.any(~nans):
+            animal_lever_dist[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), animal_lever_dist[~nans])
+        #
+        animal_lever_dist = scipy.ndimage.gaussian_filter1d(animal_lever_dist,gausKernelsize)  
+
+        a = output_key_locations['facemass_loc_all_merge'][animal_name].transpose()
+        a = np.hstack((a,[[np.nan],[np.nan]]))
+        at1_min_at0 = (a[:,1:]-a[:,:-1])
+        mass_move_speed = np.sqrt(np.einsum('ij,ij->j', at1_min_at0, at1_min_at0))*fps 
+        # fill NaNs
+        nans = np.isnan(mass_move_speed)
+        if np.any(~nans):
+            mass_move_speed[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), mass_move_speed[~nans])
+        #
+        mass_move_speed = scipy.ndimage.gaussian_filter1d(mass_move_speed,gausKernelsize)  
+
+        a = output_key_locations['facemass_loc_all_merge'][animal_name_other].transpose()
+        a = np.hstack((a,[[np.nan],[np.nan]]))
+        at1_min_at0 = (a[:,1:]-a[:,:-1])
+        other_mass_move_speed = np.sqrt(np.einsum('ij,ij->j', at1_min_at0, at1_min_at0))*fps 
+        # fill NaNs
+        nans = np.isnan(other_mass_move_speed)
+        if np.any(~nans):
+            other_mass_move_speed[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), other_mass_move_speed[~nans])
+        #
+        other_mass_move_speed = scipy.ndimage.gaussian_filter1d(other_mass_move_speed,gausKernelsize)
+
+        a = np.array(output_allvectors['head_vect_all_merge'][animal_name]).transpose()
+        a = np.hstack((a,[[np.nan],[np.nan]]))
+        at1 = a[:,1:]
+        at0 = a[:,:-1] 
+        nframes = np.shape(at1)[1]
+        gaze_angle_speed = np.empty((1,nframes,))
+        gaze_angle_speed[:] = np.nan
+        gaze_angle_speed = gaze_angle_speed[0]
+        #
+        for iframe in np.arange(0,nframes,1):
+            gaze_angle_speed[iframe] = np.arccos(np.clip(np.dot(at1[:,iframe]/np.linalg.norm(at1[:,iframe]), at0[:,iframe]/np.linalg.norm(at0[:,iframe])), -1.0, 1.0))    
+        # fill NaNs
+        nans = np.isnan(gaze_angle_speed)
+        if np.any(~nans):
+            gaze_angle_speed[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), gaze_angle_speed[~nans])
+        #
+        gaze_angle_speed = scipy.ndimage.gaussian_filter1d(gaze_angle_speed,gausKernelsize)  
+
+        a = output_key_locations['lever_loc_all_merge'][animal_name_other].transpose()
+        b = output_key_locations['meaneye_loc_all_merge'][animal_name_other].transpose()
+        a_min_b = a - b
+        otherani_otherlever_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
+        # fill NaNs
+        nans = np.isnan(otherani_otherlever_dist)
+        if np.any(~nans):
+            otherani_otherlever_dist[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), otherani_otherlever_dist[~nans])
+        #
+        otherani_otherlever_dist = scipy.ndimage.gaussian_filter1d(otherani_otherlever_dist,gausKernelsize)
+
+        a = output_key_locations['tube_loc_all_merge'][animal_name_other].transpose()
+        b = output_key_locations['meaneye_loc_all_merge'][animal_name_other].transpose()
+        a_min_b = a - b
+        otherani_othertube_dist = np.sqrt(np.einsum('ij,ij->j', a_min_b, a_min_b))
+        # fill NaNs
+        nans = np.isnan(otherani_othertube_dist)
+        if np.any(~nans):
+            otherani_othertube_dist[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(~nans), otherani_othertube_dist[~nans])
+        #
+        otherani_othertube_dist = scipy.ndimage.gaussian_filter1d(otherani_othertube_dist,gausKernelsize)
+
+        #
+        # get the self social gaze time series
+        # align to the start of the video recording
+        # self social gaze
+        if ianimal == 0:
+            timepoint_gaze = animal1_gaze+session_start_time
+        elif ianimal == 1:
+            timepoint_gaze = animal2_gaze+session_start_time
+        #
+        try:
+            timeseries_gaze = np.zeros(np.shape(gaze_angle_speed))
+            timeseries_gaze[list(map(int,list(np.round(timepoint_gaze*fps))))]=1
+        except: # some videos are shorter than the task 
+            timeseries_gaze = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_gaze*fps))))+1,))
+            timeseries_gaze[list(map(int,list(np.round(timepoint_gaze*fps))))]=1
+        socialgaze_prob = timeseries_gaze
+        # socialgaze_prob = scipy.ndimage.gaussian_filter1d(timeseries_gaze,gausKernelsize)
+        socialgaze_prob = scipy.ndimage.gaussian_filter1d(timeseries_gaze,1)
+
+        #
+        # get the other social gaze time series
+        # align to the start of the video recording
+        # other social gaze
+        if ianimal == 0:
+            timepoint_gaze = animal2_gaze+session_start_time
+        elif ianimal == 1:
+            timepoint_gaze = animal1_gaze+session_start_time
+        #
+        try:
+            timeseries_gaze = np.zeros(np.shape(gaze_angle_speed))
+            timeseries_gaze[list(map(int,list(np.round(timepoint_gaze*fps))))]=1
+        except: # some videos are shorter than the task 
+            timeseries_gaze = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_gaze*fps))))+1,))
+            timeseries_gaze[list(map(int,list(np.round(timepoint_gaze*fps))))]=1
+        othergaze_prob = timeseries_gaze
+        # othergaze_prob = scipy.ndimage.gaussian_filter1d(timeseries_gaze,gausKernelsize)
+        othergaze_prob = scipy.ndimage.gaussian_filter1d(timeseries_gaze,1)
+
+        #
+        # get the other pull time series
+        # align to the start of the video recording
+        # other pull
+        if ianimal == 0:
+            timepoint_otherpull = time_point_pull2 + session_start_time
+        elif ianimal == 1:
+            timepoint_otherpull = time_point_pull1 + session_start_time
+        #
+        try:
+            timeseries_otherpull = np.zeros(np.shape(gaze_angle_speed))
+            timeseries_otherpull[list(map(int,list(np.round(timepoint_otherpull*fps))))]=1
+        except: # some videos are shorter than the task 
+            timeseries_otherpull = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_otherpull*fps))))+1,))
+            timeseries_otherpull[list(map(int,list(np.round(timepoint_otherpull*fps))))]=1
+        otherpull_prob = scipy.ndimage.gaussian_filter1d(timeseries_otherpull,1)
+
+        #
+        # get the self pull time series for comparison
+        # align to the start of the video recording
+        # self pull
+        if ianimal == 0:
+            timepoint_selfpull = time_point_pull1 + session_start_time
+        elif ianimal == 1:
+            timepoint_selfpull = time_point_pull2 + session_start_time
+        #
+        try:
+            timeseries_selfpull = np.zeros(np.shape(gaze_angle_speed))
+            timeseries_selfpull[list(map(int,list(np.round(timepoint_selfpull*fps))))]=1
+        except: # some videos are shorter than the task 
+            timeseries_selfpull = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_selfpull*fps))))+1,))
+            timeseries_selfpull[list(map(int,list(np.round(timepoint_selfpull*fps))))]=1
+        selfpull_prob = scipy.ndimage.gaussian_filter1d(timeseries_selfpull,1)
+
+        #
+        # get the self juice time series 
+        # align to the start of the video recording
+        # self juice
+        if ianimal == 0:
+            timepoint_selfjuice = time_point_juice1 + session_start_time
+        elif ianimal == 1:
+            timepoint_selfjuice = time_point_juice2 + session_start_time
+        #
+        try:
+            timeseries_selfjuice = np.zeros(np.shape(gaze_angle_speed))
+            timeseries_selfjuice[list(map(int,list(np.round(timepoint_selfjuice*fps))))]=1
+        except: # some videos are shorter than the task 
+            timeseries_selfjuice = np.zeros((int(np.ceil(np.nanmax(np.round(timepoint_selfjuice*fps))))+1,))
+            timeseries_selfjuice[list(map(int,list(np.round(timepoint_selfjuice*fps))))]=1
+        selfjuice_prob = scipy.ndimage.gaussian_filter1d(timeseries_selfjuice,1)
+
+
+        # put all the data together in the same order as the con_vars_plot
+        data_summary[animal_name_forsaving] = [gaze_other_angle, gaze_tube_angle, gaze_lever_angle, animal_animal_dist, animal_tube_dist, animal_lever_dist, othergaze_self_angle, mass_move_speed, other_mass_move_speed, gaze_angle_speed, otherani_otherlever_dist, otherani_othertube_dist, socialgaze_prob, othergaze_prob, otherpull_prob, selfpull_prob, selfjuice_prob]
+
+        #
+        # only plot the active meaning period
+        for ivar in np.arange(0,nconvarplots,1):
+
+            if ianimal == 0:
+                timepoint_pull = time_point_pull1
+            elif ianimal == 1:
+                timepoint_pull = time_point_pull2
+            #
+            xxx_time = np.arange(0,np.shape(data_summary[animal_name_forsaving][ivar])[0],1)/fps
+            # only plot the active meaning period
+            xxx_time_range = [np.max([xxx_time[0],np.array(timepoint_pull)[0]+session_start_time-5]),
+                              np.min([xxx_time[-1],np.array(timepoint_pull)[-1]+session_start_time+5])]
+            # 
+            if xxx_time_range[1]<np.floor(np.shape(gaze_angle_speed)[0]/fps):
+                ind_time_range = (xxx_time >= xxx_time_range[0]) & (xxx_time <=xxx_time_range[1])   
+            else:
+                xxx_time_range[1] = np.floor(np.shape(gaze_angle_speed)[0]/fps)
+                ind_time_range = (xxx_time >= xxx_time_range[0]) & (xxx_time <=xxx_time_range[1])   
+
+            #
+            data_summary[animal_name_forsaving][ivar] = data_summary[animal_name_forsaving][ivar][ind_time_range]
+
+            data_summary[animal_name_forsaving][ivar] = (data_summary[animal_name_forsaving][ivar] - np.nanmean(data_summary[animal_name_forsaving][ivar])) / np.nanstd(data_summary[animal_name_forsaving][ivar])
         
         
         
@@ -439,6 +445,7 @@ def get_singlecam_bhv_var_for_neuralGLM_fitting_BasisKernelsForContVaris(gausKer
 
 
     return data_summary, data_summary_names, spiketrain_summary
+
 
 
 
